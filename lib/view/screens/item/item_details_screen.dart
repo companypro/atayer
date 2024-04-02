@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/controller/cart_controller.dart';
 import 'package:sixam_mart/controller/item_controller.dart';
@@ -24,24 +26,29 @@ import 'package:sixam_mart/view/screens/item/widget/details_app_bar.dart';
 import 'package:sixam_mart/view/screens/item/widget/details_web_view.dart';
 import 'package:sixam_mart/view/screens/item/widget/item_image_view.dart';
 import 'package:sixam_mart/view/screens/item/widget/item_title_view.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ItemDetailsScreen extends StatefulWidget {
   final Item? item;
   final bool inStorePage;
-  const ItemDetailsScreen({Key? key, required this.item, required this.inStorePage}) : super(key: key);
+
+  const ItemDetailsScreen({Key? key, required this.item, required this.inStorePage, }) : super(key: key);
 
   @override
   State<ItemDetailsScreen> createState() => _ItemDetailsScreenState();
 }
 
-class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
+class _ItemDetailsScreenState extends State<ItemDetailsScreen>  with TickerProviderStateMixin {
   final Size size = Get.size;
   final GlobalKey<ScaffoldMessengerState> _globalKey = GlobalKey();
   final GlobalKey<DetailsAppBarState> _key = GlobalKey();
+  TabController? tabController;
+  late final bool? inStorePage;
 
   @override
   void initState() {
     super.initState();
+    tabController = TabController(length: 2, initialIndex: 0, vsync: this);
 
     Get.find<ItemController>().getProductDetails(widget.item!);
   }
@@ -128,146 +135,245 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               body: SafeArea(child: (itemController.item != null) ? ResponsiveHelper.isDesktop(context) ? DetailsWebView(
                 cartModel: cartModel, stock: stock, priceWithAddOns: priceWithAddons, cart: cart,
               ) : Column(children: [
-                Expanded(child: Scrollbar(child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                    physics: const BouncingScrollPhysics(),
-                    child: Center(child: SizedBox(width: Dimensions.webMaxWidth, child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ItemImageView(item: itemController.item),
-                        const SizedBox(height: 20),
+                Expanded(child: Scrollbar(child: Center(child: SizedBox(width: Dimensions.webMaxWidth, child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Text(itemController.item!.name!),
 
-                        Builder(
-                            builder: (context) {
-                              return ItemTitleView(
-                                item: itemController.item, inStorePage: widget.inStorePage, isCampaign: itemController.item!.availableDateStarts != null,
-                                inStock: (Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && stock! <= 0),
-                              );
-                            }
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Flexible(
+                        child: Text(
+                          itemController.item!.name! ?? '',
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeOverLarge),
+                          maxLines: 2, overflow: TextOverflow.ellipsis,
                         ),
-                        const Divider(height: 20, thickness: 2),
+                      ),
+                    ),
+                    ItemImageView(item: itemController.item),
+                    const SizedBox(height: 20),
 
-                        // Variation
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: itemController.item!.choiceOptions!.length,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              Text(itemController.item!.choiceOptions![index].title!, style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
-                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                              GridView.builder(
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 20,
-                                  mainAxisSpacing: 10,
-                                  childAspectRatio: (1 / 0.25),
-                                ),
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: itemController.item!.choiceOptions![index].options!.length,
-                                itemBuilder: (context, i) {
-                                  return InkWell(
-                                    onTap: () {
-                                      itemController.setCartVariationIndex(index, i, itemController.item);
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
-                                      decoration: BoxDecoration(
-                                        color: itemController.variationIndex![index] != i ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
-                                        borderRadius: BorderRadius.circular(5),
-                                        border: itemController.variationIndex![index] != i ? Border.all(color: Theme.of(context).disabledColor, width: 2) : null,
-                                      ),
-                                      child: Text(
-                                        itemController.item!.choiceOptions![index].options![i].trim(), maxLines: 1, overflow: TextOverflow.ellipsis,
-                                        style:robotoRegular.copyWith(
-                                          color: itemController.variationIndex![index] != i ? Colors.black : Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              SizedBox(height: index != itemController.item!.choiceOptions!.length-1 ? Dimensions.paddingSizeLarge : 0),
-                            ]);
-                          },
+                    // المبلغ
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(children: [
+                        Text('${'total_amount'.tr}:', style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+
+                        Text(
+                          PriceConverter.convertPrice(itemController.cartIndex != -1
+                              ? CartHelper.getItemDetailsDiscountPrice(cart: Get.find<CartController>().cartList[itemController.cartIndex])
+                              : priceWithAddons), textDirection: TextDirection.ltr,
+                          style:robotoBold.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge),
                         ),
-                        itemController.item!.choiceOptions!.isNotEmpty ? const SizedBox(height: Dimensions.paddingSizeLarge) : const SizedBox(),
+                      ]),
+                    ),
+                    const Divider(height: 20, thickness: 3),
 
-                        // Quantity
-                        GetBuilder<CartController>(
-                          builder: (cartController) {
-                            return Row(children: [
-                              Text('quantity'.tr, style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
-                              const Expanded(child: SizedBox()),
-                              Container(
-                                decoration: BoxDecoration(color: Theme.of(context).disabledColor, borderRadius: BorderRadius.circular(5)),
-                                child: Row(children: [
-                                  InkWell(
-                                    onTap: cartController.isLoading ? null : () {
-                                      if(itemController.cartIndex != -1) {
-                                        if(cartController.cartList[itemController.cartIndex].quantity! > 1) {
-                                          cartController.setQuantity(false, itemController.cartIndex, stock, cartController.cartList[itemController.cartIndex].quantity);
-                                        }
-                                      }else {
-                                        if(itemController.quantity! > 1) {
-                                          itemController.setQuantity(false, stock, itemController.item!.quantityLimit);
-                                        }
+
+                    // const Divider(height: 20, thickness: 2),
+
+                    // Variation
+                    // ListView.builder(
+                    //   shrinkWrap: true,
+                    //   itemCount: itemController.item!.choiceOptions!.length,
+                    //   physics: const NeverScrollableScrollPhysics(),
+                    //   itemBuilder: (context, index) {
+                    //     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    //       Text(itemController.item!.choiceOptions![index].title!, style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                    //       const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                    //       GridView.builder(
+                    //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    //           crossAxisCount: 3,
+                    //           crossAxisSpacing: 20,
+                    //           mainAxisSpacing: 10,
+                    //           childAspectRatio: (1 / 0.25),
+                    //         ),
+                    //         shrinkWrap: true,
+                    //         physics: const NeverScrollableScrollPhysics(),
+                    //         itemCount: itemController.item!.choiceOptions![index].options!.length,
+                    //         itemBuilder: (context, i) {
+                    //           return InkWell(
+                    //             onTap: () {
+                    //               itemController.setCartVariationIndex(index, i, itemController.item);
+                    //             },
+                    //             child: Container(
+                    //               alignment: Alignment.center,
+                    //               padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
+                    //               decoration: BoxDecoration(
+                    //                 color: itemController.variationIndex![index] != i ? Theme.of(context).disabledColor : Theme.of(context).primaryColor,
+                    //                 borderRadius: BorderRadius.circular(5),
+                    //                 border: itemController.variationIndex![index] != i ? Border.all(color: Theme.of(context).disabledColor, width: 2) : null,
+                    //               ),
+                    //               child: Text(
+                    //                 itemController.item!.choiceOptions![index].options![i].trim(), maxLines: 1, overflow: TextOverflow.ellipsis,
+                    //                 style:robotoRegular.copyWith(
+                    //                   color: itemController.variationIndex![index] != i ? Colors.black : Colors.white,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           );
+                    //         },
+                    //       ),
+                    //       SizedBox(height: index != itemController.item!.choiceOptions!.length-1 ? Dimensions.paddingSizeLarge : 0),
+                    //     ]);
+                    //   },
+                    // ),
+
+                    itemController.item!.choiceOptions!.isNotEmpty ? const SizedBox(height: Dimensions.paddingSizeLarge) : const SizedBox(),
+
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Row(children: [
+                            Image.asset(Images.time, height: 20, width: 20,color: Theme.of(context).primaryColor,),
+                            SizedBox(width: 10,),
+                            Text("زمن التوصيل: في خلال ساعة إلي ساعتين"),
+                          ],),
+                          const Divider(height: 25, thickness: 1),
+
+                          Row(children: [
+                            Image.asset(Images.change, height: 20, width: 20,color: Theme.of(context).primaryColor,),
+                            SizedBox(width: 10,),
+                            Text("يمكنك استبدال او استرجاع هذا المنتج"),
+                          ],),
+                        ],
+                      ),
+                    ),
+
+                    // // Quantity
+                    // GetBuilder<CartController>(
+                    //   builder: (cartController) {
+                    //     return Row(children: [
+                    //       Text('quantity'.tr, style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                    //       const Expanded(child: SizedBox()),
+                    //       Container(
+                    //         decoration: BoxDecoration(color: Theme.of(context).disabledColor, borderRadius: BorderRadius.circular(5)),
+                    //         child: Row(children: [
+                    //           InkWell(
+                    //             onTap: cartController.isLoading ? null : () {
+                    //               if(itemController.cartIndex != -1) {
+                    //                 if(cartController.cartList[itemController.cartIndex].quantity! > 1) {
+                    //                   cartController.setQuantity(false, itemController.cartIndex, stock, cartController.cartList[itemController.cartIndex].quantity);
+                    //                 }
+                    //               }else {
+                    //                 if(itemController.quantity! > 1) {
+                    //                   itemController.setQuantity(false, stock, itemController.item!.quantityLimit);
+                    //                 }
+                    //               }
+                    //             },
+                    //             child: const Padding(
+                    //               padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+                    //               child: Icon(Icons.remove, size: 20),
+                    //             ),
+                    //           ),
+                    //
+                    //           !cartController.isLoading ? Text(
+                    //             itemController.cartIndex != -1 ? cartController.cartList[itemController.cartIndex].quantity.toString()
+                    //                 : itemController.quantity.toString(),
+                    //             style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
+                    //           ) : const SizedBox(height: 20, width: 20, child: CircularProgressIndicator()),
+                    //
+                    //           InkWell(
+                    //             onTap: cartController.isLoading ? null : () => itemController.cartIndex != -1
+                    //                 ? cartController.setQuantity(true, itemController.cartIndex, stock, cartController.cartList[itemController.cartIndex].quantityLimit)
+                    //                 : itemController.setQuantity(true, stock, itemController.item!.quantityLimit),
+                    //             child: const Padding(
+                    //               padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+                    //               child: Icon(Icons.add, size: 20),
+                    //             ),
+                    //           ),
+                    //         ]),
+                    //       ),
+                    //     ]);
+                    //   }
+                    // ),
+                    // const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                    // Row(children: [
+                    //   Text('${'total_amount'.tr}:', style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                    //   const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                    //
+                    //   Text(
+                    //     PriceConverter.convertPrice(itemController.cartIndex != -1
+                    //         ? CartHelper.getItemDetailsDiscountPrice(cart: Get.find<CartController>().cartList[itemController.cartIndex])
+                    //         : priceWithAddons), textDirection: TextDirection.ltr,
+                    //     style:robotoBold.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge),
+                    //   ),
+                    // ]),
+                    const Divider(height: 20, thickness: 3),
+                    Center(child: Container(
+                      width: Dimensions.webMaxWidth,
+                      color: Theme.of(context).cardColor,
+                      child: TabBar(
+                        controller: tabController,
+                        indicatorColor: Theme.of(context).primaryColor,
+                        indicatorWeight: 3,
+                        labelColor: Theme.of(context).primaryColor,
+                        unselectedLabelColor: Theme.of(context).disabledColor,
+                        unselectedLabelStyle: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
+                        labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+                        tabs: [
+                          Tab(text: 'description'.tr),
+                          Tab(text: 'evaluation'.tr),
+                        ],
+                      ),
+                    )),
+
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height / .2,
+                          child: TabBarView(
+                            controller: tabController,
+                            children: [
+                              (itemController.item!.description != null && itemController.item!.description!.isNotEmpty) ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Text('description'.tr, style: robotoMedium),
+                                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                                  Text(itemController.item!.description!, style: robotoRegular),
+                                  const SizedBox(height: Dimensions.paddingSizeLarge),
+                                ],
+                              ) : const SizedBox(),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Text('description'.tr, style: robotoMedium),
+                                  // RatingBar.builder(
+                                  //   initialRating: _averageRating,
+                                  //   minRating: 1,
+                                  //   direction: Axis.horizontal,
+                                  //   itemSize: 20,
+                                  //   itemCount: 5,
+                                  //   itemPadding: const EdgeInsets.symmetric(horizontal: 4),
+                                  //   itemBuilder: (context, _) => const Icon(
+                                  //     Icons.star,
+                                  //     // color: ColorsManager.mainMauve,
+                                  //   ),
+                                  //   onRatingUpdate: (rating) {
+                                  //     // _submitRating(rating);
+                                  //   },
+                                  // ),
+                                  Builder(
+                                      builder: (context) {
+                                        return ItemTitleView(
+                                          item: itemController.item, inStorePage: widget.inStorePage, isCampaign: itemController.item!.availableDateStarts != null,
+                                          inStock: (Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && stock! <= 0),
+                                        );
                                       }
-                                    },
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-                                      child: Icon(Icons.remove, size: 20),
-                                    ),
                                   ),
+                                ],
+                              ) ,
 
-                                  !cartController.isLoading ? Text(
-                                    itemController.cartIndex != -1 ? cartController.cartList[itemController.cartIndex].quantity.toString()
-                                        : itemController.quantity.toString(),
-                                    style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
-                                  ) : const SizedBox(height: 20, width: 20, child: CircularProgressIndicator()),
-
-                                  InkWell(
-                                    onTap: cartController.isLoading ? null : () => itemController.cartIndex != -1
-                                        ? cartController.setQuantity(true, itemController.cartIndex, stock, cartController.cartList[itemController.cartIndex].quantityLimit)
-                                        : itemController.setQuantity(true, stock, itemController.item!.quantityLimit),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-                                      child: Icon(Icons.add, size: 20),
-                                    ),
-                                  ),
-                                ]),
-                              ),
-                            ]);
-                          }
+                            ],),
                         ),
-                        const SizedBox(height: Dimensions.paddingSizeLarge),
+                      ),
+                    ),
 
-                        Row(children: [
-                          Text('${'total_amount'.tr}:', style:robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
-                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                          Text(
-                            PriceConverter.convertPrice(itemController.cartIndex != -1
-                                ? CartHelper.getItemDetailsDiscountPrice(cart: Get.find<CartController>().cartList[itemController.cartIndex])
-                                : priceWithAddons), textDirection: TextDirection.ltr,
-                            style:robotoBold.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge),
-                          ),
-                        ]),
-                        const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-
-                        (itemController.item!.description != null && itemController.item!.description!.isNotEmpty) ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('description'.tr, style: robotoMedium),
-                            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                            Text(itemController.item!.description!, style: robotoRegular),
-                            const SizedBox(height: Dimensions.paddingSizeLarge),
-                          ],
-                        ) : const SizedBox(),
-                      ],
-                    )))),
+                  ],
+                ))),
                 )),
 
                 GetBuilder<CartController>(

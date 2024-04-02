@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:sixam_mart/util/app_constants.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 final robotoRegular = TextStyle(
   fontFamily: AppConstants.fontFamily,
   fontWeight: FontWeight.w400,

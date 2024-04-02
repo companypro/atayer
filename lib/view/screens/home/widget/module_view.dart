@@ -95,6 +95,7 @@ class ModuleView extends StatelessWidget {
               ),
             ),
           )),
+
       splashController.moduleList != null ? splashController.moduleList!.isNotEmpty ? GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3, mainAxisSpacing: Dimensions.paddingSizeSmall,

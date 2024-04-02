@@ -252,7 +252,9 @@ class RouteHelper {
   }
 
   static String getHtmlRoute(String page) => '$html?page=$page';
+
   static String getCategoryRoute() => categories;
+
   static String getCategoryItemRoute(int? id, String name) {
     List<int> encoded = utf8.encode(name);
     String data = base64Encode(encoded);
@@ -268,7 +270,9 @@ class RouteHelper {
   static String getReviewRoute() => rateReview;
   static String getUpdateRoute(bool isUpdate) =>
       '$update?update=${isUpdate.toString()}';
+
   static String getCartRoute() => cart;
+
   static String getAddAddressRoute(
           bool fromCheckout, bool fromRide, int? zoneId,
           {bool isNavbar = false}) =>

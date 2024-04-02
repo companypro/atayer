@@ -18,7 +18,7 @@ class PortionWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
         child: Column(children: [
           Row(children: [
-            Image.asset(icon, height: 16, width: 16),
+            Image.asset(icon, height: 20, width: 20,color: Theme.of(context).primaryColor,),
             const SizedBox(width: Dimensions.paddingSizeSmall),
 
             Expanded(child: Text(title, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault))),
@@ -31,8 +31,11 @@ class PortionWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall, horizontal: Dimensions.paddingSizeSmall),
               child: Text(suffix!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Colors.white), textDirection: TextDirection.ltr),
             ) : const SizedBox(),
+            Spacer(),
+            Icon(Icons.arrow_forward_ios_outlined,size: 15,)
           ]),
-          hideDivider ? const SizedBox() : const Divider()
+          const SizedBox(height: 7,)
+          // hideDivider ? const SizedBox() : const Divider()
         ]),
       ),
     );

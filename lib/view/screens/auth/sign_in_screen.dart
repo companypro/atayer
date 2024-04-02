@@ -197,7 +197,7 @@ class SignInScreenState extends State<SignInScreen> {
                             ),
                             Column(
                               children: [
-                                const SizedBox(height: 50),
+                                const SizedBox(height: 100),
 
                                 // const SizedBox(
                                 //     height: Dimensions.paddingSizeDefault),

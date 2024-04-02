@@ -55,13 +55,13 @@ class ItemTitleView extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  Flexible(
-                    child: Text(
-                      item?.name ?? '',
-                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeOverLarge),
-                      maxLines: 2, overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                  // Flexible(
+                  //   child: Text(
+                  //     item?.name ?? '',
+                  //     style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeOverLarge),
+                  //     maxLines: 2, overflow: TextOverflow.ellipsis,
+                  //   ),
+                  // ),
                   const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
                   ((Get.find<SplashController>().configModel!.moduleConfig!.module!.unit! && item!.unitType != null)
@@ -173,46 +173,46 @@ class ItemTitleView extends StatelessWidget {
         builder: (itemController) {
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-            Row(children: [
-              Expanded(child: Text(
-                item!.name ?? '',
-                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
-                maxLines: 2, overflow: TextOverflow.ellipsis,
-              )),
-
-              item!.availableTimeStarts != null ? const SizedBox() : GetBuilder<WishListController>(
-                  builder: (wishController) {
-                    return Row(
-                      children: [
-                        // Text(
-                        //   wishController.localWishes.contains(item.id) ? (item.wishlistCount+1).toString() : wishController.localRemovedWishes
-                        //       .contains(item.id) ? (item.wishlistCount-1).toString() : item.wishlistCount.toString(),
-                        //   style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
-                        // ),
-                        // SizedBox(width: 5),
-
-                        InkWell(
-                          onTap: () {
-                            if(isLoggedIn){
-                              if(wishController.wishItemIdList.contains(item!.id)) {
-                                wishController.removeFromWishList(item!.id, false);
-                              }else {
-                                wishController.addToWishList(item, null, false);
-                              }
-                            }else {
-                              showCustomSnackBar('you_are_not_logged_in'.tr);
-                            }
-                          },
-                          child: Icon(
-                            wishController.wishItemIdList.contains(item!.id) ? Icons.favorite : Icons.favorite_border, size: 25,
-                            color: wishController.wishItemIdList.contains(item!.id) ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-              ),
-            ]),
+            // Row(children: [
+            //   Expanded(child: Text(
+            //     item!.name ?? '',
+            //     style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
+            //     maxLines: 2, overflow: TextOverflow.ellipsis,
+            //   )),
+            //
+            //   item!.availableTimeStarts != null ? const SizedBox() : GetBuilder<WishListController>(
+            //       builder: (wishController) {
+            //         return Row(
+            //           children: [
+            //             // Text(
+            //             //   wishController.localWishes.contains(item.id) ? (item.wishlistCount+1).toString() : wishController.localRemovedWishes
+            //             //       .contains(item.id) ? (item.wishlistCount-1).toString() : item.wishlistCount.toString(),
+            //             //   style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
+            //             // ),
+            //             // SizedBox(width: 5),
+            //
+            //             InkWell(
+            //               onTap: () {
+            //                 if(isLoggedIn){
+            //                   if(wishController.wishItemIdList.contains(item!.id)) {
+            //                     wishController.removeFromWishList(item!.id, false);
+            //                   }else {
+            //                     wishController.addToWishList(item, null, false);
+            //                   }
+            //                 }else {
+            //                   showCustomSnackBar('you_are_not_logged_in'.tr);
+            //                 }
+            //               },
+            //               child: Icon(
+            //                 wishController.wishItemIdList.contains(item!.id) ? Icons.favorite : Icons.favorite_border, size: 25,
+            //                 color: wishController.wishItemIdList.contains(item!.id) ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
+            //               ),
+            //             ),
+            //           ],
+            //         );
+            //       }
+            //   ),
+            // ]),
             const SizedBox(height: 5),
 
             InkWell(
@@ -234,12 +234,13 @@ class ItemTitleView extends StatelessWidget {
             const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
             Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                  '${PriceConverter.convertPrice(startingPrice, discount: discount, discountType: discountType)}'
-                      '${endingPrice!= null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: discount, discountType: discountType)}' : ''}',
-                  style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge), textDirection: TextDirection.ltr,
-                ),
+              Expanded(child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                // Text(
+                //   '${PriceConverter.convertPrice(startingPrice, discount: discount, discountType: discountType)}'
+                //       '${endingPrice!= null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: discount, discountType: discountType)}' : ''}',
+                //   style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge), textDirection: TextDirection.ltr,
+                // ),
                 const SizedBox(height: 5),
 
                 discount! > 0 ? Text(

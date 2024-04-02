@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:sixam_mart/util/styles.dart';
 
 class PriceConverter {
+
+
   static String convertPrice(double? price, {double? discount, String? discountType, bool forDM = false}) {
     if(discount != null && discountType != null){
       if(discountType == 'amount') {
@@ -14,10 +16,12 @@ class PriceConverter {
       }
     }
     bool isRightSide = Get.find<SplashController>().configModel!.currencySymbolDirection == 'right';
-    return '${isRightSide ? '' : '${Get.find<SplashController>().configModel!.currencySymbol!} '}'
+    return '${isRightSide ? '' : '${Get.find<SplashController>().configModel!.country!} '}'
         '${toFixed(price!).toStringAsFixed(forDM ? 0 : Get.find<SplashController>().configModel!.digitAfterDecimalPoint!)
         .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'
-        '${isRightSide ? ' ${Get.find<SplashController>().configModel!.currencySymbol!}' : ''}';
+        '${isRightSide ? ' ${Get.find<SplashController>().configModel!.country!}' : ''}';
+
+
   }
 
   static Widget convertAnimationPrice(double? price, {double? discount, String? discountType, bool forDM = false, TextStyle? textStyle}) {

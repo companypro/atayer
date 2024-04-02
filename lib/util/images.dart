@@ -11,6 +11,8 @@ class Images {
   static const String lock = 'assets/image/lock.png';
   static const String mail = 'assets/image/mail.png';
   static const String map = 'assets/image/map.png';
+  static const String time = 'assets/image/time.png';
+  static const String change = 'assets/image/change.png';
   static const String onboard_1 = 'assets/image/onboard_1.png';
   static const String onboard_2 = 'assets/image/onboard_2.png';
   static const String onboard_3 = 'assets/image/onboard_3.png';
@@ -155,6 +157,11 @@ class Images {
   static const String profileIcon = 'assets/image/profile_icon.png';
   static const String addressIcon = 'assets/image/address_icon.png';
   static const String languageIcon = 'assets/image/language_icon.png';
+  static const String changePasswordIcon = 'assets/image/change_password.png';
+  static const String privacyPolicy = 'assets/image/privacy policy.png';
+  static const String favIcon = 'assets/image/fav.png';
+  static const String termsAndConditions = 'assets/image/Terms and Conditions.png';
+  static const String changeLangIcon = 'assets/image/change_lang.png';
   static const String couponIcon = 'assets/image/coupon_icon.png';
   static const String pointIcon = 'assets/image/point_icon.png';
   static const String referIcon = 'assets/image/refer_icon.png';
@@ -268,7 +275,7 @@ class Images {
   static const String menu = 'assets/image/menu.png';
   static const String messageUnselect = 'assets/image/message_unselect.png';
   static const String messageSelect = 'assets/image/message_select.png';
-  static const String shoppingCart = 'assets/image/shopping_cart.png';
+  static const String shoppingCart = 'assets/image/shopping-basket.png';
   static const String addressUnselect = 'assets/image/address_unselect.png';
   static const String addressSelect = 'assets/image/address_select.png';
 }
