@@ -16,6 +16,8 @@ import 'package:sixam_mart/util/html_type.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/screens/home/home_screen.dart';
 
+import '../view/screens/sections/sections.dart';
+
 class SplashController extends GetxController implements GetxService {
   final SplashRepo splashRepo;
   SplashController({required this.splashRepo});
@@ -26,6 +28,7 @@ class SplashController extends GetxController implements GetxService {
   ModuleModel? _module;
   ModuleModel? _cacheModule;
   List<ModuleModel>? _moduleList;
+  List<ModelHome>? _moduleListHome;
   int _moduleIndex = 0;
   Map<String, dynamic>? _data = {};
   String? _htmlText;
@@ -44,6 +47,7 @@ class SplashController extends GetxController implements GetxService {
   ModuleModel? get cacheModule => _cacheModule;
   int get moduleIndex => _moduleIndex;
   List<ModuleModel>? get moduleList => _moduleList;
+  List<ModelHome>? get moduleListHome => _moduleListHome;
   String? get htmlText => _htmlText;
   bool get isLoading => _isLoading;
   int get selectedModuleIndex => _selectedModuleIndex;
@@ -65,6 +69,9 @@ class SplashController extends GetxController implements GetxService {
     if(response.statusCode == 200) {
       _data = response.body;
       _configModel = ConfigModel.fromJson(response.body);
+
+      print('***********_configModel*******************${_configModel!.module}');
+
       if(_configModel!.module != null) {
         setModule(_configModel!.module);
       }else if(GetPlatform.isWeb || (loadModuleData && _module != null)) {
@@ -122,17 +129,48 @@ class SplashController extends GetxController implements GetxService {
     _firstTimeConnectionCheck = isChecked;
   }
 
+  // Future<void> setModule(ModuleModel? module, {bool notify = true}) async {
+  //   _module = module;
+  //   splashRepo.setModule(module);
+  //   if(module != null) {
+  //     if(_configModel != null) {
+  //       _configModel!.moduleConfig!.module = Module.fromJson(_data!['module_config'][module.moduleType]);
+  //     }
+  //     await splashRepo.setCacheModule(module);
+  //     if((Get.find<AuthController>().isLoggedIn() || Get.find<AuthController>().isGuestLoggedIn()) && Get.find<SplashController>().cacheModule != null) {
+  //       Get.find<CartController>().getCartData();
+  //     }
+  //   }
+  //   if(Get.find<AuthController>().isLoggedIn()) {
+  //     if(Get.find<SplashController>().module != null) {
+  //       Get.find<WishListController>().getWishList();
+  //     }
+  //   }
+  //   if(notify) {
+  //     update();
+  //   }
+  // }
+  //
+  // Module getModuleConfig(String? moduleType) {
+  //   Module module = Module.fromJson(_data!['module_config'][moduleType]);
+  //   if(moduleType == 'grocery') {
+  //     module.newVariation = true;
+  //   }else {
+  //     module.newVariation = true;
+  //   }
+  //   return module;
+  // }
   Future<void> setModule(ModuleModel? module, {bool notify = true}) async {
     _module = module;
     splashRepo.setModule(module);
     if(module != null) {
       if(_configModel != null) {
-        _configModel!.moduleConfig!.module = Module.fromJson(_data!['module_config'][module.moduleType]);
+        // _configModel!.moduleConfig!.module = Module.fromJson(_data!['module_config'][module.moduleType]);
       }
       await splashRepo.setCacheModule(module);
-      if((Get.find<AuthController>().isLoggedIn() || Get.find<AuthController>().isGuestLoggedIn()) && Get.find<SplashController>().cacheModule != null) {
-        Get.find<CartController>().getCartData();
-      }
+      // if((Get.find<AuthController>().isLoggedIn() || Get.find<AuthController>().isGuestLoggedIn()) && Get.find<SplashController>().cacheModule != null) {
+      //   // Get.find<CartController>().getCartData();
+      // }
     }
     if(Get.find<AuthController>().isLoggedIn()) {
       if(Get.find<SplashController>().module != null) {
@@ -143,7 +181,38 @@ class SplashController extends GetxController implements GetxService {
       update();
     }
   }
+  Future<void> setModuleHome(int? module, {bool notify = true}) async {
+    // _module?.id = module;
+    splashRepo.setModuleHome(module);
+    if(module != null) {
+      if(_configModel != null) {
+        // _configModel!.moduleConfig!.module = Module.fromJson(_data!['module_config'][module.moduleType]);
+      }
+      // if((Get.find<AuthController>().isLoggedIn() || Get.find<AuthController>().isGuestLoggedIn()) && Get.find<SplashController>().cacheModule != null) {
+      //   // Get.find<CartController>().getCartData();
+      // }
+    }
+    await splashRepo.setCacheModuleHome(module);
 
+    if(Get.find<AuthController>().isLoggedIn()) {
+      if(module != null) {
+        Get.find<WishListController>().getWishList();
+      }
+    }
+    if(notify) {
+      update();
+    }
+  }
+
+  // Module getModuleConfig(String? moduleType) {
+  //   Module module = Module.fromJson(_data!['module_config'][moduleType]);
+  //   if(moduleType == '') {
+  //     module.newVariation = true;
+  //   }else {
+  //     module.newVariation = false;
+  //   }
+  //   return module;
+  // }
   Module getModuleConfig(String? moduleType) {
     Module module = Module.fromJson(_data!['module_config'][moduleType]);
     if(moduleType == 'food') {
@@ -165,12 +234,44 @@ class SplashController extends GetxController implements GetxService {
     }
     update();
   }
+  Future<void> getModulesHome({Map<String, String>? headers}) async {
+    _moduleIndex = 0;
+    Response response = await splashRepo.getModulesHome(headers: headers);
+    if (response.statusCode == 200) {
+      _moduleListHome = [];
+
+      response.body.forEach((storeCategory) => _moduleListHome!.add(ModelHome.fromJson(storeCategory)));
+    } else {
+      ApiChecker.checkApi(response);
+    }
+    update();
+  }
 
   void switchModule(int index, bool fromPhone) async {
     if(_module == null || _module!.id != _moduleList![index].id) {
       await Get.find<SplashController>().setModule(_moduleList![index]);
-      Get.find<CartController>().getCartData();
+
+      // Get.find<CartController>().getCartData();
       HomeScreen.loadData(true);
+    }
+
+  }
+  void switchModuleHome(int index, bool fromPhone) async {
+    if(_module == null || _module!.id != _moduleListHome![index].moduleId) {
+      await Get.find<SplashController>().setModuleHome(_moduleListHome![index].moduleId);
+      // await Get.find<SplashController>().setModule(_moduleList![index]);
+
+      // Get.find<CartController>().getCartData();
+      HomeScreen.loadData(true);
+    }
+
+  }
+  void switchModuleSections(int index, bool fromPhone) async {
+    if(_module == null || _module!.id != _moduleList![index].id) {
+      await Get.find<SplashController>().setModule(_moduleList![index]);
+      // Get.find<CartController>().getCartData();
+      Sections.loadData(true);
+      print('///////////////////////////////////////${_module!.moduleName}');
     }
   }
 
@@ -188,6 +289,7 @@ class SplashController extends GetxController implements GetxService {
     Get.find<BannerController>().getFeaturedBanner();
     // Get.find<CartController>().getCartData();
     getModules();
+    getModulesHome();
     if(Get.find<AuthController>().isLoggedIn()) {
       Get.find<LocationController>().getAddressList();
     }

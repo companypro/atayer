@@ -1,4 +1,6 @@
+import 'package:sixam_mart/data/model/response/item_model.dart';
 import 'package:sixam_mart/data/model/response/module_model.dart';
+import 'package:sixam_mart/data/model/response/store_model.dart';
 
 class ConfigModel {
   String? businessName;
@@ -730,3 +732,429 @@ class DigitalPaymentInfo {
     return data;
   }
 }
+
+class Items {
+  int? id;
+  String? name;
+  String? description;
+  String? image;
+  int? categoryId;
+  String? categoryIds;
+  String? variations;
+  String? addOns;
+  String? attributes;
+  String? choiceOptions;
+  String? price;
+  String? tax;
+  String? taxType;
+  String? discount;
+  String? discountType;
+  String? availableTimeStarts;
+  String? availableTimeEnds;
+  int? veg;
+  int? itemStatus;
+  int? storeId;
+  String? createdAt;
+  String? updatedAt;
+  int? orderCount;
+  int? avgRating;
+  int? ratingCount;
+  int? stock;
+  Null? unitId;
+  String? images;
+  String? foodVariations;
+  Null? slug;
+  int? recommended;
+  int? organic;
+  Null? maximumCartQuantity;
+  int? isApproved;
+  String? storeName;
+  int? zoneId;
+  int? scheduleOrder;
+  String? deliveryTime;
+  int? freeDelivery;
+
+  Items(
+      {this.id,
+        this.name,
+        this.description,
+        this.image,
+        this.categoryId,
+        this.categoryIds,
+        this.variations,
+        this.addOns,
+        this.attributes,
+        this.choiceOptions,
+        this.price,
+        this.tax,
+        this.taxType,
+        this.discount,
+        this.discountType,
+        this.availableTimeStarts,
+        this.availableTimeEnds,
+        this.veg,
+        this.itemStatus,
+        this.storeId,
+        this.createdAt,
+        this.updatedAt,
+        this.orderCount,
+        this.avgRating,
+        this.ratingCount,
+        this.stock,
+        this.unitId,
+        this.images,
+        this.foodVariations,
+        this.slug,
+        this.recommended,
+        this.organic,
+        this.maximumCartQuantity,
+        this.isApproved,
+        this.storeName,
+        this.zoneId,
+        this.scheduleOrder,
+        this.deliveryTime,
+        this.freeDelivery});
+
+  Items.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+    image = json['image'];
+    categoryId = json['category_id'];
+    categoryIds = json['category_ids'];
+    variations = json['variations'];
+    addOns = json['add_ons'];
+    attributes = json['attributes'];
+    choiceOptions = json['choice_options'];
+    price = json['price'];
+    tax = json['tax'];
+    taxType = json['tax_type'];
+    discount = json['discount'];
+    discountType = json['discount_type'];
+    availableTimeStarts = json['available_time_starts'];
+    availableTimeEnds = json['available_time_ends'];
+    veg = json['veg'];
+    itemStatus = json['item_status'];
+    storeId = json['store_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    orderCount = json['order_count'];
+    avgRating = json['avg_rating'];
+    ratingCount = json['rating_count'];
+    stock = json['stock'];
+    unitId = json['unit_id'];
+    images = json['images'];
+    foodVariations = json['food_variations'];
+    slug = json['slug'];
+    recommended = json['recommended'];
+    organic = json['organic'];
+    maximumCartQuantity = json['maximum_cart_quantity'];
+    isApproved = json['is_approved'];
+    storeName = json['store_name'];
+    zoneId = json['zone_id'];
+    scheduleOrder = json['schedule_order'];
+    deliveryTime = json['delivery_time'];
+    freeDelivery = json['free_delivery'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['image'] = this.image;
+    data['category_id'] = this.categoryId;
+    data['category_ids'] = this.categoryIds;
+    data['variations'] = this.variations;
+    data['add_ons'] = this.addOns;
+    data['attributes'] = this.attributes;
+    data['choice_options'] = this.choiceOptions;
+    data['price'] = this.price;
+    data['tax'] = this.tax;
+    data['tax_type'] = this.taxType;
+    data['discount'] = this.discount;
+    data['discount_type'] = this.discountType;
+    data['available_time_starts'] = this.availableTimeStarts;
+    data['available_time_ends'] = this.availableTimeEnds;
+    data['veg'] = this.veg;
+    data['item_status'] = this.itemStatus;
+    data['store_id'] = this.storeId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    data['order_count'] = this.orderCount;
+    data['avg_rating'] = this.avgRating;
+    data['rating_count'] = this.ratingCount;
+    data['stock'] = this.stock;
+    data['unit_id'] = this.unitId;
+    data['images'] = this.images;
+    data['food_variations'] = this.foodVariations;
+    data['slug'] = this.slug;
+    data['recommended'] = this.recommended;
+    data['organic'] = this.organic;
+    data['maximum_cart_quantity'] = this.maximumCartQuantity;
+    data['is_approved'] = this.isApproved;
+    data['store_name'] = this.storeName;
+    data['zone_id'] = this.zoneId;
+    data['schedule_order'] = this.scheduleOrder;
+    data['delivery_time'] = this.deliveryTime;
+    data['free_delivery'] = this.freeDelivery;
+    return data;
+  }
+}
+class ModelHome {
+  int? moduleId;
+  String? moduleName;
+  String? moduleType;
+  int? status;
+  String? icon;
+  List<Item>? items;
+
+  ModelHome(
+      {this.moduleId,
+        this.moduleName,
+        this.moduleType,
+        this.status,
+        this.icon,
+        this.items});
+
+  ModelHome.fromJson(Map<String, dynamic> json) {
+    moduleId = json['module_id'];
+    moduleName = json['module_name'];
+    moduleType = json['module_type'];
+    status = json['status'];
+    icon = json['icon'];
+    if (json['items'] != null) {
+      items = <Item>[];
+      json['items'].forEach((v) {
+        items!.add(new Item.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['module_id'] = this.moduleId;
+    data['module_name'] = this.moduleName;
+    data['module_type'] = this.moduleType;
+    data['status'] = this.status;
+    data['icon'] = this.icon;
+    if (this.items != null) {
+      data['items'] = this.items!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class ItemsHome {
+  int? id;
+  String? name;
+  String? description;
+  String? image;
+  int? categoryId;
+  String? categoryIds;
+  String? variations;
+  String? addOns;
+  String? attributes;
+  String? choiceOptions;
+  int? price;
+  int? tax;
+  String? taxType;
+  int? discount;
+  String? discountType;
+  String? availableTimeStarts;
+  String? availableTimeEnds;
+  int? veg;
+  int? itemStatus;
+  int? storeId;
+  String? createdAt;
+  String? updatedAt;
+  int? orderCount;
+  int? avgRating;
+  int? ratingCount;
+  int? stock;
+  List<String>? images;
+  List<FoodVariation>? foodVariations;
+  int? recommended;
+  int? organic;
+  int? isApproved;
+  String? storeName;
+  int? zoneId;
+  int? scheduleOrder;
+  String? deliveryTime;
+  int? freeDelivery;
+
+  ItemsHome(
+      {this.id,
+        this.name,
+        this.description,
+        this.image,
+        this.categoryId,
+        this.categoryIds,
+        this.variations,
+        this.addOns,
+        this.attributes,
+        this.choiceOptions,
+        this.price,
+        this.tax,
+        this.taxType,
+        this.discount,
+        this.discountType,
+        this.availableTimeStarts,
+        this.availableTimeEnds,
+        this.veg,
+        this.itemStatus,
+        this.storeId,
+        this.createdAt,
+        this.updatedAt,
+        this.orderCount,
+        this.avgRating,
+        this.ratingCount,
+        this.stock,
+        this.images,
+        this.foodVariations,
+        this.recommended,
+        this.organic,
+        this.isApproved,
+        this.storeName,
+        this.zoneId,
+        this.scheduleOrder,
+        this.deliveryTime,
+        this.freeDelivery});
+
+  ItemsHome.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+    image = json['image'];
+    categoryId = json['category_id'];
+    categoryIds = json['category_ids'];
+    variations = json['variations'];
+    addOns = json['add_ons'];
+    attributes = json['attributes'];
+    choiceOptions = json['choice_options'];
+    price = json['price'];
+    tax = json['tax'];
+    taxType = json['tax_type'];
+    discount = json['discount'];
+    discountType = json['discount_type'];
+    availableTimeStarts = json['available_time_starts'];
+    availableTimeEnds = json['available_time_ends'];
+    veg = json['veg'];
+    itemStatus = json['item_status'];
+    storeId = json['store_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    orderCount = json['order_count'];
+    avgRating = json['avg_rating'];
+    ratingCount = json['rating_count'];
+    stock = json['stock'];
+    images = json['images'] != null ? json['images'].cast<String>() : [];
+    if (json['food_variations'] != null && json['food_variations'].isNotEmpty) {
+      json['food_variations'].forEach((v) {
+        foodVariations!.add(FoodVariation.fromJson(v));
+      });
+    }
+    recommended = json['recommended'];
+    organic = json['organic'];
+    isApproved = json['is_approved'];
+    storeName = json['store_name'];
+    zoneId = json['zone_id'];
+    scheduleOrder = json['schedule_order'];
+    deliveryTime = json['delivery_time'];
+    freeDelivery = json['free_delivery'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['image'] = this.image;
+    data['category_id'] = this.categoryId;
+    data['category_ids'] = this.categoryIds;
+    data['variations'] = this.variations;
+    data['add_ons'] = this.addOns;
+    data['attributes'] = this.attributes;
+    data['choice_options'] = this.choiceOptions;
+    data['price'] = this.price;
+    data['tax'] = this.tax;
+    data['tax_type'] = this.taxType;
+    data['discount'] = this.discount;
+    data['discount_type'] = this.discountType;
+    data['available_time_starts'] = this.availableTimeStarts;
+    data['available_time_ends'] = this.availableTimeEnds;
+    data['veg'] = this.veg;
+    data['item_status'] = this.itemStatus;
+    data['store_id'] = this.storeId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    data['order_count'] = this.orderCount;
+    data['avg_rating'] = this.avgRating;
+    data['rating_count'] = this.ratingCount;
+    data['stock'] = this.stock;
+    if (this.images != null) {
+      data['images'] = images;
+    }
+    if (this.foodVariations != null) {
+      data['food_variations'] =
+          this.foodVariations!.map((v) => v.toJson()).toList();
+    }
+    data['recommended'] = this.recommended;
+    data['organic'] = this.organic;
+    data['is_approved'] = this.isApproved;
+    data['store_name'] = this.storeName;
+    data['zone_id'] = this.zoneId;
+    data['schedule_order'] = this.scheduleOrder;
+    data['delivery_time'] = this.deliveryTime;
+    data['free_delivery'] = this.freeDelivery;
+    return data;
+  }
+}
+class Translations {
+  int? id;
+  String? translationableType;
+  int? translationableId;
+  String? locale;
+  String? key;
+  String? value;
+  String? createdAt;
+  String? updatedAt;
+
+  Translations({
+    this.id,
+    this.translationableType,
+    this.translationableId,
+    this.locale,
+    this.key,
+    this.value,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory Translations.fromJson(Map<String, dynamic> json) {
+    return Translations(
+      id: json['id'],
+      translationableType: json['translationable_type'],
+      translationableId: json['translationable_id'],
+      locale: json['locale'],
+      key: json['key'],
+      value: json['value'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['id'] = id;
+    data['translationable_type'] = translationableType;
+    data['translationable_id'] = translationableId;
+    data['locale'] = locale;
+    data['key'] = key;
+    data['value'] = value;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    return data;
+  }
+}
+

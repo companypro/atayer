@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatelessWidget {
   final Function? onPressed;
   final String buttonText;
+  final String? buttonTextAdd;
   final bool transparent;
   final EdgeInsets? margin;
   final double? height;
@@ -17,14 +18,13 @@ class CustomButton extends StatelessWidget {
   final Color? textColor;
   final bool isLoading;
   final bool isBold;
-  const CustomButton({Key? key, this.onPressed, required this.buttonText, this.transparent = false, this.margin, this.width, this.height,
+  const CustomButton({Key? key, this.onPressed,this.buttonTextAdd, required this.buttonText, this.transparent = false, this.margin, this.width, this.height,
     this.fontSize, this.radius = 10, this.icon, this.color, this.textColor, this.isLoading = false, this.isBold = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final ButtonStyle flatButtonStyle = TextButton.styleFrom(
-      backgroundColor: onPressed == null ? Theme.of(context).disabledColor : transparent
-          ? Colors.transparent : color ?? Theme.of(context).primaryColor,
+      backgroundColor:  color ?? Theme.of(context).primaryColor,
       minimumSize: Size(width != null ? width! : Dimensions.webMaxWidth, height != null ? height! : 50),
       padding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -62,6 +62,7 @@ class CustomButton extends StatelessWidget {
             color: textColor ?? (transparent ? Theme.of(context).primaryColor : Colors.white),
             fontSize: fontSize ?? Dimensions.fontSizeLarge,
           )),
+
         ]),
       ),
     )));

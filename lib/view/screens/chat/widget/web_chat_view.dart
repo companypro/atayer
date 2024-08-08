@@ -22,6 +22,8 @@ import 'package:sixam_mart/view/screens/chat/widget/chatting_shimmer.dart';
 import 'package:sixam_mart/view/screens/chat/widget/message_bubble.dart';
 import 'package:sixam_mart/view/screens/chat/widget/web_conversation_list_view.dart';
 
+import '../../auth/sign_in_screen.dart';
+
 
 class WebChatView extends StatefulWidget {
   final ScrollController scrollController;
@@ -516,10 +518,7 @@ class _WebChatViewState extends State<WebChatView> with TickerProviderStateMixin
               ],
             ),
 
-          )) :  NotLoggedInScreen(callBack: (value){
-            widget.initCall();
-            setState(() {});
-          }),
+          )) :  SignInScreen(exitFromApp: true, backFromThis: true,),
         )))
       ],
     );

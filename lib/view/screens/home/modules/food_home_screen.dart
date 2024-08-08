@@ -47,7 +47,7 @@ class FoodHomeScreen extends StatelessWidget {
       const BestReviewItemView(),
       const BestStoreNearbyView(),
       const ItemThatYouLoveView(forShop: false),
-      const MostPopularItemView(isFood: true, isShop: false),
+      // const MostPopularItemView(isFood: true, isShop: false),
       const JustForYouView(),
       const NewOnMartView(isNewStore: true, isPharmacy: false, isShop: false),
     ]);

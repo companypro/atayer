@@ -40,7 +40,8 @@ class FilterWidget extends StatelessWidget {
                   onPressed: () {
                     searchController.resetFilter();
                   },
-                  buttonText: 'reset'.tr, transparent: true, width: 65,
+                  buttonText: 'reset'.tr,  width: 80,
+                  fontSize: 12,
                 ),
               ]),
               const SizedBox(height: Dimensions.paddingSizeLarge),

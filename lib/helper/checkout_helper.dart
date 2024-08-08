@@ -21,7 +21,7 @@ import 'package:sixam_mart/view/screens/address/widget/address_widget.dart';
 class CheckoutHelper {
 
   static double calculateOriginalDeliveryCharge({required Store? store, required AddressModel address, required double? distance, required double? extraCharge}) {
-    double deliveryCharge = -1;
+    double deliveryCharge = 0;
 
     Pivot? moduleData;
     ZoneData? zoneData;
@@ -29,7 +29,7 @@ class CheckoutHelper {
       for(ZoneData zData in address.zoneData!) {
 
         for(Modules m in zData.modules!) {
-          if(m.id == Get.find<SplashController>().module!.id && m.pivot!.zoneId == store.zoneId) {
+          if(m.pivot!.zoneId == store.zoneId) {
             moduleData = m.pivot;
             break;
           }
@@ -199,7 +199,7 @@ class CheckoutHelper {
         double? discount = cartModel!.item!.storeDiscount == 0 ? cartModel.item!.discount : cartModel.item!.storeDiscount;
         String? discountType = cartModel.item!.storeDiscount == 0 ? cartModel.item!.discountType : 'percent';
 
-        if(Get.find<SplashController>().getModuleConfig(cartModel.item!.moduleType).newVariation!) {
+        if(Get.find<SplashController>().getModuleConfig(cartModel.item!.moduleType)!.newVariation!) {
           for(int index = 0; index< cartModel.item!.foodVariations!.length; index++) {
             for(int i=0; i<cartModel.item!.foodVariations![index].variationValues!.length; i++) {
               if(cartModel.foodVariations![index][i]!) {
@@ -243,7 +243,7 @@ class CheckoutHelper {
     double price = 0;
     if(cartList != null) {
       for (var cartModel in cartList) {
-        if(Get.find<SplashController>().getModuleConfig(cartModel!.item!.moduleType).newVariation!){
+        if(Get.find<SplashController>().getModuleConfig(cartModel!.item!.moduleType)!.newVariation!){
           price = price + (cartModel.item!.price! * cartModel.quantity!);
         } else {
           price = calculateVariationPrice(store: store, cartList: cartList);
@@ -265,7 +265,7 @@ class CheckoutHelper {
             && DateConverter.isAvailable(store.discount!.startTime, store.discount!.endTime))
             && cartModel.item!.flashSale != 1
             ? 'percent' : cartModel.item!.discountType;
-        if(Get.find<SplashController>().getModuleConfig(cartModel.item!.moduleType).newVariation!) {
+        if(Get.find<SplashController>().getModuleConfig(cartModel.item!.moduleType)!.newVariation!) {
           double d = ((cartModel.item!.price! - PriceConverter.convertWithDiscount(cartModel.item!.price!, dis, disType)!) * cartModel.quantity!);
           discount = discount + d;
           if(disType == 'percent') {
@@ -330,9 +330,7 @@ class CheckoutHelper {
     //     '+ ${((orderType != 'take_away' && Get.find<SplashController>().configModel!.dmTipsStatus == 1) ? tips : 0)} + $additionalCharge');
 
     return PriceConverter.toFixed(
-        subTotal + deliveryCharge - discount- couponDiscount + (taxIncluded ? 0 : tax)
-        + ((orderType != 'take_away' && Get.find<SplashController>().configModel!.dmTipsStatus == 1) ? tips : 0)
-        + additionalCharge
+        subTotal + deliveryCharge + couponDiscount
     );
   }
 
@@ -354,7 +352,7 @@ class CheckoutHelper {
     bool isFoodVariation = false;
 
     if(cartList != null && cartList.isNotEmpty) {
-      isFoodVariation = Get.find<SplashController>().getModuleConfig(cartList[0]!.item!.moduleType).newVariation!;
+      isFoodVariation = Get.find<SplashController>().getModuleConfig(cartList[0]!.item!.moduleType)!.newVariation!;
     }
     if(isFoodVariation){
       subTotal = price + addOns + variations;
@@ -368,7 +366,7 @@ class CheckoutHelper {
   static double calculateOrderAmount({required double price, required double variations, required double discount, required double addOns, required double couponDiscount, required List<CartModel?>? cartList}) {
     double orderAmount = 0;
     double variationPrice = 0;
-    if(cartList != null && cartList.isNotEmpty && Get.find<SplashController>().getModuleConfig(cartList[0]?.item?.moduleType).newVariation!){
+    if(cartList != null && cartList.isNotEmpty && Get.find<SplashController>().getModuleConfig(cartList[0]?.item?.moduleType)!.newVariation!){
       variationPrice = variations;
     }
     orderAmount = (price + variationPrice - discount) + addOns - couponDiscount;

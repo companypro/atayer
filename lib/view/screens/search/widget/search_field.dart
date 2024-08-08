@@ -24,14 +24,18 @@ class _SearchFieldState extends State<SearchField> {
       controller: widget.controller,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 10),
         hintText: widget.hint,
         hintStyle: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), borderSide: BorderSide.none),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), borderSide: BorderSide.none,),
         filled: true, fillColor: widget.filledColor ?? Theme.of(context).cardColor,
         isDense: true,
-        suffixIcon: IconButton(
-          onPressed: widget.iconPressed as void Function()?,
-          icon: Icon(widget.suffixIcon, color: widget.iconColor ?? Theme.of(context).textTheme.bodyLarge!.color),
+        suffixIcon: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: IconButton(
+            onPressed: widget.iconPressed as void Function()?,
+            icon: Icon(widget.suffixIcon, color: widget.iconColor ?? Theme.of(context).textTheme.bodyLarge!.color),
+          ),
         ),
       ),
       onSubmitted: widget.onSubmit as void Function(String)?,

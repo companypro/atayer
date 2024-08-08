@@ -95,8 +95,7 @@ class OrderItemWidget extends StatelessWidget {
                     color: Theme.of(context).primaryColor.withOpacity(0.1),
                   ),
                   child: Text(
-                    !Get.find<SplashController>().getModuleConfig(order.moduleType).newVariation! ? orderDetails.itemDetails!.unitType ?? ''
-                        : orderDetails.itemDetails!.veg == 0 ? 'non_veg'.tr : 'veg'.tr,
+                     orderDetails.itemDetails!.veg == 0 ? 'non_veg'.tr : 'veg'.tr,
                     style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).primaryColor),
                   ),
                 ) : const SizedBox(),
@@ -106,7 +105,7 @@ class OrderItemWidget extends StatelessWidget {
           ),
         ]),
 
-        (Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! && addOnText.isNotEmpty) ? Padding(
+        ( addOnText.isNotEmpty) ? Padding(
           padding: const EdgeInsets.only(top: Dimensions.paddingSizeExtraSmall),
           child: Row(children: [
             const SizedBox(width: 60),

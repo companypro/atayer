@@ -32,6 +32,7 @@ class OrderCalculationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: EdgeInsets.only(top: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeExtraLarge : Dimensions.paddingSizeSmall),
       child: Container(
@@ -88,81 +89,94 @@ class OrderCalculationWidget extends StatelessWidget {
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Text('delivery_fee'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
                       Text(
-                        '(+) ${order.deliveryCharge}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr,
+                        '${order.deliveryCharge}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr,
                       ),
                     ]),
                     const SizedBox(height: 10),
 
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                         Text('delivery_man_tips'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                        Text('(+) ${order.dmTips}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                        Text('${order.dmTips}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
                     ]),
                     (order.additionalCharge != null && order.additionalCharge! > 0) ? const SizedBox(height: 10) : const SizedBox(),
 
                     (order.additionalCharge != null && order.additionalCharge! > 0) ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Text(Get.find<SplashController>().configModel!.additionalChargeName!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                      Text('(+) ${PriceConverter.convertPrice(order.additionalCharge)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                      Text('${PriceConverter.convertPrice(order.additionalCharge)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
                     ]) : const SizedBox(),
 
 
                   ]) : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text('item_price'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                      Text('subtotal'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
                       Text(PriceConverter.convertPrice(itemsPrice), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
                     ]),
-                    const SizedBox(height: 10),
+                    // const SizedBox(height: 10),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Text('addons'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                      //     Text('${PriceConverter.convertPrice(addOns)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                      //   ],
+                      // ),
 
-                    Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('addons'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                        Text('(+) ${PriceConverter.convertPrice(addOns)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
-                      ],
-                    ) : const SizedBox(),
+                    // Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text('addons'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                    //     Text('${PriceConverter.convertPrice(addOns)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                    //   ],
+                    // ) : const SizedBox(),
 
-                    Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? Divider(thickness: 1, color: Theme.of(context).hintColor.withOpacity(0.5),) : const SizedBox(),
+                    // Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? Divider(thickness: 1, color: Theme.of(context).hintColor.withOpacity(0.5),) : const SizedBox(),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text('${'subtotal'.tr} ${taxIncluded ? 'tax_included'.tr : ''}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                    //     Text(PriceConverter.convertPrice(subTotal), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                    //   ],
+                    // ) ,
+                   // Row(
+                   //    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   //    children: [
+                   //      Text('${'subtotal'.tr} ${taxIncluded ? 'tax_included'.tr : ''}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                   //      Text(PriceConverter.convertPrice(subTotal), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                   //    ],
+                   //  ) ,
+                    SizedBox(height:  0),
 
-                    Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('${'subtotal'.tr} ${taxIncluded ? 'tax_included'.tr : ''}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                        Text(PriceConverter.convertPrice(subTotal), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
-                      ],
-                    ) : const SizedBox(),
-                    SizedBox(height: Get.find<SplashController>().getModuleConfig(order.moduleType).addOn! ? 10 : 0),
-
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    discount > 0 ?  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Text('discount'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                      Text('(-) ${PriceConverter.convertPrice(discount)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
-                    ]),
+                      Text('${PriceConverter.convertPrice(discount)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                    ]) :  SizedBox(),
                     const SizedBox(height: 10),
 
-                    (order.additionalCharge != null && order.additionalCharge! > 0) ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text(Get.find<SplashController>().configModel!.additionalChargeName!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                      Text('(+) ${PriceConverter.convertPrice(order.additionalCharge)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
-                    ]) : const SizedBox(),
-                    (order.additionalCharge != null && order.additionalCharge! > 0) ? const SizedBox(height: 10) : const SizedBox(),
+                    // (order.additionalCharge != null && order.additionalCharge! > 0) ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    //   Text(Get.find<SplashController>().configModel!.additionalChargeName!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                    //   Text('${PriceConverter.convertPrice(order.additionalCharge)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                    // ]) : const SizedBox(),
+                    // (order.additionalCharge != null && order.additionalCharge! > 0) ? const SizedBox(height: 10) : const SizedBox(),
+                    //
+                    // couponDiscount > 0 ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    //   Text('coupon_discount'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                    //   Text(
+                    //     '${PriceConverter.convertPrice(couponDiscount)}',
+                    //     style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr,
+                    //   ),
+                    // ]) : const SizedBox(),
+                    // SizedBox(height: couponDiscount > 0 ? 10 : 0),
 
-                    couponDiscount > 0 ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text('coupon_discount'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                      Text(
-                        '(-) ${PriceConverter.convertPrice(couponDiscount)}',
-                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr,
-                      ),
-                    ]) : const SizedBox(),
-                    SizedBox(height: couponDiscount > 0 ? 10 : 0),
-
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text('${'vat_tax'.tr} ${taxIncluded ? 'tax_included'.tr : ''} (${order.taxPercentage ?? 0}%)', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                      Text('(+) ${PriceConverter.convertPrice(tax)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
-                    ]),
-                    const SizedBox(height: 10),
+                    // Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    //   Text('${'vat_tax'.tr} ${taxIncluded ? 'tax_included'.tr : ''} (${order.taxPercentage ?? 0}%)', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                    //   Text('${PriceConverter.convertPrice(tax)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                    // ]),
+                    // const SizedBox(height: 10),
 
                     (dmTips > 0) ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('delivery_man_tips'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                        Text('(+) ${PriceConverter.convertPrice(dmTips)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
+                        Text('${PriceConverter.convertPrice(dmTips)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr),
                       ],
                     ) : const SizedBox(),
                     SizedBox(height: dmTips > 0 ? 10 : 0),
@@ -170,7 +184,7 @@ class OrderCalculationWidget extends StatelessWidget {
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Text('delivery_fee'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
                       deliveryCharge > 0 ? Text(
-                        '(+) ${PriceConverter.convertPrice(deliveryCharge)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr,
+                        '${PriceConverter.convertPrice(deliveryCharge)}', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), textDirection: TextDirection.ltr,
                       ) : Text('free'.tr, style: robotoRegular.copyWith( fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor)),
                     ]),
 

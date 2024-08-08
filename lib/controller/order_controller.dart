@@ -71,6 +71,7 @@ class OrderController extends GetxController implements GetxService {
   bool _acceptTerms = true;
   double? _extraCharge;
   String? _cancelReason;
+  String? _shareApp;
   List<CancellationData>? _orderCancelReasons;
   bool _isDmTipSave = false;
   String _preferableTime = '';
@@ -125,6 +126,7 @@ class OrderController extends GetxController implements GetxService {
   bool get acceptTerms => _acceptTerms;
   double? get extraCharge => _extraCharge;
   String? get cancelReason => _cancelReason;
+  String? get shareApp => _shareApp;
   List<CancellationData>? get orderCancelReasons => _orderCancelReasons;
   bool get isDmTipSave => _isDmTipSave;
   String get preferableTime => _preferableTime;
@@ -453,7 +455,8 @@ class OrderController extends GetxController implements GetxService {
       } else {
         ApiChecker.checkApi(response);
       }
-    }else {
+    }
+    else {
       _isLoading = false;
       _orderDetails = [];
     }
@@ -461,6 +464,16 @@ class OrderController extends GetxController implements GetxService {
     return _orderDetails;
   }
 
+  Future<void> getShareApp()async{
+    Response response = await orderRepo.getShareApp();
+    if (response.statusCode == 200) {
+      _shareApp = response.body;
+      print(response.body);
+    }else {
+      ApiChecker.checkApi(response);
+    }
+
+  }
   void setPaymentMethod(int index, {bool isUpdate = true}) {
     _paymentMethodIndex = index;
     if(isUpdate){
@@ -525,46 +538,165 @@ class OrderController extends GetxController implements GetxService {
     return _responseModel;
   }
 
+  // Future<String> placeOrder(PlaceOrderBody placeOrderBody, int? zoneID, double amount, double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive, {bool forParcel = false, bool isOfflinePay = false}) async
+  // {
+  //   _isLoading = true;
+  //   update();
+  //   String orderID = '';
+  //   Response response = await orderRepo.placeOrder(placeOrderBody, _orderAttachment );
+  //   print('///////////////////x//////////////////${placeOrderBody.cart!}');
+  //
+  //   _isLoading = false;
+  //   if (response.statusCode == 200) {
+  //     String? message = response.body['message'];
+  //     orderID = response.body['order_id'].toString();
+  //     if(!isOfflinePay) {
+  //       if(forParcel) {
+  //         parcelCallback(false, message, orderID, zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
+  //       } else {
+  //         callback(true, message, orderID, zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber!);
+  //
+  //       }
+  //       Get.find<CartController>().cartList.clear();
+  //       update();
+  //     } else {
+  //       Get.find<CartController>().cartList.clear();
+  //       Get.find<CartController>().onlineCartList.clear();
+  //       // Get.find<CartController>().getCartDataOnline();
+  //       update();
+  //
+  //     }
+  //     _orderAttachment = null;
+  //     _rawAttachment = null;
+  //     if (kDebugMode) {
+  //       print('-------- Order placed successfully $orderID ----------');
+  //     }
+  //   } else {
+  //     if(!isOfflinePay) {
+  //       if(forParcel){
+  //         parcelCallback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
+  //       } else {
+  //         callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
+  //       }
+  //     } else {
+  //       print(response.statusText);
+  //       showCustomSnackBar(response.statusText);
+  //     }
+  //   }
+  //   update();
+  //
+  //   return orderID;
+  // }
+  // Future<String> placeOrder(PlaceOrderBody placeOrderBody, int? zoneID, double amount, double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive, {bool forParcel = false, bool isOfflinePay = false}) async
+  // {
+  //   _isLoading = true;
+  //   update();
+  //   String orderID = '';
+  //   Response response = await orderRepo.placeOrder(placeOrderBody, _orderAttachment );
+  //
+  //   _isLoading = false;
+  //   if (response.statusCode == 200) {
+  //     // Place order successfully
+  //     String? message = response.body['message'];
+  //     orderID = response.body['order_id'].toString();
+  //     if (!isOfflinePay) {
+  //       if (forParcel) {
+  //         parcelCallback(false, message, orderID, zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
+  //       } else {
+  //         callback(true, message, orderID, zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber!);
+  //       }
+  //       // Clear the local cart list after successful order placement
+  //       Get.find<CartController>().cartList.clear();
+  //       // Clear the online cart list as well
+  //       Get.find<CartController>().onlineCartList.clear();
+  //       update();
+  //     } else {
+  //       Get.find<CartController>().cartList.clear();
+  //       Get.find<CartController>().onlineCartList.clear();
+  //       update();
+  //
+  //     }
+  //     _orderAttachment = null;
+  //     _rawAttachment = null;
+  //     if (kDebugMode) {
+  //       print('-------- Order placed successfully $orderID ----------');
+  //     }
+  //   } else {
+  //     if (!isOfflinePay) {
+  //       if (forParcel){
+  //         parcelCallback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
+  //       } else {
+  //         callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
+  //       }
+  //     } else {
+  //       print(response.statusText);
+  //       showCustomSnackBar(response.statusText);
+  //     }
+  //   }
+  //   update();
+  //
+  //   return orderID;
+  // }
+  bool hasPaid = false; // متغير على مستوى الفئة
+
+// مثال على تعديل الدالة placeOrder لتفريغ القوائم بعد عملية الدفع
   Future<String> placeOrder(PlaceOrderBody placeOrderBody, int? zoneID, double amount, double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive, {bool forParcel = false, bool isOfflinePay = false}) async {
     _isLoading = true;
     update();
     String orderID = '';
-    Response response = await orderRepo.placeOrder(placeOrderBody, _orderAttachment );
+    Response response = await orderRepo.placeOrder(placeOrderBody, _orderAttachment);
+
     _isLoading = false;
     if (response.statusCode == 200) {
+      hasPaid = true; // تحديث حالة الدفع
+
       String? message = response.body['message'];
       orderID = response.body['order_id'].toString();
-      if(!isOfflinePay) {
-        if(forParcel) {
-          parcelCallback(true, message, orderID, zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
+
+      if (!isOfflinePay) {
+        // إجراء الدالة الخاصة بالإخطار حسب نوع الطلب
+        if (forParcel) {
+          parcelCallback(false, message, orderID, zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
         } else {
           callback(true, message, orderID, zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber!);
         }
-      } else {
-        Get.find<CartController>().getCartDataOnline();
-      }
-      _orderAttachment = null;
-      _rawAttachment = null;
-      if (kDebugMode) {
-        print('-------- Order placed successfully $orderID ----------');
+
+        // تفريغ جميع القوائم بعد تأكيد الدفع
+        Get.find<CartController>().cartList.clear();
+        Get.find<CartController>().freshCartList.clear();
+        Get.find<CartController>().onlineCartList.clear();
+        print('cartList callback ${Get.find<CartController>().cartList}');
+        update();
       }
     } else {
-      if(!isOfflinePay) {
-        if(forParcel){
-          parcelCallback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-        } else {
-          callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-        }
+      hasPaid = false; // التأكد من أن الحالة تُعدّل في حال فشل الدفع
+
+      if (!isOfflinePay) {
+        callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
+        // تفريغ القوائم في حال فشل الدفع
+        Get.find<CartController>().cartList.clear();
+        Get.find<CartController>().freshCartList.clear();
+        Get.find<CartController>().onlineCartList.clear();
       } else {
+        print(response.statusText);
         showCustomSnackBar(response.statusText);
       }
+      update();
     }
-    update();
+
+    _orderAttachment = null;
+    _rawAttachment = null;
+    if (kDebugMode) {
+      print('-------- Order placed successfully $orderID ----------');
+    }
 
     return orderID;
   }
 
-  Future<void> parcelCallback(bool isSuccess, String? message, String orderID, int? zoneID, double orderAmount, double? maxCodAmount, bool isCashOnDeliveryActive, String? contactNumber,) async {
+
+  Future<void> parcelCallback(bool isSuccess, String? message, String orderID, int? zoneID, double orderAmount, double? maxCodAmount, bool isCashOnDeliveryActive, String? contactNumber,) async
+  {
+
     Get.find<ParcelController>().startLoader(false);
     if(isSuccess) {
       if(Get.find<OrderController>().isDmTipSave){
@@ -604,7 +736,21 @@ class OrderController extends GetxController implements GetxService {
     if(isSuccess) {
       if(fromCart) {
         Get.find<CartController>().clearCartList();
+        Get.find<CartController>().cartList.clear();
+        Get.find<CartController>().freshCartList.clear();
+        Get.find<CartController>().onlineCartList.clear();
+        Get.find<CartController>().getCartDataOnline();
+        Get.find<CartController>().addItem();
+        Get.find<CartController>().clearCard();
+        print('Get.find<CartController>().cartList ${Get.find<CartController>().cartList}');
+        print('Get.find<CartController>().freshCartList ${Get.find<CartController>().freshCartList}');
       }
+      Get.find<CartController>().cartList.clear();
+      Get.find<CartController>().freshCartList.clear();
+      Get.find<CartController>().onlineCartList.clear();
+      Get.find<CartController>().getCartDataOnline();
+      Get.find<CartController>().addItem();
+      Get.find<CartController>().clearCard();
       Get.find<OrderController>().setGuestAddress(null);
       if(!Get.find<OrderController>().showBottomSheet){
         Get.find<OrderController>().showRunningOrders(canUpdate: false);
@@ -612,6 +758,9 @@ class OrderController extends GetxController implements GetxService {
       if(Get.find<OrderController>().isDmTipSave){
         Get.find<AuthController>().saveDmTipIndex(Get.find<OrderController>().selectedTips.toString());
       }
+      Get.find<CartController>().cartList.clear();
+      Get.find<CartController>().freshCartList.clear();
+      Get.find<CartController>().onlineCartList.clear();
       Get.find<OrderController>().stopLoader(canUpdate: false);
       HomeScreen.loadData(true);
       if(Get.find<OrderController>().paymentMethodIndex == 2) {

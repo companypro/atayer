@@ -11,7 +11,6 @@ class PlaceOrderBody {
   String? _paymentMethod;
   String? _orderNote;
   String? _couponCode;
-  int? _storeId;
   double? _distance;
   String? _scheduleAt;
   double? _discountAmount;
@@ -45,7 +44,6 @@ class PlaceOrderBody {
         required double orderAmount,
         required String? orderType,
         required String paymentMethod,
-        required int? storeId,
         required double? distance,
         required String? scheduleAt,
         required double? discountAmount,
@@ -80,7 +78,6 @@ class PlaceOrderBody {
     _paymentMethod = paymentMethod;
     _orderNote = orderNote;
     _couponCode = couponCode;
-    _storeId = storeId;
     _distance = distance;
     _scheduleAt = scheduleAt;
     _discountAmount = discountAmount;
@@ -115,7 +112,6 @@ class PlaceOrderBody {
   String? get paymentMethod => _paymentMethod;
   String? get orderNote => _orderNote;
   String? get couponCode => _couponCode;
-  int? get storeId => _storeId;
   double? get distance => _distance;
   String? get scheduleAt => _scheduleAt;
   double? get discountAmount => _discountAmount;
@@ -154,7 +150,7 @@ class PlaceOrderBody {
     _paymentMethod = json['payment_method'];
     _orderNote = json['order_note'];
     _couponCode = json['coupon_code'];
-    _storeId = json['store_id'] != null ? int.parse(json['store_id'].toString()) : null;
+    // _storeId = json['store_id'] != null ? int.parse(json['store_id'].toString()) : null;
     _distance = double.parse(json['distance'].toString());
     _scheduleAt = json['schedule_at'];
     _discountAmount = double.parse(json['discount_amount'].toString());
@@ -201,9 +197,9 @@ class PlaceOrderBody {
     if(_couponCode != null) {
       data['coupon_code'] = _couponCode!;
     }
-    if(_storeId != null) {
-      data['store_id'] = _storeId.toString();
-    }
+    // if(_storeId != null) {
+    //   data['store_id'] = _storeId.toString();
+    // }
     data['distance'] = _distance.toString();
     if(_scheduleAt != null) {
       data['schedule_at'] = _scheduleAt!;
@@ -334,9 +330,10 @@ class OnlineCart {
     }
     _addOnQtys = json['add_on_qtys'].cast<int>();
     _model = json['model'];
-    if(json['item_type'] != null && json['item_type'] != 'null') {
-      _itemType = json['item_type'];
-    }
+    // if(json['item_type'] != null && json['item_type'] != 'null') {
+    // }
+    _itemType = json['item_type'];
+
   }
 
   Map<String, dynamic> toJson() {
@@ -358,9 +355,10 @@ class OnlineCart {
     }
     data['add_on_qtys'] = _addOnQtys;
     data['model'] = _model;
-    if(_itemType != null) {
-      data['item_type'] = _itemType;
-    }
+    // if(_itemType != null) {
+    // }
+    data['item_type'] = _itemType;
+
     return data;
   }
 }

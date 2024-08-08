@@ -7,6 +7,7 @@ import 'package:sixam_mart/data/model/body/review_body.dart';
 import 'package:sixam_mart/data/model/response/basic_medicine_model.dart';
 import 'package:sixam_mart/data/model/response/cart_model.dart';
 import 'package:sixam_mart/data/model/response/common_condition_model.dart';
+// import 'package:sixam_mart/data/model/response/coupon_model.dart';
 import 'package:sixam_mart/data/model/response/order_details_model.dart';
 import 'package:sixam_mart/data/model/response/item_model.dart';
 import 'package:sixam_mart/data/model/response/response_model.dart';
@@ -24,6 +25,9 @@ import 'package:sixam_mart/view/base/confirmation_dialog.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/base/item_bottom_sheet.dart';
 import 'package:sixam_mart/view/screens/item/item_details_screen.dart';
+
+import '../data/model/response/config_model.dart';
+import '../data/model/response/store_model.dart';
 
 class ItemController extends GetxController implements GetxService {
   final ItemRepo itemRepo;
@@ -124,13 +128,22 @@ class ItemController extends GetxController implements GetxService {
       Response response = await itemRepo.getPopularItemList(type);
       if (response.statusCode == 200) {
         _popularItemList = [];
+        print("//////////////////////${response.body}////////");
+
         _popularItemList!.addAll(ItemModel.fromJson(response.body).items!);
+
         _isLoading = false;
       } else {
         ApiChecker.checkApi(response);
       }
       update();
     }
+  }
+
+  bool isReviewSelected = false;
+  void selectReviewSection(bool review){
+    isReviewSelected = review;
+    update();
   }
 
   Future<void> getReviewedItemList(bool reload, String type, bool notify) async {
@@ -291,7 +304,7 @@ class ItemController extends GetxController implements GetxService {
         }
       }
 
-      if(Get.find<SplashController>().getModuleConfig(item.moduleType).newVariation!) {
+      if(Get.find<SplashController>().getModuleConfig(item.moduleType)!.newVariation!) {
         _selectedVariations.addAll(cart.foodVariations!);
         for(int index=0; index<item.foodVariations!.length; index++){
           _collapsVariation.add(true);
@@ -313,7 +326,7 @@ class ItemController extends GetxController implements GetxService {
         }
       }
     }else {
-      if(Get.find<SplashController>().getModuleConfig(item!.moduleType).newVariation!) {
+      if(Get.find<SplashController>().getModuleConfig(item!.moduleType)!.newVariation!) {
         for(int index=0; index<item.foodVariations!.length; index++) {
           _selectedVariations.add([]);
           _collapsVariation.add(true);
@@ -348,11 +361,12 @@ class ItemController extends GetxController implements GetxService {
 
   int setExistInCart(Item? item, {bool notify = false}) {
     String variationType = '';
-    if(!Get.find<SplashController>().getModuleConfig(Get.find<SplashController>().module != null ? Get.find<SplashController>().module!.moduleType : Get.find<SplashController>().cacheModule!.moduleType).newVariation!){
-      List<String> variationList = [];
-      for (int index = 0; index < item!.choiceOptions!.length; index++) {
-        variationList.add(item.choiceOptions![index].options![_variationIndex![index]].replaceAll(' ', ''));
-      }
+    // if(!Get.find<SplashController>().getModuleConfig(Get.find<SplashController>().module != null ? Get.find<SplashController>().module!.moduleType : Get.find<SplashController>().cacheModule!.moduleType).newVariation!){
+    //
+    //   }
+    List<String> variationList = [];
+    for (int index = 0; index < item!.choiceOptions!.length; index++) {
+      variationList.add(item.choiceOptions![index].options![_variationIndex![index]].replaceAll(' ', ''));
       bool isFirst = true;
       for (var variation in variationList) {
         if (isFirst) {
@@ -363,7 +377,7 @@ class ItemController extends GetxController implements GetxService {
         }
       }
     }
-    if(Get.find<SplashController>().getModuleConfig(Get.find<SplashController>().module != null ? Get.find<SplashController>().module!.moduleType : Get.find<SplashController>().cacheModule!.moduleType).newVariation!) {
+    if(Get.find<SplashController>().getModuleConfig(Get.find<SplashController>().module != null ? Get.find<SplashController>().module!.moduleType : Get.find<SplashController>().cacheModule!.moduleType)!.newVariation!) {
       _cartIndex = -1;
     }else {
       _cartIndex = Get.find<CartController>().isExistInCart(item!.id, variationType, false, null);
@@ -382,7 +396,7 @@ class ItemController extends GetxController implements GetxService {
           _addOnQtyList.add(Get.find<CartController>().cartList[_cartIndex].addOnIds![addOnIdList.indexOf(addOn.id)].quantity);
         }else {
           _addOnActiveList.add(false);
-          _addOnQtyList.add(1);
+          _addOnQtyList.add(0);
         }
       }
     }
@@ -575,6 +589,22 @@ class ItemController extends GetxController implements GetxService {
     initData(_item, null);
     setExistInCart(_item, notify: !ResponsiveHelper.isDesktop(Get.context));
   }
+  Future<void> getProductDetailsHome(ItemsHome item) async {
+    _item = null;
+    if(item.name != null) {
+      // _item = item;
+    }else {
+      _item = null;
+      Response response = await itemRepo.getItemDetails(item.id);
+      if (response.statusCode == 200) {
+        _item = Item.fromJson(response.body);
+      } else {
+        ApiChecker.checkApi(response);
+      }
+    }
+    initData(_item, null);
+    setExistInCart(_item, notify: !ResponsiveHelper.isDesktop(Get.context));
+  }
 
   void setSelect(int select, bool notify){
     _productSelect = select;
@@ -602,11 +632,27 @@ class ItemController extends GetxController implements GetxService {
     }
     return startingPrice;
   }
+  double? getStartingPriceHome(ItemsHome item) {
+    double? startingPrice = 0;
+    if (item.choiceOptions != null && item.choiceOptions!.isNotEmpty) {
+      List<double?> priceList = [];
+      // for (var variation in item.variations!) {
+      //   priceList.add(variation.price);
+      // }
+      priceList.sort((a, b) => a!.compareTo(b!));
+      startingPrice = priceList[0];
+    } else {
+      startingPrice = item.price as double?;
+    }
+    return startingPrice;
+  }
 
   bool isAvailable(Item item) {
     return DateConverter.isAvailable(item.availableTimeStarts, item.availableTimeEnds);
   }
-
+  bool isAvailableHome(ItemsHome item) {
+    return DateConverter.isAvailable(item.availableTimeStarts, item.availableTimeEnds);
+  }
   double? getDiscount(Item item) => item.storeDiscount == 0 ? item.discount : item.storeDiscount;
 
   String? getDiscountType(Item item) => item.storeDiscount == 0 ? item.discountType : 'percent';
@@ -620,63 +666,164 @@ class ItemController extends GetxController implements GetxService {
         Dialog(child: ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign)),
       );
     }else {
-      Get.toNamed(RouteHelper.getItemDetailsRoute(item.id, inStore), arguments: ItemDetailsScreen(item: item, inStorePage: inStore));
+      Get.toNamed(RouteHelper.getItemDetailsRoute(item.id, inStore), arguments: ItemDetailsScreen(item: item, inStorePage: inStore, store: Store(id: item.id!),));
+    }
+  }
+  void navigateToItemPageHome(ItemsHome? item, BuildContext context, {bool inStore = false, bool isCampaign = false}) {
+    if(Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! ) {
+      // ResponsiveHelper.isMobile(context) ? Get.bottomSheet(
+      //   ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign),
+      //   backgroundColor: Colors.transparent, isScrollControlled: true,
+      // ) : Get.dialog(
+      //   Dialog(child: ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign)),
+      // );
+    }else {
+      Get.toNamed(RouteHelper.getItemDetailsRoute(item!.id, inStore), arguments: ItemDetailsScreenHome(item: item, inStorePage: inStore, store: Store(id: item.id!),));
+    }
+  }
+  void navigateToItemPageSections(Item? item, BuildContext context, {bool inStore = false, bool isCampaign = false}) {
+    if(Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! || item!.moduleType == 'food') {
+      ResponsiveHelper.isMobile(context) ? Get.bottomSheet(
+        ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign),
+        backgroundColor: Colors.transparent, isScrollControlled: true,
+      ) : Get.dialog(
+        Dialog(child: ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign)),
+      );
+    }else {
+      Get.toNamed(RouteHelper.getItemDetailsRouteSections(item.id, inStore), arguments: ItemDetailsScreen(item: item, inStorePage: inStore, store: Store(id: item.id!),));
     }
   }
 
+  // void itemDirectlyAddToCart(Item? item, BuildContext context, {bool inStore = false, bool isCampaign = false}) {
+  //
+  //   print('------check : (${(item!.foodVariations != null && item.foodVariations!.isEmpty)} &&  || (${(item.variations != null && item.variations!.isEmpty)} && )');
+  //   print('------check item : ${item.toJson()}');
+  //   double price = item.price!;
+  //   double discount = item.discount!;
+  //   double discountPrice = PriceConverter.convertWithDiscount(price, discount, item.discountType)!;
+  //
+  //   CartModel cartModel = CartModel(
+  //     id: null,price:  price,discountedPrice:  discount, variation: [], foodVariations: [], discountAmount: (price - discountPrice), quantity: 1, addOnIds: [], addOns: [], isCampaign:isCampaign,
+  //     stock :item.stock, item:item,quantityLimit: item.quantityLimit != null ? item.quantityLimit! : null,
+  //   );
+  //
+  //   OnlineCart onlineCart = OnlineCart(
+  //     null, isCampaign ? null : item.id, isCampaign ? item.id : null, price.toString(),
+  //     '', null, null,
+  //     1, [], [], [], 'Item',
+  //   );
+  //   if(Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && item.stock! <= 0){
+  //     showCustomSnackBar('out_of_stock'.tr);
+  //   }
+  //   else if (Get.find<CartController>().existAnotherStoreItem(cartModel.item!.storeId, Get.find<SplashController>().module != null
+  //       ? Get.find<SplashController>().module!.id : Get.find<SplashController>().cacheModule!.id)) {
+  //     Get.dialog(ConfirmationDialog(
+  //       icon: Images.warning,
+  //       title: 'are_you_sure_to_reset'.tr,
+  //       description: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
+  //           ? 'if_you_continue'.tr : 'if_you_continue_without_another_store'.tr,
+  //       onYesPressed: () {
+  //         Get.find<CartController>().clearCartOnline().then((success) async {
+  //           if (success) {
+  //             await Get.find<CartController>().addToCartOnline(onlineCart);
+  //             Get.back();
+  //             showCartSnackBar();
+  //           }
+  //         });
+  //       },
+  //     ), barrierDismissible: false);
+  //   } else {
+  //     Get.find<CartController>().addToCartOnline(onlineCart);
+  //     showCartSnackBar();
+  //   }
+  //     if ( (item.variations != null && item.variations!.isEmpty )) {
+  //
+  //     } else if(Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!){
+  //       ResponsiveHelper.isMobile(context) ? Get.bottomSheet(
+  //         ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign),
+  //         backgroundColor: Colors.transparent, isScrollControlled: true,
+  //       ) : Get.dialog(
+  //         Dialog(child: ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign)),
+  //       );
+  //     } else {
+  //       Get.toNamed(RouteHelper.getItemDetailsRoute(item.id, inStore), arguments: ItemDetailsScreen(item: item, inStorePage: inStore, store: Store(id: item.id!),));
+  //     }
+  // }
   void itemDirectlyAddToCart(Item? item, BuildContext context, {bool inStore = false, bool isCampaign = false}) {
 
-    print('------check : (${(item!.foodVariations != null && item.foodVariations!.isEmpty)} && ${item.moduleType == AppConstants.food}) || (${(item.variations != null && item.variations!.isEmpty)} && ${item.moduleType != AppConstants.food})');
+    print('------check : (${(item!.foodVariations != null && item.foodVariations!.isEmpty)} && ) || (${(item.variations != null && item.variations!.isEmpty)} )');
     print('------check item : ${item.toJson()}');
-      if (((item.foodVariations != null && item.foodVariations!.isEmpty) && item.moduleType == AppConstants.food) || (item.variations != null && item.variations!.isEmpty && item.moduleType != AppConstants.food)) {
-        double price = item.price!;
-        double discount = item.discount!;
-        double discountPrice = PriceConverter.convertWithDiscount(price, discount, item.discountType)!;
+    if (((item.foodVariations != null && item.foodVariations!.isEmpty)) || (item.variations != null && item.variations!.isEmpty )) {
+      double price = item.price!;
+      double discount = item.discount!;
+      double discountPrice = PriceConverter.convertWithDiscount(price, discount, item.discountType)!;
 
-        CartModel cartModel = CartModel(
-          null, price, discount, [], [], (price - discountPrice), 1, [], [], isCampaign,
-          item.stock, item, item.quantityLimit != null ? item.quantityLimit! : null,
-        );
+      CartModel cartModel = CartModel(
+        id: null,price:  price,discountedPrice:  discount, variation: [], foodVariations: [], discountAmount: (price - discountPrice), quantity: 1, addOnIds: [], addOns: [], isCampaign:isCampaign,
+        stock :item.stock, item:item,quantityLimit: item.quantityLimit != null ? item.quantityLimit! : null,
+      );
 
-        OnlineCart onlineCart = OnlineCart(
-            null, isCampaign ? null : item.id, isCampaign ? item.id : null, price.toString(),
-            '', null, Get.find<SplashController>().getModuleConfig(item.moduleType).newVariation! ? [] : null,
-            1, [], [], [], 'Item',
-        );
-        if(Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && item.stock! <= 0){
-          showCustomSnackBar('out_of_stock'.tr);
-        }
-        else if (Get.find<CartController>().existAnotherStoreItem(cartModel.item!.storeId, Get.find<SplashController>().module != null
-            ? Get.find<SplashController>().module!.id : Get.find<SplashController>().cacheModule!.id)) {
-          Get.dialog(ConfirmationDialog(
-            icon: Images.warning,
-            title: 'are_you_sure_to_reset'.tr,
-            description: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
-                ? 'if_you_continue'.tr : 'if_you_continue_without_another_store'.tr,
-            onYesPressed: () {
-              Get.find<CartController>().clearCartOnline().then((success) async {
-                if (success) {
-                  await Get.find<CartController>().addToCartOnline(onlineCart);
-                  Get.back();
-                  showCartSnackBar();
-                }
-              });
-            },
-          ), barrierDismissible: false);
-        } else {
-          Get.find<CartController>().addToCartOnline(onlineCart);
-          showCartSnackBar();
-        }
-      } else if(Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! || item.moduleType == AppConstants.food){
-        ResponsiveHelper.isMobile(context) ? Get.bottomSheet(
-          ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign),
-          backgroundColor: Colors.transparent, isScrollControlled: true,
-        ) : Get.dialog(
-          Dialog(child: ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign)),
-        );
-      } else {
-        Get.toNamed(RouteHelper.getItemDetailsRoute(item.id, inStore), arguments: ItemDetailsScreen(item: item, inStorePage: inStore));
+
+      OnlineCart onlineCart = OnlineCart(
+        null, isCampaign ? null : item.id, isCampaign ? item.id : null, price.toString(),
+        '', null, [],
+        1, [], [], [], 'Item',
+      );
+      if(Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && item.stock! <= 0){
+        showCustomSnackBar('out_of_stock'.tr);
       }
+      else {
+        Get.find<CartController>().addToCartOnline(onlineCart);
+        showCartSnackBar();
+      }
+    } else if(Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText! || item.moduleType == AppConstants.grocery){
+      ResponsiveHelper.isMobile(context) ? Get.bottomSheet(
+        ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign),
+        backgroundColor: Colors.transparent, isScrollControlled: true,
+      ) : Get.dialog(
+        Dialog(child: ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign)),
+      );
+    } else {
+      Get.toNamed(RouteHelper.getItemDetailsRoute(item.id, inStore), arguments: ItemDetailsScreen(item: item, inStorePage: inStore, store: Store(),));
+    }
+  }
+  void itemDirectlyAddToCartHome(ItemsHome? item, BuildContext context, {bool inStore = false, bool isCampaign = false}) {
+
+    print('------check : (${(item!.foodVariations != null && item.foodVariations!.isEmpty)} && ) || (${(item.variations != null && item.variations!.isEmpty)} )');
+    print('------check item : ${item.toJson()}');
+    if (((item.foodVariations != null && item.foodVariations!.isEmpty)) || (item.variations != null && item.variations!.isEmpty )) {
+      int price = item.price!;
+      int discount = item.discount!;
+      int discountPrice = PriceConverter.convertWithDiscountHome(price, discount, item.discountType)!;
+
+      // CartModel cartModel = CartModel(
+      //   id: null,price:  price,discountedPrice:  discount, variation: [], foodVariations: [], discountAmount: (price - discountPrice), quantity: 1, addOnIds: [], addOns: [], isCampaign:isCampaign,
+      //   stock :item.stock, item:item,quantityLimit: item.quantityLimit != null ? item.quantityLimit! : null,
+      // );
+
+
+      OnlineCart onlineCart = OnlineCart(
+        null, isCampaign ? null : item.id, isCampaign ? item.id : null, price.toString(),
+        '', null, [],
+        1, [], [], [], 'Item',
+      );
+      if(Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && item.stock! <= 0){
+        showCustomSnackBar('out_of_stock'.tr);
+      }
+      else {
+        Get.find<CartController>().addToCartOnline(onlineCart);
+        showCartSnackBar();
+      }
+    } else if(Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!){
+      // ResponsiveHelper.isMobile(context) ? Get.bottomSheet(
+      //   ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign),
+      //   backgroundColor: Colors.transparent, isScrollControlled: true,
+      // ) : Get.dialog(
+      //   Dialog(child: ItemBottomSheet(item: item, inStorePage: inStore, isCampaign: isCampaign)),
+      // );
+    } else {
+      Get.toNamed(RouteHelper.getItemDetailsRoute(item.id, inStore), arguments: ItemDetailsScreenHome(item: item, inStorePage: inStore, store: Store(),));
+    }
   }
 
 }

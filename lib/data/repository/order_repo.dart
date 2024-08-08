@@ -44,10 +44,13 @@ class OrderRepo {
   }
 
   Future<Response> placeOrder(PlaceOrderBody orderBody, XFile? orderAttachment) async {
+    print('******************************${orderBody.cart}');
+
     return await apiClient.postMultipartData(
       AppConstants.placeOrderUri, orderBody.toJson(),
       [MultipartBody('order_attachment', orderAttachment)],
     );
+
   }
 
   Future<Response> placePrescriptionOrder(int? storeId, double? distance, String address, String longitude,
@@ -103,7 +106,9 @@ class OrderRepo {
   Future<Response> getDmTipMostTapped() async {
     return await apiClient.getData(AppConstants.mostTipsUri);
   }
-
+  Future<Response> getShareApp() async {
+    return await apiClient.getData(AppConstants.share);
+  }
   Future<Response> getOfflineMethodList() async {
     return await apiClient.getData(AppConstants.offlineMethodListUri);
   }

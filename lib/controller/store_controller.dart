@@ -20,6 +20,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/screens/home/home_screen.dart';
 
+import '../view/screens/sections/sections.dart';
+
 class StoreController extends GetxController implements GetxService {
   final StoreRepo storeRepo;
   StoreController({required this.storeRepo});
@@ -317,7 +319,9 @@ class StoreController extends GetxController implements GetxService {
         }
         if(fromModule) {
           HomeScreen.loadData(true);
-        }else {
+          Sections.loadData(true);
+        }
+        else {
           Get.find<OrderController>().clearPrevData(_store!.zoneId);
         }
       } else {

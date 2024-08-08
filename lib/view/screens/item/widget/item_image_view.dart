@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sixam_mart/controller/item_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/data/model/response/item_model.dart';
@@ -8,6 +9,14 @@ import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/view/base/custom_image.dart';
+
+import '../../../../controller/auth_controller.dart';
+import '../../../../controller/localization_controller.dart';
+import '../../../../controller/wishlist_controller.dart';
+import '../../../base/add_favourite_view.dart';
+import '../../../base/custom_snackbar.dart';
+import '../../../base/not_logged_in_bottom_sheet_widget.dart';
+import '../../favourite/widget/fav_item_view.dart';
 
 class ItemImageView extends StatelessWidget {
   final Item? item;
@@ -24,57 +33,48 @@ class ItemImageView extends StatelessWidget {
     return GetBuilder<ItemController>(
       builder: (itemController) {
         String? baseUrl = item!.availableDateStarts == null ? Get.find<SplashController>().
-            configModel!.baseUrls!.itemImageUrl : Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl;
-        return Stack(
+        configModel!.baseUrls!.itemImageUrl : Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Column(children: [
-            //   CircleAvatar(
-            //     backgroundImage: AssetImage(Images.favIcon),
-            //   )
-            // ],),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  onTap: () => Navigator.of(context).pushNamed(
-                    RouteHelper.getItemImagesRoute(item!),
-                    arguments: ItemImageView(item: item),
-                  ),
-                  child: Stack(children: [
-                    SizedBox(
-                      height: ResponsiveHelper.isDesktop(context)? 350: MediaQuery.of(context).size.width * 0.7,
-                      child: PageView.builder(
-                        controller: _controller,
-                        itemCount: imageList.length,
-                        itemBuilder: (context, index) {
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: CustomImage(
-                              image: '$baseUrl/${imageList[index]}',
-                              height: 200,
-                              width: MediaQuery.of(context).size.width,
-                            ),
-                          );
-                        },
-                        onPageChanged: (index) {
-                          itemController.setImageSliderIndex(index);
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      left: 0, right: 0, bottom: 0,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: _indicators(context, itemController, imageList),
+            InkWell(
+              onTap: () => Navigator.of(context).pushNamed(
+                RouteHelper.getItemImagesRoute(item!),
+                arguments: ItemImageView(item: item),
+              ),
+              child: Stack(children: [
+                SizedBox(
+                  height: ResponsiveHelper.isDesktop(context)? 350: MediaQuery.of(context).size.width * 0.7,
+                  child: PageView.builder(
+                    controller: _controller,
+                    itemCount: imageList.length,
+                    itemBuilder: (context, index) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: CustomImage(
+                          image: '$baseUrl/${imageList[index]}',
+                          height: 200,
+                          width: MediaQuery.of(context).size.width,
                         ),
-                      ),
-                    ),
-
-                  ]),
+                      );
+                    },
+                    onPageChanged: (index) {
+                      itemController.setImageSliderIndex(index);
+                    },
+                  ),
                 ),
-              ],
+                Positioned(
+                  left: 0, right: 0, bottom: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: _indicators(context, itemController, imageList),
+                    ),
+                  ),
+                ),
+
+              ]),
             ),
           ],
         );

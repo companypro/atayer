@@ -94,20 +94,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   ),
                   const SizedBox(height: Dimensions.paddingSizeLarge),
 
-                  Text(
-                    'last_name'.tr,
-                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                  ),
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                  MyTextField(
-                    hintText: 'last_name'.tr,
-                    controller: _lastNameController,
-                    focusNode: _lastNameFocus,
-                    nextFocus: _emailFocus,
-                    inputType: TextInputType.name,
-                    capitalization: TextCapitalization.words,
-                  ),
-                  const SizedBox(height: Dimensions.paddingSizeLarge),
+                  // Text(
+                  //   'last_name'.tr,
+                  //   style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                  // ),
+                  // const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                  // MyTextField(
+                  //   hintText: 'last_name'.tr,
+                  //   controller: _lastNameController,
+                  //   focusNode: _lastNameFocus,
+                  //   nextFocus: _emailFocus,
+                  //   inputType: TextInputType.name,
+                  //   capitalization: TextCapitalization.words,
+                  // ),
+                  // const SizedBox(height: Dimensions.paddingSizeLarge),
 
                   Text(
                     'email'.tr,
@@ -170,7 +170,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   void _updateProfile(UserController userController) async {
     String firstName = _firstNameController.text.trim();
-    String lastName = _lastNameController.text.trim();
+    String lastName = '.';
     String email = _emailController.text.trim();
     String phoneNumber = _phoneController.text.trim();
     if (userController.userInfoModel!.fName == firstName &&

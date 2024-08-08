@@ -22,7 +22,7 @@ class MedicineItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.ecommerce;
+    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
     double? discount = item.storeDiscount == 0 ? item.discount : item.storeDiscount;
     String? discountType = item.storeDiscount == 0 ? item.discountType : 'percent';
 

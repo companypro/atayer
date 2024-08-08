@@ -16,6 +16,8 @@ import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/view/screens/language/widget/web_language_widget.dart';
 
+import '../auth/sign_in_screen.dart';
+
 class ChooseLanguageScreen extends StatefulWidget {
   final bool fromMenu;
   const ChooseLanguageScreen({Key? key, this.fromMenu = false}) : super(key: key);
@@ -57,7 +59,7 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
                           const SizedBox(height: Dimensions.paddingSizeLarge),
 
                           Directionality(
-                            textDirection: TextDirection.ltr,
+                            textDirection: TextDirection.rtl,
                             child: GridView.builder(
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: ResponsiveHelper.isDesktop(context) ? 2 : ResponsiveHelper.isTab(context) ? 3 : 2,
@@ -136,7 +138,7 @@ class LanguageSaveButton extends StatelessWidget {
               if (fromMenu!) {
                 Navigator.pop(context);
               } else {
-                Get.offNamed(RouteHelper.getOnBoardingRoute());
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen(exitFromApp: true, backFromThis: true,)));
               }
             }else {
               showCustomSnackBar('select_a_language'.tr);

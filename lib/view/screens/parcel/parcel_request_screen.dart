@@ -586,7 +586,7 @@ class _ParcelRequestScreenState extends State<ParcelRequestScreen> {
             paymentMethod: parcelController.paymentIndex == 0 ? 'cash_on_delivery'
                 : parcelController.paymentIndex == 1 ? 'wallet'
                 : parcelController.paymentIndex == 2 ? 'digital_payment' : 'offline_payment',
-            couponCode: null, storeId: null, address: widget.pickedUpAddress.address, latitude: widget.pickedUpAddress.latitude,
+            couponCode: null, address: widget.pickedUpAddress.address, latitude: widget.pickedUpAddress.latitude,
             longitude: widget.pickedUpAddress.longitude, senderZoneId: widget.pickedUpAddress.zoneId,
             addressType: widget.pickedUpAddress.addressType,
             contactPersonName: widget.pickedUpAddress.contactPersonName ?? '',

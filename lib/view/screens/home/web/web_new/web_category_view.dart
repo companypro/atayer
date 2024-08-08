@@ -56,8 +56,8 @@ class _WebCategoryViewState extends State<WebCategoryView> {
 
   @override
   Widget build(BuildContext context) {
-    bool isPharmacy = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.pharmacy;
-    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.food;
+    bool isPharmacy = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
+    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
 
     if(widget.categoryController.categoryList != null && widget.categoryController.categoryList!.length > 9 && isFirstTime){
       showForwardButton = true;

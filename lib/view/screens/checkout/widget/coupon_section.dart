@@ -24,6 +24,7 @@ class CouponSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double totalPrice = total;
+
     return storeId == null ? GetBuilder<CouponController>(
       builder: (couponController) {
         return Container(

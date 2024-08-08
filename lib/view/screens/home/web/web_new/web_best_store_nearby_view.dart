@@ -69,7 +69,7 @@ class _WebBestStoreNearbyViewState extends State<WebBestStoreNearbyView> {
 
   @override
   Widget build(BuildContext context) {
-    bool isPharmacy = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.pharmacy;
+    bool isPharmacy = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
 
     return Container(
       margin: const EdgeInsets.only(top: Dimensions.paddingSizeLarge, bottom: Dimensions.paddingSizeLarge),

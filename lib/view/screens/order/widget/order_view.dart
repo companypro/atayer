@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:sixam_mart/controller/order_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/data/model/response/order_model.dart';
@@ -77,6 +78,7 @@ class OrderView extends StatelessWidget {
 
                         return InkWell(
                           onTap: () {
+                            // for(var i = 0;i <= paginatedOrderModel!.orders.length ; i++)
                             Get.toNamed(
                               RouteHelper.getOrderDetailsRoute(paginatedOrderModel!.orders![index].id),
                               arguments: OrderDetailsScreen(
@@ -107,10 +109,11 @@ class OrderView extends StatelessWidget {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                                       child: CustomImage(
-                                        image: isParcel ? '${Get.find<SplashController>().configModel!.baseUrls!.parcelCategoryImageUrl}'
-                                            '/${paginatedOrderModel.orders![index].parcelCategory != null ? paginatedOrderModel.orders![index].parcelCategory!.image : ''}'
-                                            : '${Get.find<SplashController>().configModel!.baseUrls!.storeImageUrl}/${paginatedOrderModel.orders![index].store != null
-                                            ? paginatedOrderModel.orders![index].store!.logo : ''}',
+                                        //isParcel ? '${Get.find<SplashController>().configModel!.baseUrls!.parcelCategoryImageUrl}'
+                                        //                                             '/${paginatedOrderModel.orders![index].parcelCategory != null ? paginatedOrderModel.orders![index].parcelCategory!.image : ''}'
+                                        //                                             : '${Get.find<SplashController>().configModel!.baseUrls!.storeImageUrl}/${paginatedOrderModel.orders![index].store != null
+                                        //                                             ? paginatedOrderModel.orders![index].store!.logo :
+                                        image:  Images.placeholder,
                                         height: isParcel ? 35 : ResponsiveHelper.isDesktop(context) ? 80 : 60,
                                         width: isParcel ? 35 : ResponsiveHelper.isDesktop(context) ? 80 : 60, fit: isParcel ? null : BoxFit.cover,
                                       ),
@@ -143,9 +146,12 @@ class OrderView extends StatelessWidget {
                                 Expanded(
                                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     Row(children: [
-                                      Text(
-                                        '${isParcel ? 'delivery_id'.tr : 'order_id'.tr}:',
-                                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
+                                      Expanded(
+
+                                        child: Text(
+                                          '${isParcel ? 'delivery_id'.tr : 'order_id'.tr}:',
+                                          style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall,height: 1.3),
+                                        ),
                                       ),
                                       const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                                       Text('#${paginatedOrderModel.orders![index].id}', style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall)),

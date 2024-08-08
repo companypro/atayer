@@ -8,7 +8,7 @@ class CartModel {
   List<List<bool?>>? _foodVariations;
   double? _discountAmount;
   int? _quantity;
-  List<AddOn>? _addOnIds;
+  List<AddOnModel>? _addOnIds;
   List<AddOns>? _addOns;
   bool? _isCampaign;
   int? _stock;
@@ -17,20 +17,20 @@ class CartModel {
   bool? _isLoading;
 
   CartModel(
-      int? id,
-        double? price,
-        double discountedPrice,
-        List<Variation> variation,
-        List<List<bool?>> foodVariations,
-        double discountAmount,
-        int? quantity,
-        List<AddOn> addOnIds,
-        List<AddOns> addOns,
-        bool isCampaign,
-        int? stock,
-        Item? item,
-        int? quantityLimit,
-      {bool isLoading = false}) {
+      {int? id,
+      double? price,
+      double? discountedPrice,
+      List<Variation>? variation,
+      List<List<bool?>>? foodVariations,
+      double? discountAmount,
+      int? quantity,
+      List<AddOnModel>? addOnIds,
+      List<AddOns>? addOns,
+      bool? isCampaign,
+      int? stock,
+      Item? item,
+      int? quantityLimit,
+      bool isLoading = false}) {
     _id = id;
     _price = price;
     _discountedPrice = discountedPrice;
@@ -57,7 +57,7 @@ class CartModel {
   int? get quantity => _quantity;
   // ignore: unnecessary_getters_setters
   set quantity(int? qty) => _quantity = qty;
-  List<AddOn>? get addOnIds => _addOnIds;
+  List<AddOnModel>? get addOnIds => _addOnIds;
   List<AddOns>? get addOns => _addOns;
   bool? get isCampaign => _isCampaign;
   int? get stock => _stock;
@@ -78,9 +78,9 @@ class CartModel {
     }
     if (json['food_variations'] != null) {
       _foodVariations = [];
-      for(int index=0; index<json['food_variations'].length; index++) {
+      for (int index = 0; index < json['food_variations'].length; index++) {
         _foodVariations!.add([]);
-        for(int i=0; i<json['food_variations'][index].length; i++) {
+        for (int i = 0; i < json['food_variations'][index].length; i++) {
           _foodVariations![index].add(json['food_variations'][index][i]);
         }
       }
@@ -91,7 +91,7 @@ class CartModel {
     if (json['add_on_ids'] != null) {
       _addOnIds = [];
       json['add_on_ids'].forEach((v) {
-        _addOnIds!.add(AddOn.fromJson(v));
+        _addOnIds!.add(AddOnModel.fromJson(v));
       });
     }
     if (json['add_ons'] != null) {
@@ -104,7 +104,7 @@ class CartModel {
     if (json['item'] != null) {
       _item = Item.fromJson(json['item']);
     }
-    if(json['quantity_limit'] != null) {
+    if (json['quantity_limit'] != null) {
       _quantityLimit = int.parse(json['quantity_limit']);
     }
     _isLoading = json['is_loading'] ?? false;
@@ -137,13 +137,13 @@ class CartModel {
   }
 }
 
-class AddOn {
+class AddOnModel {
   int? id;
   int? quantity;
 
-  AddOn({this.id, this.quantity});
+  AddOnModel({this.id, this.quantity});
 
-  AddOn.fromJson(Map<String, dynamic> json) {
+  AddOnModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     quantity = json['quantity'];
   }

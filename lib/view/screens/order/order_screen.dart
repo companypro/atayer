@@ -41,7 +41,7 @@ class OrderScreenState extends State<OrderScreen> with TickerProviderStateMixin 
     _isLoggedIn = Get.find<AuthController>().isLoggedIn();
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: CustomAppBar(title: 'my_orders'.tr, backButton: ResponsiveHelper.isDesktop(context)),
+      appBar: CustomAppBar(title: 'my_orders'.tr,),
       endDrawer: const MenuDrawer(), endDrawerEnableOpenDragGesture: false,
       body:  GetBuilder<OrderController>(
         builder: (orderController) {

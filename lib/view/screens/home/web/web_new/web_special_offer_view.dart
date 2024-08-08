@@ -97,7 +97,7 @@ class _WebSpecialOfferViewState extends State<WebSpecialOfferView> {
                         child: ItemCard(
                           item: discountedItemList[index],
                           isShop: widget.isShop,
-                          isFood: widget.isFood,
+                          isFood: widget.isFood, index: index,
                         ),
                       );
                     },

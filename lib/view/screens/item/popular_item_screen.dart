@@ -38,7 +38,7 @@ class _PopularItemScreenState extends State<PopularItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.ecommerce;
+    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
 
     return GetBuilder<ItemController>(
       builder: (itemController) {

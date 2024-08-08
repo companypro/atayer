@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/cart_controller.dart';
 import 'package:sixam_mart/controller/item_controller.dart';
@@ -19,7 +20,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/view/screens/store/widget/bottom_cart_widget.dart';
 
+import '../../../controller/parcel_controller.dart';
+import '../../../helper/route_helper.dart';
 import '../../../util/images.dart';
+import '../../base/cart_widget.dart';
+import '../dashboard/dashboard_screen.dart';
+import '../dashboard/widget/bottom_nav_item.dart';
+import '../dashboard/widget/parcel_bottom_sheet.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? queryText;
@@ -34,6 +41,9 @@ class SearchScreenState extends State<SearchScreen> with TickerProviderStateMixi
 
   final TextEditingController _searchController = TextEditingController();
   late bool _isLoggedIn;
+  int _pageIndex = 4;
+  PageController? _pageController;
+
 
   @override
   void initState() {
@@ -51,6 +61,8 @@ class SearchScreenState extends State<SearchScreen> with TickerProviderStateMixi
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    bool isParcel = Get.find<SplashController>().module != null && Get.find<SplashController>().configModel!.moduleConfig!.module!.isParcel!;
     return WillPopScope(
       onWillPop: () async {
         if(Get.find<SearchingController>().isSearchMode) {
@@ -154,19 +166,21 @@ class SearchScreenState extends State<SearchScreen> with TickerProviderStateMixi
                   iconPressed: () => _actionSearch(false, _searchController.text.trim(), false),
                   onSubmit: (text) => _actionSearch(true, _searchController.text.trim(), false),
                 )),
-                CustomButton(
-                  onPressed: () {
-                    if(searchController.isSearchMode) {
-                      Get.back();
-                    } else {
-                      searchController.setSearchMode(true);
-                      searchController.setStore(false);
-                    }
-                  },
-                  buttonText: 'cancel'.tr,
-                  transparent: true,
-                  width: 80,
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 5),
+                //   child: CustomButton(
+                //     onPressed: () {
+                //       if(searchController.isSearchMode) {
+                //         Get.back();
+                //       } else {
+                //         searchController.setSearchMode(true);
+                //         searchController.setStore(false);
+                //       }
+                //     },
+                //     buttonText: 'cancel'.tr,
+                //     width: 80,
+                //   ),
+                // ),
               ]))),
 
               Expanded(child: searchController.isSearchMode ? SingleChildScrollView(
@@ -295,13 +309,73 @@ class SearchScreenState extends State<SearchScreen> with TickerProviderStateMixi
                   ])),
                 ),
                 ) : SearchResultWidget(searchText: _searchController.text.trim(), tabController: ResponsiveHelper.isDesktop(context) ? _tabController : null)),
+              // GetBuilder<CartController>(builder: (cartController) {
+              //   return cartController.cartList.isNotEmpty && !ResponsiveHelper.isDesktop(context) ? const BottomCartWidget() : const SizedBox();
+              // })
             ]);
           }),
         )),
+        bottomNavigationBar: Stack(children: [
+          // CustomPaint(size: Size(size.width, GetPlatform.isIOS ? 95 : 80), painter: BNBCustomPainter()),
 
-        bottomNavigationBar: GetBuilder<CartController>(builder: (cartController) {
-          return cartController.cartList.isNotEmpty && !ResponsiveHelper.isDesktop(context) ? const BottomCartWidget() : const SizedBox();
-        })
+          Center(
+            heightFactor: 0.9,
+            child: Container(
+              width: 60, height: 60,
+              decoration: BoxDecoration(
+                  border: Border.all(color: Theme.of(context).cardColor, width: 5),
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 2, offset: const Offset(0, -2), spreadRadius: 0)]
+              ),
+              // margin: EdgeInsets.only(bottom: GetPlatform.isIOS ? 0 : Dimensions.paddingSizeLarge),
+              child: FloatingActionButton(
+                backgroundColor: Theme.of(context).primaryColor,
+                onPressed: () {
+                  if(isParcel) {
+                    showModalBottomSheet(
+                      context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
+                      builder: (con) => ParcelBottomSheet(parcelCategoryList: Get.find<ParcelController>().parcelCategoryList),
+                    );
+                  } else {
+                    Get.toNamed(RouteHelper.getCartRoute());
+                  }
+                },
+                elevation: 0,
+                child: isParcel
+                    ? Icon(CupertinoIcons.add, size: 34, color: Theme.of(context).cardColor)
+                    : CartWidget(color: Theme.of(context).cardColor, size: 22),
+              ),
+            ),
+          ),
+
+          SizedBox(
+            width: size.width, height: 70,
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              BottomNavItem(
+                title: 'home'.tr, selectedIcon: Images.homeSelect,
+                unSelectedIcon: Images.homeUnselect, isSelected: _pageIndex == 0,
+                onTap: () => Navigator.pushNamed(context, RouteHelper.initial),
+              ),
+              BottomNavItem(
+                title: isParcel ? 'address'.tr : 'sections'.tr,
+                selectedIcon: isParcel ? Images.addressSelect : Images.sections,
+                unSelectedIcon: isParcel ? Images.addressUnselect : Images.sectionsEmpty,
+                isSelected: _pageIndex == 1, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> const DashboardScreen(pageIndex: 1,))),
+              ),
+              Container(width: size.width * 0.2),
+              BottomNavItem(
+                title: 'orders'.tr, selectedIcon: Images.searchIcon, unSelectedIcon: Images.searchIcon,
+                isSelected: _pageIndex == 4, onTap: () => Get.toNamed(
+                  RouteHelper.getSearchRoute()),
+              ),
+              BottomNavItem(
+                title: 'menu'.tr, selectedIcon: Images.menu, unSelectedIcon: Images.menu,
+                isSelected: _pageIndex == 5, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=> const DashboardScreen(pageIndex: 4,))),
+              ),
+            ]),
+          ),
+        ],),
+
       ),
     );
   }

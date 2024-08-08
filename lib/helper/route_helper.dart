@@ -5,6 +5,7 @@ import 'package:meta_seo/meta_seo.dart';
 import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/location_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
+import 'package:sixam_mart/controller/store_controller.dart';
 import 'package:sixam_mart/data/model/body/notification_body.dart';
 import 'package:sixam_mart/data/model/body/place_order_body.dart';
 import 'package:sixam_mart/data/model/body/social_log_in_body.dart';
@@ -88,6 +89,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/view/screens/wallet/wallet_screen.dart';
 
+import '../view/screens/menu/setting.dart';
+import '../view/screens/sections/sections.dart';
+
 class RouteHelper {
   static const String initial = '/';
   static const String splash = '/splash';
@@ -106,6 +110,8 @@ class RouteHelper {
   static const String store = '/store';
   static const String orderDetails = '/order-details';
   static const String profile = '/profile';
+  static const String sections = '/sections';
+  static const String setting = '/setting';
   static const String updateProfile = '/update-profile';
   static const String coupon = '/coupon';
   static const String notification = '/notification';
@@ -119,6 +125,7 @@ class RouteHelper {
   static const String html = '/html';
   static const String categories = '/categories';
   static const String categoryItem = '/category-item';
+  static const String categoryItemSections = '/category-item_Sections';
   static const String popularItems = '/popular-items';
   static const String itemCampaign = '/item-campaign';
   static const String support = '/help-and-support';
@@ -136,8 +143,10 @@ class RouteHelper {
   static const String searchStoreItem = '/search-store-item';
   static const String order = '/order';
   static const String itemDetails = '/item-details';
+  static const String itemDetailsSections = '/item-details';
   static const String wallet = '/wallet';
   static const String referAndEarn = '/refer-and-earn';
+  static const String share = '/share';
   static const String messages = '/messages';
   static const String conversation = '/conversation';
   static const String restaurantRegistration = '/restaurant-registration';
@@ -219,6 +228,8 @@ class RouteHelper {
   }
 
   static String getProfileRoute() => profile;
+  static String getSectionsRoute() => sections;
+  static String getSetting() => setting;
   static String getUpdateProfileRoute() => updateProfile;
   static String getCouponRoute() => coupon;
   static String getNotificationRoute({bool? fromNotification}) =>
@@ -255,10 +266,15 @@ class RouteHelper {
 
   static String getCategoryRoute() => categories;
 
-  static String getCategoryItemRoute(int? id, String name) {
+  static String getCategoryItemRoute(int? id, String name, {int? page}) {
     List<int> encoded = utf8.encode(name);
     String data = base64Encode(encoded);
     return '$categoryItem?id=$id&name=$data';
+  }
+  static String getCategoryItemRouteSections(int? id, String name, {int? page}) {
+    List<int> encoded = utf8.encode(name);
+    String data = base64Encode(encoded);
+    return '$categoryItemSections?id=$id&name=$data';
   }
 
   static String getPopularItemRoute(bool isPopular, bool isSpecial) =>
@@ -316,6 +332,9 @@ class RouteHelper {
   static String getOrderRoute() => order;
   static String getItemDetailsRoute(int? itemID, bool isRestaurant) =>
       '$itemDetails?id=$itemID&page=${isRestaurant ? 'restaurant' : 'item'}';
+
+  static String getItemDetailsRouteSections(int? itemID, bool isRestaurant) =>
+      '$itemDetailsSections?id=$itemID&page=${isRestaurant ? 'restaurant' : 'item'}';
   static String getWalletRoute(bool fromWallet,
           {String? fundStatus, String? token}) =>
       '$wallet?page=${fromWallet ? 'wallet' : 'loyalty_points'}&payment_status=$fundStatus&token=$token';
@@ -546,6 +565,8 @@ class RouteHelper {
           );
         }),
     GetPage(name: profile, page: () => getRoute(const ProfileScreen())),
+    GetPage(name: sections, page: () => getRoute(const Sections())),
+    GetPage(name: setting, page: () => getRoute(const Settings())),
     GetPage(
         name: updateProfile, page: () => getRoute(const UpdateProfileScreen())),
     GetPage(name: coupon, page: () => getRoute(const CouponScreen())),
@@ -671,6 +692,15 @@ class RouteHelper {
               categoryID: Get.parameters['id'], categoryName: data));
         }),
     GetPage(
+        name: categoryItemSections,
+        page: () {
+          List<int> decode =
+              base64Decode(Get.parameters['name']!.replaceAll(' ', '+'));
+          String data = utf8.decode(decode);
+          return getRoute(CategoryItemScreenSections(
+              categoryID: Get.parameters['id'], categoryName: data));
+        }),
+    GetPage(
         name: popularItems,
         page: () => getRoute(PopularItemScreen(
             isPopular: Get.parameters['page'] == 'popular',
@@ -683,7 +713,11 @@ class RouteHelper {
     GetPage(
         name: update,
         page: () => UpdateScreen(isUpdate: Get.parameters['update'] == 'true')),
-    GetPage(name: cart, page: () => getRoute(const CartScreen(fromNav: false))),
+    GetPage(name: cart, page: () => getRoute( CartScreen(fromNav: false,store: Store(
+        id: Get.parameters['id'] != 'null' &&
+            Get.parameters['id'] != null
+            ? int.parse(Get.parameters['id']!)
+            : null)))),
     GetPage(
         name: addAddress,
         page: () => getRoute(AddAddressScreen(
@@ -759,7 +793,13 @@ class RouteHelper {
         page: () => getRoute(Get.arguments ??
             ItemDetailsScreen(
                 item: Item(id: int.parse(Get.parameters['id']!)),
-                inStorePage: Get.parameters['page'] == 'restaurant'))),
+                inStorePage: Get.parameters['page'] == 'restaurant', store: Store(id:int.parse(Get.parameters['id']!) ), ))),
+    GetPage(
+        name: itemDetailsSections,
+        page: () => getRoute(Get.arguments ??
+            ItemDetailsScreenSections(
+                item: Item(id: int.parse(Get.parameters['id']!)),
+                inStorePage: Get.parameters['page'] == 'restaurant', store: Store(id:int.parse(Get.parameters['id']!) ), ))),
     GetPage(
         name: wallet,
         page: () {

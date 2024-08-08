@@ -23,7 +23,7 @@ class NotificationScreen extends StatefulWidget {
   State<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
+class _NotificationScreenState extends State<NotificationScreen> with SingleTickerProviderStateMixin{
 
   void _loadData() async {
     Get.find<NotificationController>().clearNotification();
@@ -34,12 +34,43 @@ class _NotificationScreenState extends State<NotificationScreen> {
       Get.find<NotificationController>().getNotificationList(true);
     }
   }
+  static const _initialDelayTime = Duration(milliseconds: 200);
+  static const _itemSlideTime = Duration(milliseconds: 250);
+  static const _staggerTime = Duration(milliseconds: 50);
+  static const _buttonDelayTime = Duration(milliseconds: 150);
+  static const _buttonTime = Duration(milliseconds: 500);
+  final _animationDuration = _initialDelayTime + (_staggerTime * 7) + _buttonDelayTime + _buttonTime;
 
+  late AnimationController _staggeredController;
+  final List<Interval> _itemSlideIntervals = [];
   @override
   void initState() {
     super.initState();
+    _createAnimationIntervals();
 
+    _staggeredController = AnimationController(
+      vsync: this,
+      duration: _animationDuration,
+    )..forward();
     _loadData();
+  }
+  void _createAnimationIntervals() {
+    for (var i = 0; i < Get.find<NotificationController>().notificationList!.length; ++i) {
+      final startTime = _initialDelayTime + (_staggerTime * i);
+      final endTime = startTime + _itemSlideTime;
+      _itemSlideIntervals.add(
+        Interval(
+          startTime.inMilliseconds / _animationDuration.inMilliseconds,
+          endTime.inMilliseconds / _animationDuration.inMilliseconds,
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _staggeredController.dispose();
+    super.dispose();
   }
 
   @override
@@ -95,37 +126,56 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         child: Text(DateConverter.dateTimeStringToDateOnly(notificationController.notificationList![index].createdAt!)),
                       ) : const SizedBox(),
 
-                      InkWell(
-                        onTap: () {
-                          showDialog(context: context, builder: (BuildContext context) {
-                            return NotificationDialog(notificationModel: notificationController.notificationList![index]);
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
-                          child: Row(children: [
+                      SizedBox(height: 10,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 100,
+                            width: MediaQuery.of(context).size.width * .92,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7),
+                              color: Theme.of(context).hintColor.withOpacity(.1)
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                showDialog(context: context, builder: (BuildContext context) {
+                                  return NotificationDialog(notificationModel: notificationController.notificationList![index]);
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall,horizontal: Dimensions.paddingSizeExtraSmall,),
+                                child: Row(
 
-                            ClipOval(child: CustomImage(
-                              isNotification: true,
-                              height: 40, width: 40, fit: BoxFit.cover,
-                              image: '${Get.find<SplashController>().configModel!.baseUrls!.notificationImageUrl}'
-                                  '/${notificationController.notificationList![index].data!.image}',
-                            )),
-                            const SizedBox(width: Dimensions.paddingSizeSmall),
+                                    children: [
 
-                            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              Text(
-                                notificationController.notificationList![index].data!.title ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
-                                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                                  ClipOval(child: CustomImage(
+                                    isNotification: true,
+                                    height: 30, width: 30, fit: BoxFit.cover,
+                                    image: '${Get.find<SplashController>().configModel!.baseUrls!.notificationImageUrl}''/${notificationController.notificationList![index].data!.image}',
+                                  )),
+                                  const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                                  Expanded(child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                    Text(
+                                      notificationController.notificationList![index].data!.title ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
+                                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                                    ),
+                                    SizedBox(height: 10,),
+                                    Text(
+                                      notificationController.notificationList![index].data!.description ?? '', maxLines: 3, overflow: TextOverflow.ellipsis,
+                                      style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall,height: 1.2),
+                                    ),
+                                  ])),
+
+                                ]),
                               ),
-                              Text(
-                                notificationController.notificationList![index].data!.description ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
-                                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
-                              ),
-                            ])),
-
-                          ]),
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
 
                       Padding(

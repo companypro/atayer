@@ -15,6 +15,8 @@ import 'package:sixam_mart/view/base/no_internet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../auth/sign_in_screen.dart';
+
 class SplashScreen extends StatefulWidget {
   final NotificationBody? body;
   const SplashScreen({Key? key, required this.body}) : super(key: key);
@@ -132,13 +134,14 @@ class SplashScreenState extends State<SplashScreen> {
     }
 
     return Scaffold(
+      backgroundColor: Color(0xFF007058),
       key: _globalKey,
       body: GetBuilder<SplashController>(builder: (splashController) {
         return Center(
           child: splashController.hasConnection ? Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(Images.logo, width: 200),
+              Image.asset(Images.lo, width: 200),
               const SizedBox(height: Dimensions.paddingSizeSmall),
               // Text(AppConstants.APP_NAME, style: robotoMedium.copyWith(fontSize: 25)),
             ],

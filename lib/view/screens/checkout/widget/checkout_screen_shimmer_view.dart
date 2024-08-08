@@ -675,3 +675,257 @@ class CheckoutShimmerView extends StatelessWidget {
     );
   }
 }
+class CardScreenShimmerView extends StatelessWidget {
+  const CardScreenShimmerView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Center(
+        child: SizedBox(
+          width: Dimensions.webMaxWidth,
+          child: ResponsiveHelper.isMobile(context) ? const CheckoutShimmerView() : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+            // const Expanded(
+            //   flex: 6,
+            //   child: CheckoutShimmerView(),
+            // ),
+            const SizedBox(width: Dimensions.paddingSizeExtraLarge),
+
+            Expanded(
+              flex: 4,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                  Shimmer(
+                    duration: const Duration(seconds: 2),
+                    enabled: true,
+                    child: Container(
+                      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                      ),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Container(
+                          height: 30, width: 30,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ),
+                        const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                        ]),
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
+
+
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                        ]),
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                        ]),
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                        ]),
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+
+                          Container(
+                            height: 15, width: 150,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                        ]),
+
+                      ]),
+                    ),
+                  ),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                  Shimmer(
+                    duration: const Duration(seconds: 2),
+                    enabled: true,
+                    child: Container(
+                      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                      ),
+                      child: Column(children: [
+                        Row(children: [
+
+                          Container(
+                            height: 15, width: 80,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                          const Spacer(),
+
+                          Container(
+                            height: 15, width: 80,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                          Icon(Icons.add, color: Theme.of(context).cardColor),
+                        ]),
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                        Container(
+                          height: 60,
+                          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                          ),
+                          child: Row(children: [
+
+                            Icon(Icons.countertops, color: Theme.of(context).cardColor),
+                            const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                            Container(
+                              height: 10, width: 120,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                              ),
+                            ),
+                            const Spacer(),
+
+                            Container(
+                              height: 40, width: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                              ),
+                            ),
+                          ]),
+                        ),
+                      ]),
+                    ),
+                  ),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                  Shimmer(
+                    duration: const Duration(seconds: 2),
+                    enabled: true,
+                    child: Container(
+                      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 15, width: 120,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                          const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                          Container(
+                            height: 120, width: context.width,
+                            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                            alignment: Alignment.centerLeft,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+
+          ]),
+        ),
+      ),
+    );
+  }
+}

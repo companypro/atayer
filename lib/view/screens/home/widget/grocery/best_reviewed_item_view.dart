@@ -43,7 +43,7 @@ class _BestReviewItemViewState extends State<BestReviewItemView> {
             itemCount: reviewItemList.length,
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeDefault, top: Dimensions.paddingSizeDefault),
+                padding: const EdgeInsets.only( right: Dimensions.paddingSizeDefault, top: Dimensions.paddingSizeDefault),
                 child: InkWell(
                   onTap: () => Get.find<ItemController>().navigateToItemPage(reviewItemList[index], context),
                   child: ReviewItemCard(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:meta_seo/meta_seo.dart';
 import 'package:sixam_mart/controller/auth_controller.dart';
@@ -30,14 +31,17 @@ import 'package:url_strategy/url_strategy.dart';
 import 'helper/get_di.dart' as di;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
+
   // if (ResponsiveHelper.isMobilePhone()) {
   //   HttpOverrides.global = MyHttpOverrides();
   // }
+
   setPathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   // Pass all uncaught "fatal" errors from the framework to Crashlytics
   FlutterError.onError = (errorDetails) {
@@ -64,25 +68,13 @@ Future<void> main() async {
   //
   //   // MetaSEO().config();
   // }
-  await Firebase.initializeApp(
-          options: const FirebaseOptions(
-              apiKey: "AIzaSyDFN-73p8zKVZbA0i5DtO215XzAb-xuGSE",
-              authDomain: "ammart-8885e.firebaseapp.com",
-              databaseURL: "https://ammart-8885e-default-rtdb.firebaseio.com",
-              projectId: "ammart-8885e",
-              storageBucket: "ammart-8885e.appspot.com",
-              messagingSenderId: "1000163153346",
-              appId: "1:1000163153346:web:4f702a4b5adbd5c906b25b",
-              measurementId: "G-L1GNL2YV61")
-
-  );
   Map<String, Map<String, String>> languages = await di.init();
 
   NotificationBody? body;
   try {
     if (GetPlatform.isMobile) {
       final RemoteMessage? remoteMessage =
-          await FirebaseMessaging.instance.getInitialMessage();
+      await FirebaseMessaging.instance.getInitialMessage();
       if (remoteMessage != null) {
         body = NotificationHelper.convertNotification(remoteMessage.data);
       }
@@ -134,7 +126,7 @@ class _MyAppState extends State<MyApp> {
         await Get.find<AuthController>().guestLogin();
       }
       if ((Get.find<AuthController>().isLoggedIn() ||
-              Get.find<AuthController>().isGuestLoggedIn()) &&
+          Get.find<AuthController>().isGuestLoggedIn()) &&
           Get.find<SplashController>().cacheModule != null) {
         Get.find<CartController>().getCartDataOnline();
       }
@@ -155,6 +147,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF007058), // Status bar color
+      statusBarBrightness: Brightness.dark, // For iOS (dark icons)
+      statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
+    ));
+
     return GetBuilder<ThemeController>(builder: (themeController) {
       return GetBuilder<LocalizationController>(builder: (localizeController) {
         return GetBuilder<SplashController>(builder: (splashController) {

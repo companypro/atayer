@@ -1,6 +1,7 @@
 import 'package:sixam_mart/controller/location_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/data/api/api_checker.dart';
+import 'package:sixam_mart/data/model/response/config_model.dart';
 import 'package:sixam_mart/data/model/response/item_model.dart';
 import 'package:sixam_mart/data/model/response/store_model.dart';
 import 'package:sixam_mart/data/repository/item_repo.dart';
@@ -14,12 +15,14 @@ class WishListController extends GetxController implements GetxService {
   WishListController({required this.wishListRepo, required this.itemRepo});
 
   List<Item?>? _wishItemList;
+  List<ItemsHome?>? _wishItemListHome;
   List<Store?>? _wishStoreList;
   List<int?> _wishItemIdList = [];
   List<int?> _wishStoreIdList = [];
   bool _isRemoving = false;
 
   List<Item?>? get wishItemList => _wishItemList;
+  List<Item?>? get wishItemListHome => _wishItemList;
   List<Store?>? get wishStoreList => _wishStoreList;
   List<int?> get wishItemIdList => _wishItemIdList;
   List<int?> get wishStoreIdList => _wishStoreIdList;
@@ -33,6 +36,54 @@ class WishListController extends GetxController implements GetxService {
     }else{
       _wishItemList ??= [];
       _wishItemList!.add(product);
+      _wishItemIdList.add(product!.id);
+    }
+    Response response = await wishListRepo.addWishList(isStore ? store!.id : product!.id, isStore);
+    if (response.statusCode == 200) {
+      // if(isStore) {
+      //   _wishStoreIdList.forEach((storeId) {
+      //     if(storeId == store.id){
+      //       _wishStoreIdList.removeAt(_wishStoreIdList.indexOf(storeId));
+      //     }
+      //   });
+      //   _wishStoreIdList.add(store.id);
+      //   _wishStoreList.add(store);
+      // }else {
+      //   _wishItemIdList.forEach((productId) {
+      //     if(productId == product.id){
+      //       _wishItemIdList.removeAt(_wishItemIdList.indexOf(productId));
+      //     }
+      //   });
+      //   _wishItemList.add(product);
+      //   _wishItemIdList.add(product.id);
+      // }
+      showCustomSnackBar(response.body['message'], isError: false, getXSnackBar: getXSnackBar);
+    } else {
+      if(isStore) {
+        for (var storeId in _wishStoreIdList) {
+          if (storeId == store!.id) {
+            _wishStoreIdList.removeAt(_wishStoreIdList.indexOf(storeId));
+          }
+        }
+      }else{
+        for (var productId in _wishItemIdList) {
+          if(productId == product!.id){
+            _wishItemIdList.removeAt(_wishItemIdList.indexOf(productId));
+          }
+        }
+      }
+      ApiChecker.checkApi(response, getXSnackBar: getXSnackBar);
+    }
+    update();
+  }
+  void addToWishListHome(ItemsHome? product, Store? store, bool isStore, {bool getXSnackBar = false}) async {
+    if(isStore) {
+      _wishStoreList ??= [];
+      _wishStoreIdList.add(store!.id);
+      _wishStoreList!.add(store);
+    }else{
+      _wishItemList ??= [];
+      _wishItemListHome!.add(product);
       _wishItemIdList.add(product!.id);
     }
     Response response = await wishListRepo.addWishList(isStore ? store!.id : product!.id, isStore);
@@ -131,8 +182,7 @@ class WishListController extends GetxController implements GetxService {
 
       if(response.body['item'] != null){
         response.body['item'].forEach((item) async {
-          if(item['module_type'] == null || !Get.find<SplashController>().getModuleConfig(item['module_type']).newVariation!
-              || item['variations'] == null || item['variations'].isEmpty
+          if( item['variations'] == null || item['variations'].isEmpty
               || (item['food_variations'] != null && item['food_variations'].isNotEmpty)){
 
             Item i = Item.fromJson(item);

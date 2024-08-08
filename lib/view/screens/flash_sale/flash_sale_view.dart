@@ -156,74 +156,76 @@ class FlashSaleShimmerView extends StatelessWidget {
       child: Shimmer(
         duration: const Duration(seconds: 2),
         enabled: true,
-        child: Column(children: [
+        child: SingleChildScrollView(
+          child: Column(children: [
 
-          Padding(
-            padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-            child: Row(children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('flash_sale'.tr, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
-                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+            Padding(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+              child: Row(children: [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('flash_sale'.tr, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-                ResponsiveHelper.isDesktop(context) ? const SizedBox() : Text('limited_time_offer'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
-              ],
-              ),
-              const Spacer(),
-
-              Row(children: [
-                TimerWidget(
-                    timeCount: 00,
-                    timeUnit: 'days'.tr
+                  ResponsiveHelper.isDesktop(context) ? const SizedBox() : Text('limited_time_offer'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
+                ],
                 ),
-                const SizedBox(width: Dimensions.paddingSizeDefault),
+                const Spacer(),
 
-                TimerWidget(
-                    timeCount: 00,
-                    timeUnit: 'hours'.tr
-                ),
-                const SizedBox(width: Dimensions.paddingSizeDefault),
+                Row(children: [
+                  TimerWidget(
+                      timeCount: 00,
+                      timeUnit: 'days'.tr
+                  ),
+                  const SizedBox(width: Dimensions.paddingSizeDefault),
 
-                TimerWidget(
-                    timeCount: 00,
-                    timeUnit: 'mins'.tr
-                ),
-                const SizedBox(width: Dimensions.paddingSizeDefault),
+                  TimerWidget(
+                      timeCount: 00,
+                      timeUnit: 'hours'.tr
+                  ),
+                  const SizedBox(width: Dimensions.paddingSizeDefault),
 
-                TimerWidget(
-                    timeCount: 00,
-                    timeUnit: 'sec'.tr
-                ),
-              ])
-            ]),
-          ),
+                  TimerWidget(
+                      timeCount: 00,
+                      timeUnit: 'mins'.tr
+                  ),
+                  const SizedBox(width: Dimensions.paddingSizeDefault),
 
-          Container(
-            height: ResponsiveHelper.isDesktop(context) ? 150 : 170, width: Get.width * 0.7,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                  TimerWidget(
+                      timeCount: 00,
+                      timeUnit: 'sec'.tr
+                  ),
+                ])
+              ]),
             ),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
 
-          Container(
-            height: 10, width: 100,
-            color: Colors.grey[300],
-          ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
+            Container(
+              height: ResponsiveHelper.isDesktop(context) ? 150 : 170, width: Get.width * 0.7,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+              ),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
 
-          Container(
-            height: 10, width: 200,
-            color: Colors.grey[300],
-          ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
+            Container(
+              height: 10, width: 100,
+              color: Colors.grey[300],
+            ),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
 
-          Container(
-            height: 10, width: 100,
-            color: Colors.grey[300],
+            Container(
+              height: 10, width: 200,
+              color: Colors.grey[300],
+            ),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+
+            Container(
+              height: 10, width: 100,
+              color: Colors.grey[300],
+            ),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+          ],
           ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
-        ],
         ),
       ),
     );

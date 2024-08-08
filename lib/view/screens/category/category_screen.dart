@@ -14,8 +14,8 @@ import 'package:get/get.dart';
 import 'package:sixam_mart/view/base/web_page_title_widget.dart';
 
 class CategoryScreen extends StatefulWidget {
-  const CategoryScreen({Key? key}) : super(key: key);
-
+  const CategoryScreen({Key? key, this.page}) : super(key: key);
+  final int? page;
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
 }
@@ -58,7 +58,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () => Get.toNamed(RouteHelper.getCategoryItemRoute(
-                      catController.categoryList![index].id, catController.categoryList![index].name!,
+                      catController.categoryList![index].id, catController.categoryList![index].name!,page: widget.page,
                     )),
                     child: Container(
                       decoration: BoxDecoration(

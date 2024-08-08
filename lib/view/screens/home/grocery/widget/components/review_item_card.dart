@@ -22,17 +22,24 @@ class ReviewItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.ecommerce;
-    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.food;
+    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
+    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
 
     return OnHover(
       isItem: true,
       child: isShop ? Container(
-        width: 180,
+        width: 180,height: 300,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
           color: Theme.of(context).cardColor,
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
+          border: Border(
+            bottom: BorderSide(color: Colors.black.withOpacity(.2)),
+            top: BorderSide(color: Colors.black.withOpacity(.2)),
+            right: BorderSide(color: Colors.black.withOpacity(.2)),
+            left: BorderSide(color: Colors.black.withOpacity(.2)),
+          ),
+
+          // boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
         ),
         child: InkWell(
           hoverColor: Colors.transparent,
@@ -55,9 +62,9 @@ class ReviewItemCard extends StatelessWidget {
                   ),
                 ),
 
-                AddFavouriteView(
-                  item: item!,
-                ),
+                // AddFavouriteView(
+                //   item: item!,
+                // ),
 
                 DiscountTag(
                   isFloating: true,
@@ -80,14 +87,14 @@ class ReviewItemCard extends StatelessWidget {
                   ),
 
                   Text(item!.name!, maxLines: 1, overflow: TextOverflow.ellipsis, style: robotoBold),
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                  // const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
                   Row(mainAxisAlignment: isFeatured ? MainAxisAlignment.start : MainAxisAlignment.center, children: [
-                    Icon(Icons.star, size: 14, color: Theme.of(context).primaryColor),
-                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                    Text(item!.avgRating!.toStringAsFixed(1), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                    Text("(${item!.ratingCount})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
+                    // Icon(Icons.star, size: 14, color: Theme.of(context).primaryColor),
+                    // const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                    // Text(item!.avgRating!.toStringAsFixed(1), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                    // const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                    // Text("(${item!.ratingCount})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
                   ]),
 
                   item!.discount != null && item!.discount! > 0  ? Text(
@@ -111,167 +118,175 @@ class ReviewItemCard extends StatelessWidget {
           ]),
         ),
       ) : Container(
-        width: 210, height: 285,
+        width: 210,height: 300,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
           color: Theme.of(context).cardColor,
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
+          border: Border(
+            bottom: BorderSide(color: Colors.black.withOpacity(.2)),
+            top: BorderSide(color: Colors.black.withOpacity(.2)),
+            right: BorderSide(color: Colors.black.withOpacity(.2)),
+            left: BorderSide(color: Colors.black.withOpacity(.2)),
+          ),
+
+          // boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-          Expanded(
-            child: Stack(children: [
-              Padding(
-                padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(Dimensions.radiusDefault)),
-                  child: CustomImage(
-                    placeholder: Images.placeholder,
-                    image: '${Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl}'
-                        '/${item!.image}',
-                    fit: BoxFit.cover, width: double.infinity, height: double.infinity,
-                  ),
+          Stack(children: [
+
+            Padding(
+              padding: EdgeInsets.only( top:  Dimensions.paddingSizeSmall ,left:  Dimensions.paddingSizeExtremeLarge , right: Dimensions.paddingSizeExtremeLarge,bottom: 70),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(1)),
+                child: CustomImage(
+                  placeholder: Images.placeholder,
+                  image: '${Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl}'
+                      '/${item!.image}',
+                  fit: BoxFit.cover, width: double.infinity,
                 ),
               ),
+            ),
+            DiscountTag(
+              isFloating: true,
+              discount: Get.find<ItemController>().getDiscount(item!),
+              discountType: Get.find<ItemController>().getDiscountType(item!),
+            ),
 
-              AddFavouriteView(
-                top: 10, right: 10,
-                item: item!,
-              ),
+            // AddFavouriteView(
+            //   top: 10, right: 10,
+            //   item: item!,
+            // ),
 
-              DiscountTag(
-                isFloating: true,
-                discount: Get.find<ItemController>().getDiscount(item!),
-                discountType: Get.find<ItemController>().getDiscountType(item!),
-              ),
 
-              OrganicTag(item: item!, placeInImage: false),
+            // OrganicTag(item: item!, placeInImage: false),
 
-              Positioned(
-                bottom: 0, left: 0, right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(Dimensions.radiusDefault), topRight: Radius.circular(Dimensions.radiusDefault)),
-                          color: Theme.of(context).cardColor,
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
-                        ),
-                        child: isFood ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+            Positioned(
+              bottom: 8, left: 0, right: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
 
-                          Text(
-                            item!.storeName!, maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
-                          ),
+                    isFood ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-                          Text(item!.name!, maxLines: 1, overflow: TextOverflow.ellipsis, style: robotoBold),
-
-                          Row(mainAxisAlignment: isFeatured ? MainAxisAlignment.start : MainAxisAlignment.center, children: [
-                            Icon(Icons.star, size: 14, color: Theme.of(context).primaryColor),
-                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                            Text(item!.avgRating!.toStringAsFixed(1), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                            Text("(${item!.ratingCount})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
-                          ]),
-
-                          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                            item!.discount! > 0  ? Text(
-                              PriceConverter.convertPrice(
-                                Get.find<ItemController>().getStartingPrice(item!),
-                              ),
-                              style: robotoRegular.copyWith(
-                                fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor, decoration: TextDecoration.lineThrough,
-                              ),
-                            ) : const SizedBox(),
-                            SizedBox(width: item!.discount! > 0 ? Dimensions.paddingSizeExtraSmall : 0),
-
-                            Text(
-                              PriceConverter.convertPrice(
-                                Get.find<ItemController>().getStartingPrice(item!),
-                                discount: item!.discount,
-                                discountType: item!.discountType,
-                              ),
-                              style: robotoMedium, textDirection: TextDirection.ltr,
-                            ),
-                          ]),
-                        ],
-                        ) : Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-                          Text(item!.name!, style: robotoBold, maxLines: 1, overflow: TextOverflow.ellipsis),
-
-                          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                            Icon(Icons.star, size: 15, color: Theme.of(context).primaryColor),
-                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                            Text(item!.avgRating!.toStringAsFixed(1), style: robotoRegular),
-                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                            Text("(${item!.ratingCount})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
-                          ],
-                          ),
-
-                          (Get.find<SplashController>().configModel!.moduleConfig!.module!.unit! && item!.unitType != null) ? Text(
-                            '(${item!.unitType ?? ''})',
-                            style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
-                          ) : const SizedBox(),
-
-                          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                            item!.discount! > 0  ? Text(
-                              PriceConverter.convertPrice(
-                                Get.find<ItemController>().getStartingPrice(item!),
-                              ),
-                              style: robotoRegular.copyWith(
-                                fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor, decoration: TextDecoration.lineThrough,
-                              ),
-                            ) : const SizedBox(),
-                            // SizedBox(height: item!.discount! > 0 ? Dimensions.paddingSizeExtraSmall : 0),
-
-                            Text(
-                              PriceConverter.convertPrice(
-                                Get.find<ItemController>().getStartingPrice(item!),
-                                discount: item!.discount,
-                                discountType: item!.discountType,
-                              ),
-                              style: robotoMedium, textDirection: TextDirection.ltr,
-                            ),
-                          ]),
-                        ],
-                        ),
+                      Text(
+                        item!.storeName!, maxLines: 1, overflow: TextOverflow.ellipsis,
+                        style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
                       ),
+                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
+                      Text(item!.name!, maxLines: 1, overflow: TextOverflow.ellipsis, style: robotoBold),
 
-                      Positioned(
-                        top: -15, left: 0, right: 0,
-                        child: CartCountView(
-                          item: item!,
-                          child: Center(
-                            child: Container(
-                              alignment: Alignment.center,
-                              width: 65, height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(112),
-                                color: Theme.of(context).cardColor,
-                                boxShadow: [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.1), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
-                              ),
-                              child: Text("add".tr, style: robotoBold.copyWith(color: Theme.of(context).primaryColor)),
-                            ),
+                      // Row(mainAxisAlignment: isFeatured ? MainAxisAlignment.start : MainAxisAlignment.center, children: [
+                      //   Icon(Icons.star, size: 14, color: Theme.of(context).primaryColor),
+                      //   const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      //   Text(item!.avgRating!.toStringAsFixed(1), style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                      //   const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      //   Text("(${item!.ratingCount})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
+                      // ]),
+
+                      Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        item!.discount! > 0  ? Text(
+                          PriceConverter.convertPrice(
+                            Get.find<ItemController>().getStartingPrice(item!),
                           ),
+                          style: robotoRegular.copyWith(
+                            fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor, decoration: TextDecoration.lineThrough,
+                          ),
+                        ) : const SizedBox(),
+                        SizedBox(width: item!.discount! > 0 ? Dimensions.paddingSizeExtraSmall : 0),
+
+                        Text(
+                          PriceConverter.convertPrice(
+                            Get.find<ItemController>().getStartingPrice(item!),
+                            discount: item!.discount,
+                            discountType: item!.discountType,
+                          ),
+                          style: robotoMedium, textDirection: TextDirection.ltr,
                         ),
-                      ),
+                      ]),
                     ],
-                  ),
+                    ) : Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                      // const SizedBox(height: Dimensions.paddingSizeExtremeLarge,),
+
+                      Text(item!.name!, style: robotoBold, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                      // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      //   Icon(Icons.star, size: 15, color: Theme.of(context).primaryColor),
+                      //   const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      //   Text(item!.avgRating!.toStringAsFixed(1), style: robotoRegular),
+                      //   const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      //   Text("(${item!.ratingCount})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
+                      // ],
+                      // ),
+
+                      (Get.find<SplashController>().configModel!.moduleConfig!.module!.unit! && item!.unitType != null) ? Text(
+                        '(${item!.unitType ?? ''})',
+                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
+                      ) : const SizedBox(),
+
+                      Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        item!.discount! > 0  ? Text(
+                          PriceConverter.convertPrice(
+                            Get.find<ItemController>().getStartingPrice(item!),
+                          ),
+                          style: robotoRegular.copyWith(
+                            fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor, decoration: TextDecoration.lineThrough,
+                          ),
+                        ) : const SizedBox(),
+                        // SizedBox(height: item!.discount! > 0 ? Dimensions.paddingSizeExtraSmall : 0),
+
+                        Text(
+                          PriceConverter.convertPrice(
+                            Get.find<ItemController>().getStartingPrice(item!),
+                            discount: item!.discount,
+                            discountType: item!.discountType,
+                          ),
+                          style: robotoMedium, textDirection: TextDirection.ltr,
+                        ),
+                        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                      ]),
+                    ],
+                    ),
+
+
+                    Positioned(
+                      top: 65, left: 0, right: 0,
+                      child: CartCountView(
+                        item: item!,
+                        child: Center(
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: 65, height: 30,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(112),
+                              color: Theme.of(context).cardColor,
+                              boxShadow: [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.1), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
+                            ),
+                            child: Text("add".tr, style: robotoBold.copyWith(color: Theme.of(context).primaryColor)),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  ],
                 ),
               ),
+            ),
+            SizedBox(height: Dimensions.paddingSizeExtremeLarge,),
 
-            ]),
-          ),
+          ]),
+          SizedBox(height: Dimensions.paddingSizeExtremeLarge,),
+
         ]),
-      ),
+      )  ,
     );
   }
 }

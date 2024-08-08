@@ -43,7 +43,8 @@ class ApiClient extends GetxService {
     );
   }
 
-  Map<String, String> updateHeader(String? token, List<int>? zoneIDs, List<int>? operationIds, String? languageCode, int? moduleID, String? latitude, String? longitude, {bool setHeader = true}) {
+  Map<String, String> updateHeader(String? token, List<int>? zoneIDs, List<int>? operationIds, String? languageCode, int? moduleID, String? latitude, String? longitude, {bool setHeader = true})
+  {
     Map<String, String> header = {};
     if(moduleID != null) {
       header.addAll({AppConstants.moduleId: moduleID.toString()});
@@ -103,7 +104,7 @@ class ApiClient extends GetxService {
     try {
       if(kDebugMode) {
         print('====> API Call: $uri\nHeader: $_mainHeaders');
-        print('====> API Body: $body with ${multipartBody.length} picture');
+        print('====> API Body: ${body} with ${multipartBody.length} picture');
       }
       http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse(appBaseUrl+uri));
       request.headers.addAll(headers ?? _mainHeaders);

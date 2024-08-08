@@ -702,14 +702,16 @@ class _StoreScreenState extends State<StoreScreen> {
                                   borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                                   color: index == storeController.categoryIndex ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.transparent,
                                 ),
-                                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                  Text(
-                                    storeController.categoryList![index].name!,
-                                    style: index == storeController.categoryIndex
-                                        ? robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor)
-                                        : robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
-                                  ),
-                                ]),
+                                child: SingleChildScrollView(
+                                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                    Text(
+                                      storeController.categoryList![index].name!,
+                                      style: index == storeController.categoryIndex
+                                          ? robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor)
+                                          : robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
+                                    ),
+                                  ]),
+                                ),
                               ),
                             );
                           },

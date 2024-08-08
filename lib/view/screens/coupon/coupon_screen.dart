@@ -15,6 +15,8 @@ import 'package:get/get.dart';
 import 'package:sixam_mart/view/base/web_page_title_widget.dart';
 import 'package:sixam_mart/view/screens/coupon/widget/coupon_card.dart';
 
+import '../auth/sign_in_screen.dart';
+
 class CouponScreen extends StatefulWidget {
   const CouponScreen({Key? key}) : super(key: key);
 
@@ -84,10 +86,7 @@ class _CouponScreenState extends State<CouponScreen> {
             ),
           )),
         ) : NoDataScreen(text: 'no_coupon_found'.tr, showFooter: true) : const Center(child: CircularProgressIndicator());
-      }) :  NotLoggedInScreen(callBack: (bool value)  {
-        initCall();
-        setState(() {});
-      }),
+      }) :  SignInScreen(exitFromApp: true, backFromThis: true,),
     );
   }
 }

@@ -24,6 +24,8 @@ import 'package:sixam_mart/view/base/paginated_list_view.dart';
 import 'package:sixam_mart/view/screens/chat/widget/web_chat_view.dart';
 import 'package:sixam_mart/view/screens/search/widget/search_field.dart';
 
+import '../auth/sign_in_screen.dart';
+
 class ConversationScreen extends StatefulWidget {
   final bool fromNavBar;
   const ConversationScreen({Key? key, this.fromNavBar = false}) : super(key: key);
@@ -242,10 +244,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   )),
                 ),
               ),
-            ) : Center(child: Text('no_conversation_found'.tr)) : const Center(child: CircularProgressIndicator()) :  NotLoggedInScreen(callBack: (value){
-              initCall();
-              setState(() {});
-            })),
+            ) : Center(child: Text('no_conversation_found'.tr)) : const Center(child: CircularProgressIndicator()) :  SignInScreen(exitFromApp: true, backFromThis: true,)
+            ),
 
           ]),
         ),

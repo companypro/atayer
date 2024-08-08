@@ -46,9 +46,9 @@ class OrderBannerView extends StatelessWidget {
         ),
         const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-      ]) : CustomImage(image: '${Get.find<SplashController>().configModel!.baseUrls!.storeCoverPhotoUrl}/${order.store!.coverPhoto}', height: 150, width: double.infinity) : const SizedBox(),
+      ]) : const SizedBox() : const SizedBox(),
 
-      parcel ? (ongoing && order.orderStatus == 'pending') ? Image.asset(Images.pendingOrderDetails, height: 160, width: double.infinity) : Center(child: CustomImage(image: '${Get.find<SplashController>().configModel!.baseUrls!.parcelCategoryImageUrl}/${order.parcelCategory!.image}', height: 160)) : const SizedBox(),
+      parcel ? (ongoing && order.orderStatus == 'pending') ? Image.asset(Images.pendingOrderDetails, height: 160, width: double.infinity) : SizedBox() : const SizedBox(),
 
       prescriptionOrder ? ongoing ? Image.asset(
           order.orderStatus == 'pending' ? Images.pendingOrderDetails : (order.orderStatus == 'confirmed' || order.orderStatus == 'processing' || order.orderStatus == 'handover')
@@ -58,17 +58,16 @@ class OrderBannerView extends StatelessWidget {
 
       orderController.orderDetails!.isNotEmpty && orderController.orderDetails![0].itemDetails!.moduleType == 'grocery'
           ? (ongoing && order.orderStatus == 'pending') ? Image.asset(Images.pendingOrderDetails, height: 160, width: double.infinity)
-          : CustomImage(image: '${Get.find<SplashController>().configModel!.baseUrls!.storeCoverPhotoUrl}/${order.store!.coverPhoto}', height: 160, width: double.infinity)
+          : SizedBox()
           : const SizedBox(),
-
-      orderController.orderDetails!.isNotEmpty && orderController.orderDetails![0].itemDetails!.moduleType == 'pharmacy'
-          ?(ongoing && order.orderStatus == 'pending') ? Image.asset(Images.pendingOrderDetails, height: 160, width: double.infinity)
-          : CustomImage(image: '${Get.find<SplashController>().configModel!.baseUrls!.storeCoverPhotoUrl}/${order.store!.coverPhoto}', height: 160, width: double.infinity)
+//CustomImage(image: '${Get.find<SplashController>().configModel!.baseUrls!.storeCoverPhotoUrl}/${order.store!.coverPhoto}', height: 160, width: double.infinity)
+      orderController.orderDetails!.isNotEmpty && orderController.orderDetails![0].itemDetails!.moduleType == 'pharmacy' ?(ongoing && order.orderStatus == 'pending') ? Image.asset(Images.pendingOrderDetails, height: 160, width: double.infinity)
+          : const SizedBox()
           : const SizedBox(),
 
       orderController.orderDetails!.isNotEmpty && orderController.orderDetails![0].itemDetails!.moduleType == 'ecommerce'
           ?(ongoing && order.orderStatus == 'pending') ? Image.asset(Images.pendingOrderDetails, height: 160, width: double.infinity)
-          : CustomImage(image: '${Get.find<SplashController>().configModel!.baseUrls!.storeCoverPhotoUrl}/${order.store!.coverPhoto}', height: 160, width: double.infinity)
+          : const SizedBox()
           : const SizedBox(),
 
     ]);

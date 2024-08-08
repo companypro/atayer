@@ -51,7 +51,7 @@ class PopularStoreView extends StatelessWidget {
               itemCount: storeList.length > 10 ? 10 : storeList.length,
               itemBuilder: (context, index){
                 return Padding(
-                  padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall, bottom: 5),
+                  padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall, ),
                   child: InkWell(
                     onTap: () {
                       if(isFeatured && Get.find<SplashController>().moduleList != null) {
@@ -122,28 +122,32 @@ class PopularStoreView extends StatelessWidget {
 
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
-                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-                              Text(
-                                storeList[index].name ?? '',
-                                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
-                                maxLines: 1, overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-                              Text(
-                                storeList[index].address ?? '',
-                                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
-                                maxLines: 1, overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-                              RatingBar(
-                                rating: storeList[index].avgRating,
-                                ratingCount: storeList[index].ratingCount,
-                                size: 12,
-                              ),
-                            ]),
+                            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall,vertical: Dimensions.paddingSizeExtraSmall),
+                            child: SingleChildScrollView(
+                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+                                Text(
+                                  storeList[index].name ?? '',
+                                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                              
+                                Text(
+                                  storeList[index].address ?? '',
+                                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
+                                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                              
+                                RatingBar(
+                                  rating: storeList[index].avgRating,
+                                  ratingCount: storeList[index].ratingCount,
+                                  size: 12,
+                                ),
+                                SizedBox(height: 20,),
+                              
+                              ]),
+                            ),
                           ),
                         ),
 

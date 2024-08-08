@@ -16,7 +16,7 @@ class WebRecommendedStoreView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.food;
+    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
 
     return GetBuilder<StoreController>(builder: (storeController) {
       return storeController.recommendedStoreList != null ? Container(

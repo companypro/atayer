@@ -14,7 +14,7 @@ class QuantityButton extends StatelessWidget {
     return InkWell(
       onTap: onTap as void Function()?,
       child: Container(
-        height: fromSheet ? 30 : 22, width: fromSheet ? 30 : 22,
+        height: fromSheet ? 35 : 30, width: fromSheet ? 35 : 30,
         margin: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -23,8 +23,8 @@ class QuantityButton extends StatelessWidget {
         ),
         alignment: Alignment.center,
         child: Icon(
-          showRemoveIcon ? Icons.delete_outline_outlined : isIncrement ? Icons.add : Icons.remove,
-          size: 15,
+          showRemoveIcon ? Icons.remove : isIncrement ? Icons.add : Icons.remove,
+          size: 22,
           color: showRemoveIcon ? Theme.of(context).colorScheme.error
               : isIncrement ? Theme.of(context).cardColor
               : Theme.of(context).disabledColor,

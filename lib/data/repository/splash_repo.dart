@@ -3,11 +3,14 @@ import 'dart:convert';
 import 'package:sixam_mart/controller/localization_controller.dart';
 import 'package:sixam_mart/data/api/api_client.dart';
 import 'package:sixam_mart/data/model/response/address_model.dart';
+import 'package:sixam_mart/data/model/response/config_model.dart';
 import 'package:sixam_mart/data/model/response/module_model.dart';
 import 'package:sixam_mart/util/app_constants.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sixam_mart/util/html_type.dart';
+
+import '../../controller/splash_controller.dart';
 
 class SplashRepo {
   ApiClient apiClient;
@@ -90,6 +93,17 @@ class SplashRepo {
     return await apiClient.getData(AppConstants.moduleUri, headers: headers);
   }
 
+  Future<Response> getModulesHome({Map<String, String>? headers}) async {
+    Map<String, String>? header ={
+      'Content-Type': 'application/json; charset=UTF-8',
+      AppConstants.localizationKey: AppConstants.languages[0].languageCode!,
+      AppConstants.moduleId: '${Get.find<SplashController>().getCacheModule()}',
+      'Authorization': 'Bearer ${sharedPreferences.getString(AppConstants.token)}',
+      AppConstants.moduleId: '2'
+    };
+    return await apiClient.getData(AppConstants.modelHome, headers: header);
+  }
+
   Future<void> setModule(ModuleModel? module) async {
     AddressModel? addressModel;
     try {
@@ -101,7 +115,23 @@ class SplashRepo {
         addressModel?.latitude, addressModel?.longitude
     );
     if(module != null) {
-      await sharedPreferences.setString(AppConstants.moduleId, jsonEncode(module.toJson()));
+      await sharedPreferences.remove(AppConstants.moduleId);
+    }else {
+      await sharedPreferences.remove(AppConstants.moduleId);
+    }
+  }
+  Future<void> setModuleHome(int? module) async {
+    AddressModel? addressModel;
+    try {
+      addressModel = AddressModel.fromJson(jsonDecode(sharedPreferences.getString(AppConstants.userAddress)!));
+    }catch(_) {}
+    apiClient.updateHeader(
+      sharedPreferences.getString(AppConstants.token), addressModel?.zoneIds, addressModel?.areaIds,
+      sharedPreferences.getString(AppConstants.languageCode), module,
+        addressModel?.latitude, addressModel?.longitude
+    );
+    if(module != null) {
+      await sharedPreferences.remove(AppConstants.moduleId);
     }else {
       await sharedPreferences.remove(AppConstants.moduleId);
     }
@@ -110,6 +140,13 @@ class SplashRepo {
   Future<void> setCacheModule(ModuleModel? module) async {
     if(module != null) {
       await sharedPreferences.setString(AppConstants.cacheModuleId, jsonEncode(module.toJson()));
+    }else {
+      await sharedPreferences.remove(AppConstants.cacheModuleId);
+    }
+  }
+  Future<void> setCacheModuleHome(int? module) async {
+    if(module != null) {
+      await sharedPreferences.setString(AppConstants.cacheModuleId, jsonEncode(module));
     }else {
       await sharedPreferences.remove(AppConstants.cacheModuleId);
     }

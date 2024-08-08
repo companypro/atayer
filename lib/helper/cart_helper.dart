@@ -26,7 +26,7 @@ class CartHelper {
     return variations;
   }
 
-  static getSelectedAddonIds({required List<AddOn> addOnIdList }) {
+  static getSelectedAddonIds({required List<AddOnModel> addOnIdList }) {
     List<int?> listOfAddOnId = [];
     for (var addOn in addOnIdList) {
       listOfAddOnId.add(addOn.id);
@@ -34,7 +34,7 @@ class CartHelper {
     return listOfAddOnId;
   }
 
-  static getSelectedAddonQtnList({required List<AddOn> addOnIdList }) {
+  static getSelectedAddonQtnList({required List<AddOnModel> addOnIdList }) {
     List<int?> listOfAddOnQty = [];
     for (var addOn in addOnIdList) {
       listOfAddOnQty.add(addOn.quantity);
@@ -47,9 +47,9 @@ class CartHelper {
     List<CartModel> cartList = [];
     for (OnlineCartModel cart in onlineCartModel) {
       // print('=======caart module type : ${cart.item!.moduleType}');
-      double price = cart.item!.price!;
+      double price = cart.item?.price ?? 0.0;
       double? discount = cart.item!.storeDiscount == 0 ? cart.item!.discount! : cart.item!.storeDiscount!;
-      String? discountType = (cart.item!.storeDiscount == 0) ? cart.item!.discountType : 'percent';
+      String? discountType = cart.item!.discountType;
       double discountedPrice = PriceConverter.convertWithDiscount(price, discount, discountType)!;
 
       double? discountAmount = price - discountedPrice;
@@ -59,18 +59,19 @@ class CartHelper {
       List<List<bool?>> selectedFoodVariations = [];
       List<bool> collapsVariation = [];
 
-      if(cart.item!.moduleType == 'food'/*Get.find<SplashController>().getModuleConfig(cart.item!.moduleType).newVariation ?? false*/) {
-        for(int index=0; index<cart.item!.foodVariations!.length; index++) {
-          selectedFoodVariations.add([]);
-          collapsVariation.add(true);
-          for(int i=0; i < cart.item!.foodVariations![index].variationValues!.length; i++) {
-            if(cart.item!.foodVariations![index].variationValues![i].isSelected ?? false){
-              selectedFoodVariations[index].add(true);
-            } else {
-              selectedFoodVariations[index].add(false);
-            }
+      for(int index=0; index<cart.item!.foodVariations!.length; index++) {
+        selectedFoodVariations.add([]);
+        collapsVariation.add(false);
+        for(int i=0; i < cart.item!.foodVariations![index].variationValues!.length; i++) {
+          if(cart.item!.foodVariations![index].variationValues![i].isSelected ?? false){
+            selectedFoodVariations[index].add(false);
+          } else {
+            selectedFoodVariations[index].add(false);
           }
         }
+      }
+
+      if(cart.item!.moduleType == 'grocery'/*Get.find<SplashController>().getModuleConfig(cart.item!.moduleType).newVariation ?? false*/) {
       } else {
         String variationType = cart.productVariation != null && cart.productVariation!.isNotEmpty ? cart.productVariation![0].type! : '';
         for (other_variation.Variation variation in cart.item!.variations!) {
@@ -81,10 +82,10 @@ class CartHelper {
         }
       }
 
-      List<AddOn> addOnIdList = [];
+      List<AddOnModel> addOnIdList = [];
       List<AddOns> addOnsList = [];
       for (int index = 0; index < cart.addOnIds!.length; index++) {
-        addOnIdList.add(AddOn(id: cart.addOnIds![index], quantity: cart.addOnQtys![index]));
+        addOnIdList.add(AddOnModel(id: cart.addOnIds![index], quantity: cart.addOnQtys![index]));
         for (int i=0; i< cart.item!.addOns!.length; i++) {
           if(cart.addOnIds![index] == cart.item!.addOns![i].id) {
             addOnsList.add(AddOns(id: cart.item!.addOns![i].id, name: cart.item!.addOns![i].name, price: cart.item!.addOns![i].price));
@@ -96,8 +97,19 @@ class CartHelper {
 
       cartList.add(
         CartModel(
-          cart.id, price, discountedPrice, cart.productVariation?? [], selectedFoodVariations, discountAmount, quantity,
-          addOnIdList, addOnsList, false, stock, cart.item, quantityLimit,
+          id: cart.id,
+          price: price,
+          discountedPrice: discountedPrice,
+          variation: cart.productVariation ?? [],
+          foodVariations: [],
+          discountAmount: discountAmount,
+          quantity: quantity,
+          addOnIds: [],
+          addOns: [],
+          isCampaign: false,
+          stock: stock,
+          item: cart.item,
+          quantityLimit: quantityLimit,
         ),
       );
     }
@@ -132,7 +144,7 @@ class CartHelper {
   static String? setupVariationText({required CartModel cart}) {
     String? variationText = '';
 
-    if(Get.find<SplashController>().getModuleConfig(cart.item!.moduleType).newVariation!) {
+    if(Get.find<SplashController>().getModuleConfig(cart.item!.moduleType)!.newVariation!) {
       if(cart.foodVariations!.isNotEmpty) {
         for(int index=0; index<cart.foodVariations!.length; index++) {
           if(cart.foodVariations![index].contains(true)) {

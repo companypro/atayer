@@ -29,6 +29,8 @@ import 'package:sixam_mart/view/screens/order/order_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../search/search_screen.dart';
+import '../sections/sections.dart';
 import 'widget/running_order_view_widget.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -71,12 +73,13 @@ class DashboardScreenState extends State<DashboardScreen> {
     _pageIndex = widget.pageIndex;
 
     _pageController = PageController(initialPage: widget.pageIndex);
+    Get.find<OrderController>().getShareApp();
 
     _screens = [
       const HomeScreen(),
-      const FavouriteScreen(),
+      const Sections(),
       const SizedBox(),
-      const OrderScreen(),
+      const SearchScreen(queryText: ''),
       const MenuScreenNew()
     ];
 
@@ -167,9 +170,9 @@ class DashboardScreenState extends State<DashboardScreen> {
 
                             _screens = [
                               const HomeScreen(),
-                              isParcel ? const AddressScreen(fromDashboard: true) : const FavouriteScreen(),
+                              isParcel ? const AddressScreen(fromDashboard: true) : const Sections(),
                               const SizedBox(),
-                              const OrderScreen(),
+                              const SearchScreen(queryText: ''),
                               const MenuScreenNew()
                             ];
                             return Container(
@@ -224,14 +227,14 @@ class DashboardScreenState extends State<DashboardScreen> {
                                           onTap: () => _setPage(0),
                                         ),
                                         BottomNavItem(
-                                          title: isParcel ? 'address'.tr : 'favourite'.tr,
-                                          selectedIcon: isParcel ? Images.addressSelect : Images.favouriteSelect,
-                                          unSelectedIcon: isParcel ? Images.addressUnselect : Images.favouriteUnselect,
+                                          title: isParcel ? 'address'.tr : 'sections'.tr,
+                                          selectedIcon: isParcel ? Images.addressSelect : Images.moduleIcon,
+                                          unSelectedIcon: isParcel ? Images.addressUnselect : Images.sectionsEmpty,
                                           isSelected: _pageIndex == 1, onTap: () => _setPage(1),
                                         ),
                                         Container(width: size.width * 0.2),
                                         BottomNavItem(
-                                          title: 'orders'.tr, selectedIcon: Images.orderSelect, unSelectedIcon: Images.orderUnselect,
+                                          title: 'search'.tr, selectedIcon: Images.searchIcon, unSelectedIcon: Images.searchIcon,
                                           isSelected: _pageIndex == 3, onTap: () => _setPage(3),
                                         ),
                                         BottomNavItem(

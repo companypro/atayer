@@ -55,6 +55,8 @@ class CartRepo{
     return apiClient.postData('${AppConstants.addCartUri}${!Get.find<AuthController>().isLoggedIn() ? '?guest_id=${Get.find<AuthController>().getGuestId()}' : ''}', cart.toJson());
   }
 
+
+
   Future<Response> updateCartOnline(OnlineCart cart) async {
     return apiClient.postData('${AppConstants.updateCartUri}${!Get.find<AuthController>().isLoggedIn() ? '?guest_id=${Get.find<AuthController>().getGuestId()}' : ''}', cart.toJson());
   }

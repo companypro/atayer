@@ -58,7 +58,7 @@ class _WebMostPopularItemViewState extends State<WebMostPopularItemView> {
 
   @override
   Widget build(BuildContext context) {
-    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.ecommerce;
+    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
 
     return GetBuilder<ItemController>(builder: (itemController) {
       List<Item>? itemList = itemController.popularItemList;
@@ -103,7 +103,7 @@ class _WebMostPopularItemViewState extends State<WebMostPopularItemView> {
                       isPopularItemCart: true,
                       item: itemList[index],
                       isFood: widget.isFood,
-                      isShop: widget.isShop,
+                      isShop: widget.isShop, index: index,
                     ),
                   );
                 },

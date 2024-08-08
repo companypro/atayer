@@ -47,13 +47,17 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen> {
   final ScrollController scrollController = ScrollController();
 
   void _loadData(BuildContext context, bool reload) async {
-    await Get.find<OrderController>().trackOrder(widget.orderId.toString(), reload ? null : widget.orderModel, false, contactNumber: widget.contactNumber).then((value) {
+    await Get.find<OrderController>().trackOrder(widget.orderId.toString(),
+        reload ? null : widget.orderModel, false, contactNumber: widget.contactNumber).then((value) {
       if(widget.fromOfflinePayment) {
         Future.delayed(const Duration(seconds: 2), () => showAnimatedDialog(context, OfflineSuccessDialog(orderId: widget.orderId)));
       }
     });
     Get.find<OrderController>().timerTrackOrder(widget.orderId.toString(), contactNumber: widget.contactNumber);
+    // for(var i = 0; i<= widget.orderModel!.orderProof!.length; i++) {
+    // }
     Get.find<OrderController>().getOrderDetails(widget.orderId.toString());
+
   }
 
   void _startApiCall(){
@@ -157,7 +161,7 @@ class OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 && order.orderStatus != 'refund_request_canceled' );
           }
           double subTotal = itemsPrice + addOns;
-          double total = itemsPrice + addOns - discount + (taxIncluded ? 0 : tax) + deliveryCharge - couponDiscount + dmTips + additionalCharge;
+          double total = itemsPrice  + deliveryCharge  + addOns;
 
           print('-----check order details : ${orderController.orderDetails != null } && ${order != null}');
           return orderController.orderDetails != null && order != null ? Column(children: [

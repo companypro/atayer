@@ -185,7 +185,7 @@ class StoreDescriptionView extends StatelessWidget {
            onTap: () => Get.toNamed(RouteHelper.getMapRoute(
                AddressModel(id: store!.id, address: store!.address, latitude: store!.latitude,
                  longitude: store!.longitude, contactPersonNumber: '', contactPersonName: '', addressType: '',
-               ), 'store', Get.find<SplashController>().getModuleConfig(Get.find<SplashController>().module!.moduleType!).newVariation!
+               ), 'store', Get.find<SplashController>().getModuleConfig(Get.find<SplashController>().module!.moduleType!)!.newVariation!
            )),
            child: Column(children: [
              // Icon(Icons.location_on, color: Theme.of(context).primaryColor, size: 20),
@@ -244,7 +244,7 @@ class StoreDescriptionView extends StatelessWidget {
          onTap: () => Get.toNamed(RouteHelper.getMapRoute(
            AddressModel(                id: store!.id, address: store!.address, latitude: store!.latitude,
              longitude: store!.longitude, contactPersonNumber: '', contactPersonName: '', addressType: '',
-           ), 'store', Get.find<SplashController>().getModuleConfig(Get.find<SplashController>().module!.moduleType!).newVariation!
+           ), 'store', Get.find<SplashController>().getModuleConfig(Get.find<SplashController>().module!.moduleType!)!.newVariation!
          )),
          child: Column(children: [
            Icon(Icons.location_on, color: Theme.of(context).primaryColor, size: 20),

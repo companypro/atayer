@@ -18,11 +18,16 @@ class PaginatedOrderModel {
     offset = (json['offset'] != null && json['offset'].toString().trim().isNotEmpty) ? int.parse(json['offset'].toString()) : null;
     if (json['orders'] != null) {
       orders = [];
-      json['orders'].forEach((v) {
-        orders!.add(OrderModel.fromJson(v));
-      });
-    }
-  }
+      if (json['orders'] is List) {
+        json['orders'].forEach((v) {
+          orders!.add(OrderModel.fromJson(v));
+        });
+      } else if (json['orders'] is Map<String, dynamic>) {
+        json['orders'].forEach((key, value) {
+          orders!.add(OrderModel.fromJson(value));
+        });
+      }
+    }  }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

@@ -17,6 +17,8 @@ import 'package:sixam_mart/view/screens/address/widget/address_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../auth/sign_in_screen.dart';
+
 class AddressScreen extends StatefulWidget {
   final bool fromDashboard;
   const AddressScreen({Key? key, this.fromDashboard = false}) : super(key: key);
@@ -188,10 +190,7 @@ class _AddressScreenState extends State<AddressScreen> {
                   ),
                 )),
               );
-            }) :  NotLoggedInScreen(callBack: (value) {
-              initCall();
-              setState(() {});
-            }),
+            }) :  SignInScreen(exitFromApp: true, backFromThis: true,)
           ),
           bottomNavigationBar: widget.fromDashboard ? Container(height: GetPlatform.isIOS ? 80 : 65) : const SizedBox(),
         );

@@ -1,5 +1,6 @@
 class Images {
   static const String logo = 'assets/image/logo.png';
+  static const String lo = 'assets/image/lo.png';
   static const String placeholder = 'assets/image/placeholder.jpg';
   static const String notificationPlaceholder = 'assets/image/notification_placeholder.jpg';
   static const String arabic = 'assets/image/arabic.png';
@@ -7,11 +8,17 @@ class Images {
   static const String call = 'assets/image/call.png';
   static const String checked = 'assets/image/checked.png';
   static const String english = 'assets/image/english.png';
+  static const String setting = 'assets/image/setting.png';
+  static const String bell = 'assets/image/bell.png';
+  static const String timing = 'assets/image/timing.png';
+  static const String cardEmpty = 'assets/svg/cardEmpty.svg';
+  static const String locationMaps = 'assets/image/location_map.png';
+  static const String star = 'assets/image/star.png';
   static const String locationMarker = 'assets/image/location_marker.png';
   static const String lock = 'assets/image/lock.png';
   static const String mail = 'assets/image/mail.png';
   static const String map = 'assets/image/map.png';
-  static const String time = 'assets/image/time.png';
+  static const String time = 'assets/image/delivery-man.png';
   static const String change = 'assets/image/change.png';
   static const String onboard_1 = 'assets/image/onboard_1.png';
   static const String onboard_2 = 'assets/image/onboard_2.png';
@@ -59,6 +66,13 @@ class Images {
   static const String distance = 'assets/image/distance.png';
   static const String delivery = 'assets/image/delivery.png';
   static const String profile = 'assets/image/profile.png';
+  static const String walleticon = 'assets/image/walleticon.png';
+  static const String requestIcon = 'assets/image/Requestsicon.png';
+  static const String favicon = 'assets/image/facicon.png';
+  static const String notaIcon = 'assets/image/notaicon.png';
+  static const String addressicon = 'assets/image/address.png';
+  static const String cartPay = 'assets/image/cartpay.png';
+  static const String supporticon = 'assets/image/supporticon.png';
   static const String landingAppStore = 'assets/image/landing_app_store.png';
   static const String landingCheckout = 'assets/image/landing_checkout.png';
   static const String landingChooseLocation = 'assets/image/landing_choose_location.png';
@@ -237,8 +251,10 @@ class Images {
   static const String loyaltyConvertIcon = 'assets/image/loyalty_convert_icon.png';
   static const String socialFacebook = 'assets/image/social_facebook.png';
   static const String cash = 'assets/image/cash.png';
+  static const String share = 'assets/image/share.png';
   static const String note = 'assets/image/note.png';
   static const String searchIcon = 'assets/image/search_icon.png';
+  static const String delete = 'assets/image/trash.png';
   static const String sendIconWeb = 'assets/image/send_icon_web.png';
   static const String addressCity = 'assets/image/address_city.png';
   static const String truck = 'assets/image/truck.png';
@@ -246,6 +262,7 @@ class Images {
   static const String offlinePayment = 'assets/image/offline_payment.png';
   static const String trackOrderPlace = 'assets/image/track_order_place.png';
   static const String trackOrderAccept = 'assets/image/track_order_accept.png';
+  static const String timer = 'assets/image/timer.png';
   static const String trackOrderPreparing = 'assets/image/track_order_preparing.png';
   static const String trackOrderOnTheWay = 'assets/image/track_on_the_way.png';
   static const String trackOrderDelivered = 'assets/image/track_delivered.png';
@@ -275,7 +292,9 @@ class Images {
   static const String menu = 'assets/image/menu.png';
   static const String messageUnselect = 'assets/image/message_unselect.png';
   static const String messageSelect = 'assets/image/message_select.png';
-  static const String shoppingCart = 'assets/image/shopping-basket.png';
+  static const String shoppingCart = 'assets/image/shopping_cart.png';
   static const String addressUnselect = 'assets/image/address_unselect.png';
   static const String addressSelect = 'assets/image/address_select.png';
+  static const String sections = 'assets/image/sections.png';
+  static const String sectionsEmpty = 'assets/image/sectionsEmpty.png';
 }

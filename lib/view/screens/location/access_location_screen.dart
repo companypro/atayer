@@ -120,11 +120,11 @@ class _AccessLocationScreenState extends State<AccessLocationScreen> {
                     const SizedBox(height: Dimensions.paddingSizeLarge),
 
                     Text('find_stores_and_items'.tr.toUpperCase(), textAlign: TextAlign.center, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge)),
-                    Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                      child: Text('by_allowing_location_access'.tr, textAlign: TextAlign.center,
-                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                      ),
-                    ),
+                    // Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                    //   child: Text('by_allowing_location_access'.tr, textAlign: TextAlign.center,
+                    //     style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                    //   ),
+                    // ),
                     const SizedBox(height: Dimensions.paddingSizeLarge),
 
                     Padding(

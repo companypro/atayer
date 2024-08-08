@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -32,8 +34,8 @@ class BestStoreNearbyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isPharmacy = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.pharmacy;
-    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.food;
+    bool isPharmacy = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
+    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
 
     return GetBuilder<StoreController>(builder: (storeController) {
       List<Store>? storeList = isPharmacy ? storeController.featuredStoreList : storeController.popularStoreList;
@@ -162,7 +164,7 @@ class BestStoreNearbyView extends StatelessWidget {
                               child: Container(
                                 width: 270,
                                 margin: const EdgeInsets.only(top: 30),
-                                padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                                padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
@@ -180,30 +182,34 @@ class BestStoreNearbyView extends StatelessWidget {
                                         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
                                           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                                          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                          SingleChildScrollView(
+                                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-                                            Column(children: [
+                                              Column(children: [
 
-                                              Text('start_from'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall)),
-                                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                                Text('start_from'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall)),
+                                                const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
-                                              Text(PriceConverter.convertPrice(storeList[index].minimumOrder), style: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                                                Text(PriceConverter.convertPrice(storeList[index].minimumOrder), style: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall)),
+
+                                              ]),
+                                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                                              Row(children: [
+
+                                                Icon(Icons.star, size: 15, color: Theme.of(context).primaryColor),
+                                                const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+
+                                                Text(storeList[index].avgRating!.toStringAsFixed(1), style: robotoRegular),
+                                                const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+
+                                                Text("(${storeList[index].ratingCount.toString()})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
+
+                                              ]),
+                                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
                                             ]),
-                                            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-                                            Row(children: [
-
-                                              Icon(Icons.star, size: 15, color: Theme.of(context).primaryColor),
-                                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                                              Text(storeList[index].avgRating!.toStringAsFixed(1), style: robotoRegular),
-                                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                                              Text("(${storeList[index].ratingCount.toString()})", style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
-
-                                            ]),
-                                          ]),
+                                          ),
 
                                         ]),
                                       ),

@@ -18,8 +18,8 @@ class VisitAgainCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isPharmacy = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.pharmacy;
-    bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.food;
+    // bool isPharmacy = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
+    // bool isFood = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
 
     return InkWell(
       hoverColor: Colors.transparent,
@@ -84,7 +84,7 @@ class VisitAgainCard extends StatelessWidget {
                       child: Stack(
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular((isPharmacy || isFood) ? 100 : Dimensions.radiusSmall),
+                            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                             child: CustomImage(
                               image: '${Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl}'
                                 '/${store.items![index].image}',
@@ -96,7 +96,7 @@ class VisitAgainCard extends StatelessWidget {
                             top: 0, left: 0,right: 0, bottom: 0,
                             child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular((isPharmacy || isFood) ? 100 : Dimensions.radiusSmall),
+                                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                                 color: Colors.black.withOpacity(0.5),
                               ),
                               child: Center(child: Text(

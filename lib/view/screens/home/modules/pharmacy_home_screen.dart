@@ -37,7 +37,7 @@ class PharmacyHomeScreen extends StatelessWidget {
       const CategoryView(),
       isLoggedIn ? const VisitAgainView() : const SizedBox(),
       const ProductWithCategoriesView(),
-      const MiddleSectionBannerView(),
+      // const MiddleSectionBannerView(),
       const BestStoreNearbyView(),
       const JustForYouView(),
       const NewOnMartView(isShop: false, isPharmacy: true, isNewStore: true),

@@ -159,7 +159,7 @@ class AuthRepo {
   }
 
   bool clearSharedData() {
-    if(!GetPlatform.isWeb) {
+    if(!GetPlatform.isMobile) {
       FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.topic);
       apiClient.postData(AppConstants.tokenUri, {"_method": "put", "cm_firebase_token": '@'});
     }

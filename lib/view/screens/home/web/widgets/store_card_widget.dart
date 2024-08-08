@@ -52,7 +52,7 @@ class StoreCardWidget extends StatelessWidget {
             },
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
             child: Container(
-              width: double.infinity,
+              // width: double.infinity,
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
@@ -126,58 +126,56 @@ class StoreCardWidget extends StatelessWidget {
                   ),
                 ]),
 
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-                      SizedBox(
-                        width: context.width * 0.7,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+                    SizedBox(
+                      width: context.width * 0.7,
+                      child: Text(
+                        store!.name ?? '',
+                        style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                        maxLines: 1, overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                    Row(children: [
+                      Icon(Icons.location_on_outlined, size: 15, color: Theme.of(context).primaryColor),
+                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+
+                      Flexible(
                         child: Text(
-                          store!.name ?? '',
-                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                          store!.address ?? '',
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                           maxLines: 1, overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                    ]),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-                      Row(children: [
-                        Icon(Icons.location_on_outlined, size: 15, color: Theme.of(context).primaryColor),
+                    Row(children: [
+                      store!.freeDelivery! ? Row(children: [
+                        Image.asset(Images.deliveryIcon, height: 15, width: 15, color: Theme.of(context).primaryColor),
                         const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
-                        Flexible(
-                          child: Text(
-                            store!.address ?? '',
-                            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                            maxLines: 1, overflow: TextOverflow.ellipsis,
-                          ),
+                        Text(
+                          'free_delivery'.tr,
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                         ),
-                      ]),
-                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                      ]) : const SizedBox(),
+                      SizedBox(width: store!.freeDelivery! ? Dimensions.paddingSizeSmall : 0),
 
                       Row(children: [
-                        store!.freeDelivery! ? Row(children: [
-                          Image.asset(Images.deliveryIcon, height: 15, width: 15, color: Theme.of(context).primaryColor),
-                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                        Icon(Icons.timer, size: 15, color: Theme.of(context).primaryColor),
+                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
-                          Text(
-                            'free_delivery'.tr,
-                            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                          ),
-                        ]) : const SizedBox(),
-                        SizedBox(width: store!.freeDelivery! ? Dimensions.paddingSizeSmall : 0),
-
-                        Row(children: [
-                          Icon(Icons.timer, size: 15, color: Theme.of(context).primaryColor),
-                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                          Text(
-                            '${store!.deliveryTime}',
-                            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                          ),
-                        ]),
+                        Text(
+                          '${store!.deliveryTime}',
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                        ),
                       ]),
                     ]),
-                  ),
+                  ]),
                 ),
               ]),
             ),

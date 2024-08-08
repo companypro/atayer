@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:sixam_mart/data/model/response/address_model.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
@@ -38,29 +39,37 @@ class AddressWidget extends StatelessWidget {
           child: Row(mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(mainAxisSize: MainAxisSize.min, children: [
-                    Image.asset(
-                      address!.addressType == 'home' ? Images.homeIcon : address!.addressType == 'office' ? Images.workIcon : Images.otherIcon,
-                      color: Theme.of(context).primaryColor, height: ResponsiveHelper.isDesktop(context) ? 25 : 20, width: ResponsiveHelper.isDesktop(context) ? 25 : 20,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          address!.addressType == 'home' ? Images.homeIcon : address!.addressType == 'office' ? Images.workIcon : Images.otherIcon,
+                          color: Theme.of(context).primaryColor,
+                          height: ResponsiveHelper.isDesktop(context) ? 25 : 20,
+                          width: ResponsiveHelper.isDesktop(context) ? 25 : 20,
+                        ),
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
+                        Text(
+                          address!.addressType!.tr,
+                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                    Text(
-                      address!.addressType!.tr,
-                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                    Expanded(
+                      child: Text(
+                        address!.address!,
+                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ]),
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-                  Text(
-                    address!.address!,
-                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                  ),
-                ]),
+                  ],
+                ),
               ),
-
               fromAddress ? IconButton(
                 icon: const Icon(Icons.edit, color: Colors.blueGrey, size: 25),
                 onPressed: onEditPressed as void Function()?,
