@@ -115,87 +115,87 @@ class _CartScreenState extends State<CartScreen> {
       appBar: CustomAppBar(title: 'my_cart'.tr, backButton: (ResponsiveHelper.isDesktop(context) || !widget.fromNav)),
       endDrawer: const MenuDrawer(),endDrawerEnableOpenDragGesture: false,
       body: GetBuilder<CartController>(builder: (cartController) {
-       return GetBuilder<StoreController>(builder: (storeController) {
-      return   GetBuilder<LocationController>(builder: (locationController){
-      return  GetBuilder<CouponController>(builder: (couponController){
-      return  GetBuilder<OrderController>(
-            builder: (orderController) {
-              // print("Delivery Charge: $deliveryCharge");
-              // print("Delivery Charge: $orderAmount");
-              print("Delivery store: ${Get.find<StoreController>().store}");
-              print("Delivery Charge: ${Get.find<LocationController>().getUserAddress()!}");
-              print("Delivery distance: ${Get.find<OrderController>().distance}");
-              print("Delivery extraCharge: ${Get.find<OrderController>().extraCharge}");
-              print("Delivery orderType: ${Get.find<OrderController>().orderType}");
-              print("Delivery calculateOrderAmount: ${calculateOrderAmount()}");
-              double orderAmount = calculateOrderAmount();
-              double deliveryCharge = CheckoutHelper.calculateDeliveryCharge(
-                store: Get.find<StoreController>().store,
-                address: Get.find<LocationController>().getUserAddress()!,
-                distance: Get.find<OrderController>().distance??0,
-                extraCharge: Get.find<OrderController>().extraCharge??0,
-                orderType: Get.find<OrderController>().orderType??'',
-                orderAmount: orderAmount,
-              );
+        return GetBuilder<StoreController>(builder: (storeController) {
+          return   GetBuilder<LocationController>(builder: (locationController){
+            return  GetBuilder<CouponController>(builder: (couponController){
+              return  GetBuilder<OrderController>(
+                  builder: (orderController) {
+                    // print("Delivery Charge: $deliveryCharge");
+                    // print("Delivery Charge: $orderAmount");
+                    print("Delivery store: ${Get.find<StoreController>().store}");
+                    print("Delivery Charge: ${Get.find<LocationController>().getUserAddress()!}");
+                    print("Delivery distance: ${Get.find<OrderController>().distance}");
+                    print("Delivery extraCharge: ${Get.find<OrderController>().extraCharge}");
+                    print("Delivery orderType: ${Get.find<OrderController>().orderType}");
+                    print("Delivery calculateOrderAmount: ${calculateOrderAmount()}");
+                    double orderAmount = calculateOrderAmount();
+                    double deliveryCharge = CheckoutHelper.calculateDeliveryCharge(
+                      store: Get.find<StoreController>().store,
+                      address: Get.find<LocationController>().getUserAddress()!,
+                      distance: Get.find<OrderController>().distance??0,
+                      extraCharge: Get.find<OrderController>().extraCharge??0,
+                      orderType: Get.find<OrderController>().orderType??'',
+                      orderAmount: orderAmount,
+                    );
 
-              print("Delivery Charge: $deliveryCharge");
-              print("Delivery Charge: $orderAmount");
-              print("Delivery Charge: ${Get.find<StoreController>().store}");
-              print("Delivery Charge: ${Get.find<LocationController>().getUserAddress()!}");
-              print("Delivery Charge: ${Get.find<OrderController>().distance}");
-              print("Delivery Charge: ${Get.find<OrderController>().extraCharge}");
-              print("Delivery Charge: ${Get.find<OrderController>().orderType}");
-              return cartController.cartList.isNotEmpty  ? (Get.find<OrderController>().distance != null && Get.find<StoreController>().store != null && Get.find<OrderController>().extraCharge != null && Get.find<OrderController>().orderType != null && deliveryCharge != null) ? Padding(
-                padding: const EdgeInsets.only(bottom: 15),
-                child:  Column(
-                  children: [
-                    // Optional: WebScreenTitleWidget(title: 'cart_list'.tr),
-                    const Divider(thickness: 4, height: 5),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                    print("Delivery Charge: $deliveryCharge");
+                    print("Delivery Charge: $orderAmount");
+                    print("Delivery Charge: ${Get.find<StoreController>().store}");
+                    print("Delivery Charge: ${Get.find<LocationController>().getUserAddress()!}");
+                    print("Delivery Charge: ${Get.find<OrderController>().distance}");
+                    print("Delivery Charge: ${Get.find<OrderController>().extraCharge}");
+                    print("Delivery Charge: ${Get.find<OrderController>().orderType}");
+                    return cartController.cartList.isNotEmpty  ? (Get.find<OrderController>().distance != null && Get.find<StoreController>().store != null && Get.find<OrderController>().extraCharge != null && Get.find<OrderController>().orderType != null && deliveryCharge != null) ? Padding(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child:  Column(
                         children: [
-                          Image.asset(Images.time, width: 35,),
-                          const SizedBox(width: 10),
-                          Text("delivery_within".tr, style: robotoBold.copyWith(color: Theme.of(context).colorScheme.error, fontSize: 16))
+                          // Optional: WebScreenTitleWidget(title: 'cart_list'.tr),
+                          const Divider(thickness: 4, height: 5),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Image.asset(Images.time, width: 35,),
+                                const SizedBox(width: 10),
+                                Text("delivery_within".tr, style: robotoBold.copyWith(color: Theme.of(context).colorScheme.error, fontSize: 16))
+                              ],
+                            ),
+                          ),
+
+                          const Divider(thickness: 1, height: 5),
+
+                          // Properly use Expanded for ListView
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: cartController.cartList.length,
+                              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                              itemBuilder: (context, index) {
+                                // print('/////////////////////////${Get.find<CartController>().cartList![1]!.item!.storeId}');
+                                return CartItemWidget(
+                                    cart: cartController.cartList[index],
+                                    cartIndex: index,
+                                    addOns: cartController.addOnsList[index],
+                                    isAvailable: cartController.availableList[index]
+                                );
+                              },
+                            ),
+                          ),
+
+                          pricingView(cartController, cartController.cartList[0].item!,storeController,locationController,couponController,deliveryCharge),
+
+                          ResponsiveHelper.isDesktop(context) ? const SizedBox.shrink() : CheckoutButton(cartController: cartController, availableList: cartController.availableList),
                         ],
                       ),
-                    ),
+                    ): const CardScreenShimmerView() : const NoDataScreen(isCart: true, text: '', showFooter: true);
+                  });
 
-                    const Divider(thickness: 1, height: 5),
 
-                    // Properly use Expanded for ListView
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: cartController.cartList.length,
-                        padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                        itemBuilder: (context, index) {
-                          // print('/////////////////////////${Get.find<CartController>().cartList![1]!.item!.storeId}');
-                          return CartItemWidget(
-                              cart: cartController.cartList[index],
-                              cartIndex: index,
-                              addOns: cartController.addOnsList[index],
-                              isAvailable: cartController.availableList[index]
-                          );
-                        },
-                      ),
-                    ),
 
-                    pricingView(cartController, cartController.cartList[0].item!,storeController,locationController,couponController,deliveryCharge),
-
-                    ResponsiveHelper.isDesktop(context) ? const SizedBox.shrink() : CheckoutButton(cartController: cartController, availableList: cartController.availableList),
-                  ],
-                ),
-              ): const CardScreenShimmerView() : const NoDataScreen(isCart: true, text: '', showFooter: true);
             });
 
-
-
-        });
-
-         });
+          });
 
 
         });
@@ -524,21 +524,21 @@ class CheckoutButton extends StatelessWidget {
       width: Dimensions.webMaxWidth,
       padding:  const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(ResponsiveHelper.isDesktop(context) ? Dimensions.radiusDefault : 0),
-        boxShadow: ResponsiveHelper.isDesktop(context) ? null : [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.2), blurRadius: 10)]
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(ResponsiveHelper.isDesktop(context) ? Dimensions.radiusDefault : 0),
+          boxShadow: ResponsiveHelper.isDesktop(context) ? null : [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.2), blurRadius: 10)]
       ),
       child: GetBuilder<StoreController>(
-        builder: (storeController) {
-          if(Get.find<StoreController>().store != null && !Get.find<StoreController>().store!.freeDelivery! && Get.find<SplashController>().configModel!.freeDeliveryOver != null){
-            percentage = cartController.subTotal/Get.find<SplashController>().configModel!.freeDeliveryOver!;
-          }
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          builder: (storeController) {
+            if(Get.find<StoreController>().store != null && !Get.find<StoreController>().store!.freeDelivery! && Get.find<SplashController>().configModel!.freeDeliveryOver != null){
+              percentage = cartController.subTotal/Get.find<SplashController>().configModel!.freeDeliveryOver!;
+            }
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
 
-              (storeController.store != null && !storeController.store!.freeDelivery! && Get.find<SplashController>().configModel!.freeDeliveryOver != null && percentage < 1)
-              ? Column(children: [
+                (storeController.store != null && !storeController.store!.freeDelivery! && Get.find<SplashController>().configModel!.freeDeliveryOver != null && percentage < 1)
+                    ? Column(children: [
                   Row(children: [
                     Image.asset(Images.percentTag, height: 20, width: 20),
                     const SizedBox(width: Dimensions.paddingSizeExtraSmall),
@@ -551,136 +551,136 @@ class CheckoutButton extends StatelessWidget {
 
                     Text('more_for_free_delivery'.tr, style: robotoMedium.copyWith(color: Theme.of(context).disabledColor)),
                   ]),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                  LinearProgressIndicator(
+                    backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                    value: percentage,
+                  ),
+                ]) : const SizedBox(),
+
+                ResponsiveHelper.isDesktop(context) ? const Divider(height: 1) : const SizedBox(),
                 const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-                LinearProgressIndicator(
-                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
-                  value: percentage,
-                ),
-              ]) : const SizedBox(),
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text('subtotal'.tr, style: robotoMedium.copyWith(color:  ResponsiveHelper.isDesktop(context) ? Theme.of(context).textTheme.bodyLarge!.color : Theme.of(context).primaryColor)),
+                //       PriceConverter.convertAnimationPrice(cartController.subTotal, textStyle: robotoRegular.copyWith(color: Theme.of(context).primaryColor)),
+                //       // Text(
+                //       //   PriceConverter.convertPrice(cartController.subTotal),
+                //       //   style: robotoMedium.copyWith(color: ResponsiveHelper.isDesktop(context) ? Theme.of(context).textTheme.bodyLarge!.color : Theme.of(context).primaryColor), textDirection: TextDirection.ltr,
+                //       // ),
+                //     ],
+                //   ),
+                // ),
 
-              ResponsiveHelper.isDesktop(context) ? const Divider(height: 1) : const SizedBox(),
-              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                ResponsiveHelper.isDesktop(context) && Get.find<SplashController>().getModuleConfig(cartController.cartList[0].item!.moduleType)!.newVariation!
+                    && (storeController.store != null && storeController.store!.cutlery!) ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                    Image.asset(Images.cutlery, height: 18, width: 18),
+                    const SizedBox(width: Dimensions.paddingSizeDefault),
 
-              // Padding(
-              //   padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       Text('subtotal'.tr, style: robotoMedium.copyWith(color:  ResponsiveHelper.isDesktop(context) ? Theme.of(context).textTheme.bodyLarge!.color : Theme.of(context).primaryColor)),
-              //       PriceConverter.convertAnimationPrice(cartController.subTotal, textStyle: robotoRegular.copyWith(color: Theme.of(context).primaryColor)),
-              //       // Text(
-              //       //   PriceConverter.convertPrice(cartController.subTotal),
-              //       //   style: robotoMedium.copyWith(color: ResponsiveHelper.isDesktop(context) ? Theme.of(context).textTheme.bodyLarge!.color : Theme.of(context).primaryColor), textDirection: TextDirection.ltr,
-              //       // ),
-              //     ],
-              //   ),
-              // ),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('add_cutlery'.tr, style: robotoMedium.copyWith(color: Theme.of(context).primaryColor)),
+                        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-              ResponsiveHelper.isDesktop(context) && Get.find<SplashController>().getModuleConfig(cartController.cartList[0].item!.moduleType)!.newVariation!
-              && (storeController.store != null && storeController.store!.cutlery!) ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                  Image.asset(Images.cutlery, height: 18, width: 18),
-                  const SizedBox(width: Dimensions.paddingSizeDefault),
-
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('add_cutlery'.tr, style: robotoMedium.copyWith(color: Theme.of(context).primaryColor)),
-                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-                      Text('do_not_have_cutlery'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall)),
-                    ]),
-                  ),
-
-                  Transform.scale(
-                    scale: 0.7,
-                    child: CupertinoSwitch(
-                      value: cartController.addCutlery,
-                      activeColor: Theme.of(context).primaryColor,
-                      onChanged: (bool? value) {
-                        cartController.updateCutlery();
-                      },
-                      trackColor: Theme.of(context).primaryColor.withOpacity(0.5),
-                    ),
-                  )
-                ]),
-              ) : const SizedBox(),
-              ResponsiveHelper.isDesktop(context) ? const SizedBox(height: Dimensions.paddingSizeSmall) : const SizedBox(),
-
-              !ResponsiveHelper.isDesktop(context) ? const SizedBox() :
-              Container(
-                width: Dimensions.webMaxWidth,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                    color: Theme.of(context).cardColor,
-                    border: Border.all(color: Theme.of(context).primaryColor, width: 0.5)),
-                padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                //margin: ResponsiveHelper.isDesktop(context) ? const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall) : EdgeInsets.zero,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkWell(
-                      onTap: (){
-                        if(ResponsiveHelper.isDesktop(context)){
-                          Get.dialog(const Dialog(child: NotAvailableBottomSheet()));
-                        }else{
-                          showModalBottomSheet(
-                            context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
-                            builder: (con) => const NotAvailableBottomSheet(),
-                          );
-                        }
-                      },
-                      child: Row(children: [
-                        Expanded(child: Text('if_any_product_is_not_available'.tr, style: robotoMedium, maxLines: 2, overflow: TextOverflow.ellipsis)),
-                        const Icon(Icons.keyboard_arrow_down, size: 18),
+                        Text('do_not_have_cutlery'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall)),
                       ]),
                     ),
 
-                    cartController.notAvailableIndex != -1 ? Row(children: [
-                      Text(cartController.notAvailableList[cartController.notAvailableIndex].tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor)),
+                    Transform.scale(
+                      scale: 0.7,
+                      child: CupertinoSwitch(
+                        value: cartController.addCutlery,
+                        activeColor: Theme.of(context).primaryColor,
+                        onChanged: (bool? value) {
+                          cartController.updateCutlery();
+                        },
+                        trackColor: Theme.of(context).primaryColor.withOpacity(0.5),
+                      ),
+                    )
+                  ]),
+                ) : const SizedBox(),
+                ResponsiveHelper.isDesktop(context) ? const SizedBox(height: Dimensions.paddingSizeSmall) : const SizedBox(),
 
-                      IconButton(
-                        onPressed: ()=> cartController.setAvailableIndex(-1),
-                        icon: const Icon(Icons.clear, size: 18),
-                      )
-                    ]) : const SizedBox(),
-                  ],
+                !ResponsiveHelper.isDesktop(context) ? const SizedBox() :
+                Container(
+                  width: Dimensions.webMaxWidth,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                      color: Theme.of(context).cardColor,
+                      border: Border.all(color: Theme.of(context).primaryColor, width: 0.5)),
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                  //margin: ResponsiveHelper.isDesktop(context) ? const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall) : EdgeInsets.zero,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: (){
+                          if(ResponsiveHelper.isDesktop(context)){
+                            Get.dialog(const Dialog(child: NotAvailableBottomSheet()));
+                          }else{
+                            showModalBottomSheet(
+                              context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
+                              builder: (con) => const NotAvailableBottomSheet(),
+                            );
+                          }
+                        },
+                        child: Row(children: [
+                          Expanded(child: Text('if_any_product_is_not_available'.tr, style: robotoMedium, maxLines: 2, overflow: TextOverflow.ellipsis)),
+                          const Icon(Icons.keyboard_arrow_down, size: 18),
+                        ]),
+                      ),
+
+                      cartController.notAvailableIndex != -1 ? Row(children: [
+                        Text(cartController.notAvailableList[cartController.notAvailableIndex].tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor)),
+
+                        IconButton(
+                          onPressed: ()=> cartController.setAvailableIndex(-1),
+                          icon: const Icon(Icons.clear, size: 18),
+                        )
+                      ]) : const SizedBox(),
+                    ],
+                  ),
                 ),
-              ),
-              ResponsiveHelper.isDesktop(context) ? const SizedBox(height: Dimensions.paddingSizeSmall) : const SizedBox(),
+                ResponsiveHelper.isDesktop(context) ? const SizedBox(height: Dimensions.paddingSizeSmall) : const SizedBox(),
 
-              SafeArea(
-                child: CustomButton(
-                  buttonText: 'proceed_to_checkout'.tr,
-                  fontSize: ResponsiveHelper.isDesktop(context) ? Dimensions.fontSizeSmall : Dimensions.fontSizeLarge,
-                  isBold:  ResponsiveHelper.isDesktop(context) ? false : true,
-                  radius: ResponsiveHelper.isDesktop(context) ? Dimensions.radiusSmall : Dimensions.radiusDefault,
-                  onPressed: () {
-                  if(!cartController.cartList.first.item!.scheduleOrder! && availableList.contains(false)) {
-                    showCustomSnackBar('one_or_more_product_unavailable'.tr);
-                  } /*else if(Get.find<AuthController>().isGuestLoggedIn() && !Get.find<SplashController>().configModel!.guestCheckoutStatus!) {
+                SafeArea(
+                  child: CustomButton(
+                      buttonText: 'proceed_to_checkout'.tr,
+                      fontSize: ResponsiveHelper.isDesktop(context) ? Dimensions.fontSizeSmall : Dimensions.fontSizeLarge,
+                      isBold:  ResponsiveHelper.isDesktop(context) ? false : true,
+                      radius: ResponsiveHelper.isDesktop(context) ? Dimensions.radiusSmall : Dimensions.radiusDefault,
+                      onPressed: () {
+                        if(!cartController.cartList.first.item!.scheduleOrder! && availableList.contains(false)) {
+                          showCustomSnackBar('one_or_more_product_unavailable'.tr);
+                        } /*else if(Get.find<AuthController>().isGuestLoggedIn() && !Get.find<SplashController>().configModel!.guestCheckoutStatus!) {
                     showCustomSnackBar('currently_your_zone_have_no_permission_to_place_any_order'.tr);
                   }*/ else {
-                    if(Get.find<SplashController>().module == null) {
-                      int i = 0;
-                      for(i = 0; i < Get.find<SplashController>().moduleList!.length; i++){
-                        if(cartController.cartList[0].item!.moduleId == Get.find<SplashController>().moduleList![i].id){
-                          break;
-                        }
-                      }
-                      Get.find<SplashController>().setModule(Get.find<SplashController>().moduleList![i]);
-                      HomeScreen.loadData(true);
-                    }
-                    Get.find<CouponController>().removeCouponData(false);
+                          if(Get.find<SplashController>().module == null) {
+                            int i = 0;
+                            for(i = 0; i < Get.find<SplashController>().moduleList!.length; i++){
+                              if(cartController.cartList[0].item!.moduleId == Get.find<SplashController>().moduleList![i].id){
+                                break;
+                              }
+                            }
+                            Get.find<SplashController>().setModule(Get.find<SplashController>().moduleList![i]);
+                            HomeScreen.loadData(true);
+                          }
+                          Get.find<CouponController>().removeCouponData(false);
 
-                    Get.toNamed(RouteHelper.getCheckoutRoute('cart'));
-                  }
-                }),
-              ),
-            ],
-          );
-        }
+                          Get.toNamed(RouteHelper.getCheckoutRoute('cart'));
+                        }
+                      }),
+                ),
+              ],
+            );
+          }
       ),
     );
   }

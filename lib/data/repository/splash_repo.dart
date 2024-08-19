@@ -99,7 +99,7 @@ class SplashRepo {
       AppConstants.localizationKey: AppConstants.languages[0].languageCode!,
       AppConstants.moduleId: '${Get.find<SplashController>().getCacheModule()}',
       'Authorization': 'Bearer ${sharedPreferences.getString(AppConstants.token)}',
-      AppConstants.moduleId: '2'
+      AppConstants.moduleId: '1'
     };
     return await apiClient.getData(AppConstants.modelHome, headers: header);
   }

@@ -28,9 +28,14 @@ class CheckoutHelper {
     if(store != null) {
       for(ZoneData zData in address.zoneData!) {
 
+        print('address.zoneData ${address.zoneData![0].modules![0].pivot!.zoneId}');
+        print('store ${store.zoneId}');
         for(Modules m in zData.modules!) {
           if(m.pivot!.zoneId == store.zoneId) {
             moduleData = m.pivot;
+            print('moduleData $moduleData');
+            print('m.pivot!.zoneId ${m.pivot!.zoneId}');
+            print('store.zoneId ${store.zoneId}');
             break;
           }
         }
@@ -48,9 +53,9 @@ class CheckoutHelper {
       minimumCharge = store.minimumShippingCharge!;
       maximumCharge = store.maximumShippingCharge;
     }else if(store != null && distance != null && distance != -1) {
-      perKmCharge = moduleData!.perKmShippingCharge!;
-      minimumCharge = moduleData.minimumShippingCharge!;
-      maximumCharge = moduleData.maximumShippingCharge;
+      perKmCharge = moduleData?.perKmShippingCharge ?? 0;
+      minimumCharge = moduleData?.minimumShippingCharge ?? 0;
+      maximumCharge = moduleData?.maximumShippingCharge ?? 0;
     }
     if(store != null && distance != null) {
       deliveryCharge = distance * perKmCharge;
@@ -66,8 +71,8 @@ class CheckoutHelper {
       deliveryCharge = deliveryCharge + extraCharge;
     }
 
-    if(store != null && store.selfDeliverySystem == 0 && zoneData!.increaseDeliveryFeeStatus == 1) {
-      deliveryCharge = deliveryCharge + (deliveryCharge * (zoneData.increaseDeliveryFee!/100));
+    if(store != null && store.selfDeliverySystem == 0 && zoneData?.increaseDeliveryFeeStatus == 1) {
+      deliveryCharge = deliveryCharge + (deliveryCharge * (zoneData?.increaseDeliveryFee ?? 0 /100));
     }
 
     return deliveryCharge;

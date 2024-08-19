@@ -12,52 +12,60 @@ import 'package:sixam_mart/view/screens/home/widget/grocery/special_offer_view.d
 
 import '../../../../../data/model/response/config_model.dart';
 import '../../../../../data/model/response/item_model.dart';
+import '../../../../../data/model/response/module_model.dart';
 
 class MostPopularItemView extends StatelessWidget {
   final bool isFood;
   final bool isShop;
-  final List<Item> product;
-  const MostPopularItemView({Key? key, required this.isFood, required this.isShop, required this.product}) : super(key: key);
+  const MostPopularItemView({Key? key, required this.isFood, required this.isShop}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    bool isShop = Get.find<SplashController>().module != null && Get.find<SplashController>().module!.moduleType.toString() == AppConstants.grocery;
+    bool isShop = Get.find<SplashController>().module != null ;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
       child: GetBuilder<ItemController>(builder: (itemController) {
-        // List<Item>? itemList = itemController.popularItemList;
+        List<Item>? itemList = itemController.popularItemList;
 
-          return (product != null) ? product.isNotEmpty ? Container(
-            // color: Theme.of(context).primaryColor.withOpacity(0.1),
-            child: Column(children: [
+        return (itemList != null) ? itemList.isNotEmpty ? Container(
+          color: Theme.of(context).primaryColor.withOpacity(0.1),
+          child: Column(children: [
 
-
-              SizedBox(
-                height:320, width: Get.width,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault),
-                  itemCount: product.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeExtraSmall, right: Dimensions.paddingSizeDefault, top: Dimensions.paddingSizeExtraSmall),
-                      child: ItemCard(
-                        isPopularItem: isShop ? false : true,
-                        isPopularItemCart: true,
-                        item: product[index],
-                        isShop: isShop,
-                        isFood: isFood, index: index,
-                      ),
-                    );
-                  },
-                ),
+            Padding(
+              padding: const EdgeInsets.only(top: Dimensions.paddingSizeDefault, left: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeDefault),
+              child: TitleWidget(
+                title: isShop ? 'most_popular_products'.tr : 'most_popular_items'.tr,
+                image: Images.mostPopularIcon,
+                onTap: () => Get.toNamed(RouteHelper.getPopularItemRoute(true, false)),
               ),
+            ),
 
-            ]),
-          ) : const SizedBox() : const ItemShimmerView(isPopularItem: true);
-        }
+            SizedBox(
+              height: 285, width: Get.width,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault),
+                itemCount: itemList.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeDefault, top: Dimensions.paddingSizeDefault),
+                    child: ItemCard(
+                      isPopularItem: isShop ? false : true,
+                      isPopularItemCart: true,
+                      item: itemList[index],
+                      isShop: isShop,
+                      isFood: isFood, index: index,
+                    ),
+                  );
+                },
+              ),
+            ),
+
+          ]),
+        ) : const SizedBox() : const ItemShimmerView(isPopularItem: true);
+      }
       ),
     );
   }
