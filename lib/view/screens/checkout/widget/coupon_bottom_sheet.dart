@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/controller/coupon_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
-import 'package:sixam_mart/data/model/response/coupon_model.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/view/screens/coupon/widget/coupon_card.dart';
 class CouponBottomSheet extends StatelessWidget {
-  final int? storeId;
-  const CouponBottomSheet({Key? key, required this.storeId}) : super(key: key);
+  const CouponBottomSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,47 +38,41 @@ class CouponBottomSheet extends StatelessWidget {
             )
           ]),
 
-          GetBuilder<CouponController>(builder: (couponController) {
-            List<CouponModel>? couponList;
-            if(couponController.couponList != null) {
-              couponList = [];
-              for(CouponModel coupon in couponController.couponList!) {
-                if(coupon.storeId == null || (coupon.couponType != 'store_wise' && coupon.couponType != 'default' && coupon.couponType != 'free_delivery') || coupon.storeId == storeId) {
-                  couponList.add(coupon);
-                }
-              }
-            }
-            return couponList != null ? couponList.isNotEmpty ? GridView.builder(
+          GetBuilder<CouponController>(builder: (couponController){
+            return couponController.couponList!.isNotEmpty ? GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: ResponsiveHelper.isDesktop(context) ? 3 : ResponsiveHelper.isTab(context) ? 2 : 1,
                 mainAxisSpacing: Dimensions.paddingSizeSmall, crossAxisSpacing: Dimensions.paddingSizeSmall,
                 childAspectRatio: ResponsiveHelper.isMobile(context) ? 3 : 3,
               ),
-              itemCount: couponList.length,
+              itemCount: couponController.couponList!.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {
-                    Get.back(result: couponList![index].code);
+                    Get.back(result: couponController.couponList![index].code);
                   },
-                  child: CouponCard(coupon: couponList![index], index: index),
+                  child: CouponCard(couponController: couponController, index: index),
                 );
               },
-            ) : Column(children: [
-              Image.asset(Images.noCoupon, height: 70),
-              const SizedBox(height: Dimensions.paddingSizeSmall),
+            ) : Column(
+                  children: [
+                    Image.asset(Images.noCoupon, height: 70),
+                    const SizedBox(height: Dimensions.paddingSizeSmall),
 
-              Text('no_promo_available'.tr, style: robotoMedium),
-              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                    Text('no_promo_available'.tr, style: robotoMedium),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-              Text(
-                '${'please_add_manually_or_collect_promo_from'.tr} ${Get.find<SplashController>().configModel!.businessName!}',
-                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-              ),
-              const SizedBox(height: 50),
-            ]) : const Center(child: CircularProgressIndicator());
+                    Text(
+                      '${'please_add_manually_or_collect_promo_from'.tr} ${Get.find<SplashController>().configModel!.businessName!}',
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                    ),
+                    const SizedBox(height: 50),
+
+                  ],
+                );
           })
 
         ]),

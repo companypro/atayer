@@ -2,7 +2,6 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/data/model/body/social_log_in_body.dart';
-import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/util/styles.dart';
@@ -14,16 +13,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 class SocialLoginWidget extends StatelessWidget {
   const SocialLoginWidget({Key? key}) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    return Get.find<SplashController>().configModel != null && Get.find<SplashController>().configModel!.socialLogin!.isNotEmpty
-      && (Get.find<SplashController>().configModel!.socialLogin![0].status!
+    return Get.find<SplashController>().configModel!.socialLogin!.isNotEmpty && (Get.find<SplashController>().configModel!.socialLogin![0].status!
     || Get.find<SplashController>().configModel!.socialLogin![1].status!) ? Column(children: [
 
-      Center(child: Text( ResponsiveHelper.isDesktop(context) ? 'or_continue_with'.tr : 'social_login'.tr, style: robotoMedium.copyWith( color : ResponsiveHelper.isDesktop(context) ? Theme.of(context).hintColor : null))),
+      Center(child: Text('social_login'.tr, style: robotoMedium)),
       const SizedBox(height: Dimensions.paddingSizeSmall),
 
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -68,7 +65,7 @@ class SocialLoginWidget extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(5)),
               boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300]!, spreadRadius: 1, blurRadius: 5)],
             ),
-            child: Image.asset(Images.socialFacebook),
+            child: Image.asset(Images.facebook),
           ),
         ) : const SizedBox(),
         const SizedBox(width: Dimensions.paddingSizeSmall),

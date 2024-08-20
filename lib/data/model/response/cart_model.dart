@@ -1,37 +1,30 @@
 import 'package:sixam_mart/data/model/response/item_model.dart';
 
 class CartModel {
-  int? _id;
   double? _price;
   double? _discountedPrice;
   List<Variation>? _variation;
   List<List<bool?>>? _foodVariations;
   double? _discountAmount;
   int? _quantity;
-  List<AddOnModel>? _addOnIds;
+  List<AddOn>? _addOnIds;
   List<AddOns>? _addOns;
   bool? _isCampaign;
   int? _stock;
   Item? _item;
-  int? _quantityLimit;
-  bool? _isLoading;
 
   CartModel(
-      {int? id,
-      double? price,
-      double? discountedPrice,
-      List<Variation>? variation,
-      List<List<bool?>>? foodVariations,
-      double? discountAmount,
-      int? quantity,
-      List<AddOnModel>? addOnIds,
-      List<AddOns>? addOns,
-      bool? isCampaign,
-      int? stock,
-      Item? item,
-      int? quantityLimit,
-      bool isLoading = false}) {
-    _id = id;
+        double? price,
+        double discountedPrice,
+        List<Variation> variation,
+        List<List<bool?>> foodVariations,
+        double discountAmount,
+        int? quantity,
+        List<AddOn> addOnIds,
+        List<AddOns> addOns,
+        bool isCampaign,
+        int? stock,
+        Item? item) {
     _price = price;
     _discountedPrice = discountedPrice;
     _variation = variation;
@@ -43,11 +36,8 @@ class CartModel {
     _isCampaign = isCampaign;
     _stock = stock;
     _item = item;
-    _quantityLimit = quantityLimit;
-    _isLoading = isLoading ?? false;
   }
 
-  int? get id => _id;
   double? get price => _price;
   double? get discountedPrice => _discountedPrice;
   List<Variation>? get variation => _variation;
@@ -57,19 +47,15 @@ class CartModel {
   int? get quantity => _quantity;
   // ignore: unnecessary_getters_setters
   set quantity(int? qty) => _quantity = qty;
-  List<AddOnModel>? get addOnIds => _addOnIds;
+  List<AddOn>? get addOnIds => _addOnIds;
   List<AddOns>? get addOns => _addOns;
   bool? get isCampaign => _isCampaign;
   int? get stock => _stock;
   Item? get item => _item;
-  int? get quantityLimit => _quantityLimit;
-  bool? get isLoading => _isLoading;
-  set isLoading(bool? status) => _isLoading = status;
 
   CartModel.fromJson(Map<String, dynamic> json) {
-    _id = json['cart_id'];
     _price = json['price'].toDouble();
-    _discountedPrice = json['discounted_price']?.toDouble();
+    _discountedPrice = json['discounted_price'].toDouble();
     if (json['variation'] != null) {
       _variation = [];
       json['variation'].forEach((v) {
@@ -78,20 +64,20 @@ class CartModel {
     }
     if (json['food_variations'] != null) {
       _foodVariations = [];
-      for (int index = 0; index < json['food_variations'].length; index++) {
+      for(int index=0; index<json['food_variations'].length; index++) {
         _foodVariations!.add([]);
-        for (int i = 0; i < json['food_variations'][index].length; i++) {
+        for(int i=0; i<json['food_variations'][index].length; i++) {
           _foodVariations![index].add(json['food_variations'][index][i]);
         }
       }
     }
-    _discountAmount = json['discount_amount']?.toDouble();
+    _discountAmount = json['discount_amount'].toDouble();
     _quantity = json['quantity'];
     _stock = json['stock'];
     if (json['add_on_ids'] != null) {
       _addOnIds = [];
       json['add_on_ids'].forEach((v) {
-        _addOnIds!.add(AddOnModel.fromJson(v));
+        _addOnIds!.add(AddOn.fromJson(v));
       });
     }
     if (json['add_ons'] != null) {
@@ -104,15 +90,10 @@ class CartModel {
     if (json['item'] != null) {
       _item = Item.fromJson(json['item']);
     }
-    if (json['quantity_limit'] != null) {
-      _quantityLimit = int.parse(json['quantity_limit']);
-    }
-    _isLoading = json['is_loading'] ?? false;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['cart_id'] = _id;
     data['price'] = _price;
     data['discounted_price'] = _discountedPrice;
     if (_variation != null) {
@@ -122,7 +103,6 @@ class CartModel {
     data['discount_amount'] = _discountAmount;
     data['quantity'] = _quantity;
     if (_addOnIds != null) {
-      // data['add_on_ids'] = addOnIds;
       data['add_on_ids'] = _addOnIds!.map((v) => v.toJson()).toList();
     }
     if (_addOns != null) {
@@ -131,19 +111,17 @@ class CartModel {
     data['is_campaign'] = _isCampaign;
     data['stock'] = _stock;
     data['item'] = _item!.toJson();
-    data['quantity_limit'] = _quantityLimit?.toString();
-    // data['is_loading'] = _isLoading?? false;
     return data;
   }
 }
 
-class AddOnModel {
+class AddOn {
   int? id;
   int? quantity;
 
-  AddOnModel({this.id, this.quantity});
+  AddOn({this.id, this.quantity});
 
-  AddOnModel.fromJson(Map<String, dynamic> json) {
+  AddOn.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     quantity = json['quantity'];
   }

@@ -1,4 +1,3 @@
-import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,7 @@ class ProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveHelper.isDesktop(context) ? 130 :112,
+      height: 112,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
         color: Theme.of(context).cardColor,
@@ -25,11 +24,11 @@ class ProfileCard extends StatelessWidget {
 
         Text(
           data, textDirection: TextDirection.ltr,
-          style: robotoMedium.copyWith(fontSize: ResponsiveHelper.isDesktop(context) ? Dimensions.fontSizeDefault : Dimensions.fontSizeExtraLarge),
+          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
         ),
         const SizedBox(height: Dimensions.paddingSizeSmall),
         Text(title, style: robotoRegular.copyWith(
-          fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor,
+          fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor,
         )),
       ]),
     );

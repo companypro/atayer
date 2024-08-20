@@ -11,9 +11,8 @@ class SearchLocationWidget extends StatelessWidget {
   final String? pickedAddress;
   final bool? isEnabled;
   final bool? isPickedUp;
-  final bool? fromDialog;
   final String? hint;
-  const SearchLocationWidget({Key? key, required this.mapController, required this.pickedAddress, required this.isEnabled, this.isPickedUp, this.hint, this.fromDialog = false}) : super(key: key);
+  const SearchLocationWidget({Key? key, required this.mapController, required this.pickedAddress, required this.isEnabled, this.isPickedUp, this.hint}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +30,15 @@ class SearchLocationWidget extends StatelessWidget {
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
           border: isEnabled != null ? Border.all(
-            color: fromDialog! ? Theme.of(context).disabledColor : isEnabled! ? Theme.of(context).primaryColor : Theme.of(context).disabledColor, width: isEnabled! ? 2 : 1,
+            color: isEnabled! ? Theme.of(context).primaryColor : Theme.of(context).disabledColor, width: isEnabled! ? 2 : 1,
           ) : null,
         ),
         child: Row(children: [
-          (/*!fromDialog! &&*/ pickedAddress != null && pickedAddress!.isNotEmpty) ? Icon(
+          Icon(
             Icons.location_on, size: 25,
             color: (isEnabled == null || isEnabled!) ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
-          ) : Text('search_location'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
+          ),
           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
           Expanded(
             child: (pickedAddress != null && pickedAddress!.isNotEmpty) ? Text(
               pickedAddress!,
@@ -52,7 +50,7 @@ class SearchLocationWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: Dimensions.paddingSizeSmall),
-          Icon(Icons.search, size: 25, color: fromDialog! ? Theme.of(context).disabledColor : Theme.of(context).textTheme.bodyLarge!.color),
+          Icon(Icons.search, size: 25, color: Theme.of(context).textTheme.bodyLarge!.color),
         ]),
       ),
     );

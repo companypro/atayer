@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:sixam_mart/data/model/response/address_model.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
@@ -26,7 +25,8 @@ class AddressWidget extends StatelessWidget {
       child: InkWell(
         onTap: onTap as void Function()?,
         child: Container(
-          padding: EdgeInsets.all(ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeDefault : Dimensions.paddingSizeSmall),
+          padding: EdgeInsets.all(ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeDefault
+              : Dimensions.paddingSizeSmall),
           decoration: fromDashBoard ? BoxDecoration(
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
             border: Border.all(color: isSelected ? Theme.of(context).primaryColor : Colors.transparent, width: isSelected ? 1 : 0),
@@ -34,49 +34,37 @@ class AddressWidget extends StatelessWidget {
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
             border: Border.all(color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).cardColor, width: isSelected ? 0.5 : 0),
-            boxShadow: [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.1), blurRadius: 5, spreadRadius: 1)],
+            boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200]!, blurRadius: 5, spreadRadius: 1)],
           ),
           child: Row(mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          address!.addressType == 'home' ? Images.homeIcon : address!.addressType == 'office' ? Images.workIcon : Images.otherIcon,
-                          color: Theme.of(context).primaryColor,
-                          height: ResponsiveHelper.isDesktop(context) ? 25 : 20,
-                          width: ResponsiveHelper.isDesktop(context) ? 25 : 20,
-                        ),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-                        Text(
-                          address!.addressType!.tr,
-                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
-                        ),
-                      ],
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    Image.asset(
+                      address!.addressType == 'home' ? Images.homeIcon : address!.addressType == 'office' ? Images.workIcon : Images.otherIcon,
+                      color: Theme.of(context).primaryColor, height: ResponsiveHelper.isDesktop(context) ? 25 : 20, width: ResponsiveHelper.isDesktop(context) ? 25 : 20,
                     ),
-                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                    Expanded(
-                      child: Text(
-                        address!.address!,
-                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                    Text(
+                      address!.addressType!.tr,
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
                     ),
-                  ],
-                ),
+                  ]),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                  Text(
+                    address!.address!,
+                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                  ),
+                ]),
               ),
-              fromAddress ? IconButton(
-                icon: const Icon(Icons.edit, color: Colors.blueGrey, size: 25),
-                onPressed: onEditPressed as void Function()?,
-              ) : const SizedBox(),
+
 
               fromAddress ? IconButton(
-                icon: const Icon(Icons.delete_outline, color: Colors.red, size: 25),
+                icon: Icon(Icons.delete_outline, color: Colors.red, size: ResponsiveHelper.isDesktop(context) ? 35 : 25),
                 onPressed: onRemovePressed as void Function()?,
               ) : const SizedBox(),
             ],

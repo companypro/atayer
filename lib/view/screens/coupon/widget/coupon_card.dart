@@ -1,13 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
+import 'package:sixam_mart/controller/coupon_controller.dart';
 import 'package:sixam_mart/controller/localization_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/controller/theme_controller.dart';
-import 'package:sixam_mart/data/model/response/coupon_model.dart';
 import 'package:sixam_mart/helper/date_converter.dart';
 import 'package:sixam_mart/helper/price_converter.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
@@ -16,9 +14,9 @@ import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/util/styles.dart';
 
 class CouponCard extends StatelessWidget {
-  final CouponModel coupon;
+  final CouponController couponController;
   final int index;
-  const CouponCard({Key? key, required this.coupon, required this.index}) : super(key: key);
+  const CouponCard({Key? key, required this.couponController, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,24 +44,27 @@ class CouponCard extends StatelessWidget {
             width: ResponsiveHelper.isDesktop(context) ? 150 : size.width * 0.3,
             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(
-                coupon.discountType == 'percent' ? Images.percentCouponOffer : coupon.couponType
+                couponController.couponList![index].discountType == 'percent' ? Images.percentCouponOffer : couponController.couponList![index].couponType
                     == 'free_delivery' ? Images.freeDelivery : Images.money,
                 height: 25, width: 25,
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
               Text(
-                '${coupon.discount}${coupon.discountType == 'percent' ? '%' : Get.find<SplashController>().configModel!.currencySymbol} ${'off'.tr}',
+                '${couponController.couponList![index].discount}${couponController.couponList![index].discountType == 'percent' ? '%'
+                    : Get.find<SplashController>().configModel!.currencySymbol} ${'off'.tr}',
                 style: robotoBold.copyWith(fontSize: Dimensions.fontSizeDefault),
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-              coupon.store == null ?  Flexible(child: Text(
-                coupon.couponType == 'store_wise' ? '${'on'.tr} ${coupon.data}' : 'on_all_store'.tr,
+              couponController.couponList![index].store == null ?  Flexible(child: Text(
+                couponController.couponList![index].couponType == 'store_wise' ?
+                '${'on'.tr} ${couponController.couponList![index].data}' : 'on_all_store'.tr,
                 style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall),
                 maxLines: 1, overflow: TextOverflow.ellipsis,
               )) : Flexible(child: Text(
-                coupon.couponType == 'default' ? '${coupon.store!.name}' : '',
+                couponController.couponList![index].couponType == 'default' ?
+                '${couponController.couponList![index].store!.name}' : '',
                 style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall),
                 maxLines: 1, overflow: TextOverflow.ellipsis,
               )),
@@ -76,64 +77,37 @@ class CouponCard extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
 
               Text(
-                '${coupon.title}',
-                style: robotoRegular, textDirection: TextDirection.ltr,
+                '${couponController.couponList![index].title}',
+                style: robotoRegular,
                 maxLines: 1, overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
               Text(
-                '${DateConverter.stringToReadableString(coupon.startDate!)} ${'to'.tr} ${DateConverter.stringToReadableString(coupon.expireDate!)}',
+                '${DateConverter.stringToReadableString(couponController.couponList![index].startDate!)} ${'to'.tr} ${DateConverter.stringToReadableString(couponController.couponList![index].expireDate!)}',
                 style: robotoMedium.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
-                maxLines: 2, overflow: TextOverflow.ellipsis,
+                maxLines: 1, overflow: TextOverflow.ellipsis,
               ),
 
               Row(children: [
                 Text(
                   '*${'min_purchase'.tr} ',
-                  style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeExtraSmall),
-                  maxLines: 2, overflow: TextOverflow.ellipsis,
+                  style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
+                  maxLines: 1, overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                 Text(
-                  PriceConverter.convertPrice(coupon.minPurchase),
-                  style: robotoMedium.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeExtraSmall),
+                  PriceConverter.convertPrice(couponController.couponList![index].minPurchase),
+                  style: robotoMedium.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
                   maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
                 ),
               ]),
+
             ]),
           ),
+
         ]),
       ),
-
-
-      ResponsiveHelper.isDesktop(context) ? Positioned(
-        top: Dimensions.paddingSizeSmall,
-        right: Dimensions.paddingSizeSmall,
-        child: JustTheTooltip(
-          backgroundColor: Theme.of(context).cardColor,
-          controller: coupon.toolTip,
-          preferredDirection: AxisDirection.up,
-          tailLength: 14,
-          tailBaseWidth: 20,
-          triggerMode: TooltipTriggerMode.manual,
-          content: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('code_copied'.tr,style: robotoRegular.copyWith(color: Theme.of(context).primaryColor)),
-          ),
-          child: InkWell(
-            onTap: () async {
-              coupon.toolTip?.showTooltip();
-              Clipboard.setData(ClipboardData(text: coupon.code!));
-
-              Future.delayed(const Duration(milliseconds: 750), () {
-                coupon.toolTip?.hideTooltip();
-              });
-            },
-            child: Image.asset(Images.copyCoupon, height: 20, width: 20),
-          ),
-        ),
-      ) : const SizedBox(),
 
     ]);
   }

@@ -11,7 +11,7 @@ class ModuleViewWidget extends StatelessWidget {
     return GetBuilder<AuthController>(builder: (authController) {
       List<int> moduleIndexList = [];
       List<DropdownItem<int>> moduleList = [];
-      if(authController.moduleList != null && authController.moduleList!.isNotEmpty) {
+      if(authController.moduleList != null && authController.moduleList!.length > 0) {
         for(int index=0; index < authController.moduleList!.length; index++) {
           if(authController.moduleList![index].moduleType != 'parcel') {
             moduleIndexList.add(index);

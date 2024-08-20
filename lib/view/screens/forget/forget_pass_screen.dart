@@ -4,7 +4,6 @@ import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/localization_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/data/model/body/social_log_in_body.dart';
-import 'package:sixam_mart/helper/custom_validator.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
@@ -18,6 +17,7 @@ import 'package:sixam_mart/view/base/footer_view.dart';
 import 'package:sixam_mart/view/base/menu_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:phone_number/phone_number.dart';
 
 class ForgetPassScreen extends StatefulWidget {
   final bool fromSocialLogin;
@@ -35,7 +35,7 @@ class _ForgetPassScreenState extends State<ForgetPassScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: widget.fromSocialLogin ? 'phone'.tr : 'forgot_password_title'.tr),
+      appBar: CustomAppBar(title: widget.fromSocialLogin ? 'phone'.tr : 'forgot_password'.tr),
       endDrawer: const MenuDrawer(),endDrawerEnableOpenDragGesture: false,
       body: SafeArea(child: Center(child: Scrollbar(child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -53,10 +53,10 @@ class _ForgetPassScreenState extends State<ForgetPassScreen> {
 
             Padding(
               padding: const EdgeInsets.all(30),
-              child: Text('please_enter_mobile'.tr, style: robotoBold, textAlign: TextAlign.center),
+              child: Text('please_enter_mobile'.tr, style: robotoRegular, textAlign: TextAlign.center),
             ),
 
-            CustomTextFieldCountry(
+            CustomTextField(
               titleText: 'phone'.tr,
               controller: _numberController,
               inputType: TextInputType.phone,
@@ -81,17 +81,17 @@ class _ForgetPassScreenState extends State<ForgetPassScreen> {
             }),
             const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-            // RichText(text: TextSpan(children: [
-            //   TextSpan(
-            //     text: '${'if_you_have_any_queries_feel_free_to_contact_with_our'.tr} ',
-            //     style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeSmall),
-            //   ),
-            //   TextSpan(
-            //     text: 'help_and_support'.tr, style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeDefault),
-            //     recognizer: TapGestureRecognizer()
-            //       ..onTap = () => Get.toNamed(RouteHelper.getSupportRoute()),
-            //   ),
-            // ]), textAlign: TextAlign.center, maxLines: 3),
+            RichText(text: TextSpan(children: [
+              TextSpan(
+                text: '${'if_you_have_any_queries_feel_free_to_contact_with_our'.tr} ',
+                style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeSmall),
+              ),
+              TextSpan(
+                text: 'help_and_support'.tr, style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeDefault),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => Get.toNamed(RouteHelper.getSupportRoute()),
+              ),
+            ]), textAlign: TextAlign.center, maxLines: 3),
 
           ]),
         )),
@@ -103,12 +103,18 @@ class _ForgetPassScreenState extends State<ForgetPassScreen> {
     String phone = _numberController.text.trim();
 
     String numberWithCountryCode = countryCode+phone;
-    PhoneValid phoneValid = await CustomValidator.isPhoneValid(numberWithCountryCode);
-    numberWithCountryCode = phoneValid.phone;
+    bool isValid = GetPlatform.isAndroid ? false : true;
+    if(GetPlatform.isAndroid) {
+      try {
+        PhoneNumber phoneNumber = await PhoneNumberUtil().parse(numberWithCountryCode);
+        numberWithCountryCode = '+${phoneNumber.countryCode}${phoneNumber.nationalNumber}';
+        isValid = true;
+      } catch (_) {}
+    }
 
     if (phone.isEmpty) {
       showCustomSnackBar('enter_phone_number'.tr);
-    }else if (!phoneValid.isValid) {
+    }else if (!isValid) {
       showCustomSnackBar('invalid_phone_number'.tr);
     }else {
       if(widget.fromSocialLogin) {

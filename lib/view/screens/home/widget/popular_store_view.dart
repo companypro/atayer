@@ -1,6 +1,7 @@
 import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/store_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
+import 'package:sixam_mart/controller/theme_controller.dart';
 import 'package:sixam_mart/controller/wishlist_controller.dart';
 import 'package:sixam_mart/data/model/response/module_model.dart';
 import 'package:sixam_mart/data/model/response/store_model.dart';
@@ -51,7 +52,7 @@ class PopularStoreView extends StatelessWidget {
               itemCount: storeList.length > 10 ? 10 : storeList.length,
               itemBuilder: (context, index){
                 return Padding(
-                  padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall, ),
+                  padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall, bottom: 5),
                   child: InkWell(
                     onTap: () {
                       if(isFeatured && Get.find<SplashController>().moduleList != null) {
@@ -63,17 +64,21 @@ class PopularStoreView extends StatelessWidget {
                         }
                       }
                       Get.toNamed(
-                        RouteHelper.getStoreRoute(id: storeList[index].id, page: isFeatured ? 'module' : 'store'),
+                        RouteHelper.getStoreRoute(storeList[index].id, isFeatured ? 'module' : 'store'),
                         arguments: StoreScreen(store: storeList[index], fromModule: isFeatured),
                       );
                     },
                     child: Container(
+                      // height: 150,
                       width: 200,
                       margin: const EdgeInsets.only(top: Dimensions.paddingSizeExtraSmall),
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
+                        boxShadow: [BoxShadow(
+                          color: Colors.grey[Get.find<ThemeController>().darkTheme ? 800 : 300]!,
+                          blurRadius: 5, spreadRadius: 1,
+                        )],
                       ),
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
 
@@ -122,32 +127,28 @@ class PopularStoreView extends StatelessWidget {
 
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall,vertical: Dimensions.paddingSizeExtraSmall),
-                            child: SingleChildScrollView(
-                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-                                Text(
-                                  storeList[index].name ?? '',
-                                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
-                                  maxLines: 1, overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                              
-                                Text(
-                                  storeList[index].address ?? '',
-                                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
-                                  maxLines: 1, overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                              
-                                RatingBar(
-                                  rating: storeList[index].avgRating,
-                                  ratingCount: storeList[index].ratingCount,
-                                  size: 12,
-                                ),
-                                SizedBox(height: 20,),
-                              
-                              ]),
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
+                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Text(
+                                storeList[index].name ?? '',
+                                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                                maxLines: 1, overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                              Text(
+                                storeList[index].address ?? '',
+                                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
+                                maxLines: 1, overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                              RatingBar(
+                                rating: storeList[index].avgRating,
+                                ratingCount: storeList[index].ratingCount,
+                                size: 12,
+                              ),
+                            ]),
                           ),
                         ),
 

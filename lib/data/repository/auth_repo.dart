@@ -26,15 +26,7 @@ class AuthRepo {
   }
 
   Future<Response> login({String? phone, String? password}) async {
-    String guestId = getGuestId();
-    Map<String, String> data = {
-      "phone": phone!,
-      "password": password!,
-    };
-    if(guestId.isNotEmpty) {
-      data.addAll({"guest_id": guestId});
-    }
-    return await apiClient.postData(AppConstants.loginUri, data);
+    return await apiClient.postData(AppConstants.loginUri, {"phone": phone, "password": password});
   }
 
   Future<Response> loginWithSocialMedia(SocialLogInBody socialLogInBody, int timeout) async {
@@ -114,9 +106,9 @@ class AuthRepo {
   }
 
   // for  user token
-  Future<bool> saveUserToken(String token) async {
+  Future<bool> saveUserToken(String token, {bool alreadyInApp = false}) async {
     apiClient.token = token;
-    if(sharedPreferences.getString(AppConstants.userAddress) != null){
+    if(alreadyInApp){
       AddressModel? addressModel = AddressModel.fromJson(jsonDecode(sharedPreferences.getString(AppConstants.userAddress)!));
       apiClient.updateHeader(
           token, addressModel.zoneIds, addressModel.areaIds, sharedPreferences.getString(AppConstants.languageCode),
@@ -159,12 +151,11 @@ class AuthRepo {
   }
 
   bool clearSharedData() {
-    if(!GetPlatform.isMobile) {
+    if(!GetPlatform.isWeb) {
       FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.topic);
       apiClient.postData(AppConstants.tokenUri, {"_method": "put", "cm_firebase_token": '@'});
     }
     sharedPreferences.remove(AppConstants.token);
-    sharedPreferences.remove(AppConstants.guestId);
     sharedPreferences.setStringList(AppConstants.cartList, []);
     sharedPreferences.remove(AppConstants.userAddress);
     apiClient.token = null;
@@ -250,34 +241,4 @@ class AuthRepo {
   Future<Response> getVehicleList() async {
     return await apiClient.getData(AppConstants.vehiclesUri);
   }
-
-  Future<Response> guestLogin() async {
-    String? deviceToken = await _saveDeviceToken();
-    return await apiClient.postData(AppConstants.guestLoginUri, {'fcm_token': deviceToken});
-  }
-
-  Future<bool> saveGuestId(String id) async {
-    return await sharedPreferences.setString(AppConstants.guestId, id);
-  }
-
-  String getGuestId() {
-    return sharedPreferences.getString(AppConstants.guestId) ?? "";
-  }
-
-  Future<bool> clearGuestId() async {
-    return await sharedPreferences.remove(AppConstants.guestId);
-  }
-
-  bool isGuestLoggedIn() {
-    return sharedPreferences.containsKey(AppConstants.guestId);
-  }
-
-  Future<bool> saveGuestContactNumber(String number) async {
-    return await sharedPreferences.setString(AppConstants.guestNumber, number);
-  }
-
-  String getGuestContactNumber() {
-    return sharedPreferences.getString(AppConstants.guestNumber) ?? "";
-  }
-
 }

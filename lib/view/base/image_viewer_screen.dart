@@ -22,8 +22,6 @@ class ImageViewerScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(title: 'product_images'.tr),
       body: GetBuilder<ItemController>(builder: (itemController) {
-        String? baseUrl = item.availableDateStarts == null ? Get.find<SplashController>().
-        configModel!.baseUrls!.itemImageUrl : Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl;
         return Column(children: [
 
           Expanded(child: Stack(children: [
@@ -35,7 +33,7 @@ class ImageViewerScreen extends StatelessWidget {
               pageController: pageController,
               builder: (BuildContext context, int index) {
                 return PhotoViewGalleryPageOptions(
-                  imageProvider: NetworkImage('$baseUrl/${imageList[index]}'),
+                  imageProvider: NetworkImage('${Get.find<SplashController>().configModel!.baseUrls!.itemImageUrl}/${imageList[index]}'),
                   initialScale: PhotoViewComputedScale.contained,
                   heroAttributes: PhotoViewHeroAttributes(tag: index.toString()),
                 );

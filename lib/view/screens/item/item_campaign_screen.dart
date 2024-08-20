@@ -8,8 +8,7 @@ import 'package:get/get.dart';
 import 'package:sixam_mart/view/base/menu_drawer.dart';
 
 class ItemCampaignScreen extends StatefulWidget {
-  final bool isJustForYou;
-  const ItemCampaignScreen({Key? key, required this.isJustForYou}) : super(key: key);
+  const ItemCampaignScreen({Key? key}) : super(key: key);
 
   @override
   State<ItemCampaignScreen> createState() => _ItemCampaignScreenState();
@@ -27,7 +26,7 @@ class _ItemCampaignScreenState extends State<ItemCampaignScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: widget.isJustForYou ? 'just_for_you'.tr : 'campaigns'.tr),
+      appBar: CustomAppBar(title: 'campaigns'.tr),
       endDrawer: const MenuDrawer(),endDrawerEnableOpenDragGesture: false,
       body: Scrollbar(child: SingleChildScrollView(child: FooterView(child: SizedBox(
         width: Dimensions.webMaxWidth,

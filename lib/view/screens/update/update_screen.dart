@@ -54,7 +54,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                 appUrl = Get.find<SplashController>().configModel!.appUrlIos;
               }
               if(await canLaunchUrlString(appUrl!)) {
-                launchUrlString(appUrl, mode: LaunchMode.externalApplication);
+                launchUrlString(appUrl);
               }else {
                 showCustomSnackBar('${'can_not_launch'.tr} $appUrl');
               }

@@ -23,9 +23,8 @@ class TimeSlotBottomSheet extends StatelessWidget {
       margin: EdgeInsets.only(top: GetPlatform.isWeb ? 0 : 30),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: ResponsiveHelper.isMobile(context) ?
-          const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge))
-          : const BorderRadius.all(Radius.circular(Dimensions.radiusDefault)),
+        borderRadius: ResponsiveHelper.isMobile(context) ? const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge))
+            : const BorderRadius.all(Radius.circular(Dimensions.radiusExtraLarge)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -68,11 +67,11 @@ class TimeSlotBottomSheet extends StatelessWidget {
                             ? Center(child: Text(module!.showRestaurantText! ? 'restaurant_is_closed'.tr : 'store_is_closed'.tr))
                               : orderController.timeSlots != null
                             ? orderController.timeSlots!.isNotEmpty ? GridView.builder(
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3,
                                 mainAxisSpacing: Dimensions.paddingSizeSmall,
                                 crossAxisSpacing: Dimensions.paddingSizeExtraSmall,
-                                childAspectRatio: ResponsiveHelper.isDesktop(context) ? 4 : 3,
+                                childAspectRatio: 3
                               ),
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
@@ -101,32 +100,24 @@ class TimeSlotBottomSheet extends StatelessWidget {
             ),
           ),
 
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraLarge, vertical: Dimensions.paddingSizeSmall),
-              child: Row(children: [
-                Expanded(
-                  child: CustomButton(
-                    radius: ResponsiveHelper.isDesktop(context) ?  Dimensions.radiusSmall : Dimensions.radiusDefault,
-                    height: ResponsiveHelper.isDesktop(context) ? 50 : null,
-                    isBold:  ResponsiveHelper.isDesktop(context) ? false : true,
-                    buttonText: 'cancel'.tr,
-                    color: Theme.of(context).disabledColor,
-                    onPressed: () => Get.back(),
-                  ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraLarge, vertical: Dimensions.paddingSizeSmall),
+            child: Row(children: [
+              Expanded(
+                child: CustomButton(
+                  buttonText: 'cancel'.tr,
+                  color: Theme.of(context).disabledColor,
+                  onPressed: () => Get.back(),
                 ),
-                const SizedBox(width: Dimensions.paddingSizeSmall),
-                Expanded(
-                  child: CustomButton(
-                    radius: ResponsiveHelper.isDesktop(context) ?  Dimensions.radiusSmall : Dimensions.radiusDefault,
-                    height: ResponsiveHelper.isDesktop(context) ? 50 : null,
-                    isBold:  ResponsiveHelper.isDesktop(context) ? false : true,
-                    buttonText: 'schedule'.tr,
-                    onPressed: () => Get.back(),
-                  ),
+              ),
+              const SizedBox(width: Dimensions.paddingSizeSmall),
+              Expanded(
+                child: CustomButton(
+                  buttonText: 'schedule'.tr,
+                  onPressed: () => Get.back(),
                 ),
-              ]),
-            ),
+              ),
+            ]),
           ),
         ],
       ),
@@ -139,7 +130,6 @@ class TimeSlotBottomSheet extends StatelessWidget {
       child: Column(
         children: [
           Text(title, style: isSelected ? robotoBold.copyWith(color: Theme.of(context).primaryColor) : robotoMedium),
-          ResponsiveHelper.isDesktop(context) ? const SizedBox(height: Dimensions.paddingSizeSmall) : const SizedBox(),
           Divider(color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).disabledColor, thickness: isSelected ? 2 : 1),
         ],
       ),

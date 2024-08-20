@@ -34,12 +34,12 @@ class PopularItemView extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(10, 15, 10, 10),
             child: TitleWidget(
               title: isPopular ? 'popular_items_nearby'.tr : 'best_reviewed_item'.tr,
-              onTap: () => Get.toNamed(RouteHelper.getPopularItemRoute(isPopular, false)),
+              onTap: () => Get.toNamed(RouteHelper.getPopularItemRoute(isPopular)),
             ),
           ),
 
           SizedBox(
-            height: Get.find<LocalizationController>().isLtr ? 90 : 100,
+            height: 90,
             child: itemList != null ? ListView.builder(
               controller: ScrollController(),
               physics: const BouncingScrollPhysics(),
@@ -56,12 +56,15 @@ class PopularItemView extends StatelessWidget {
                     child: Stack(
                       children: [
                         Container(
-                          height: Get.find<LocalizationController>().isLtr ? 90 : 100, width: 250,
+                          height: 90, width: 250,
                           padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
+                            boxShadow: [BoxShadow(
+                              color: Colors.grey[Get.find<ThemeController>().darkTheme ? 800 : 300]!,
+                              blurRadius: 5, spreadRadius: 1,
+                            )],
                           ),
                           child: Row(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
 

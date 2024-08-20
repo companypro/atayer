@@ -4,7 +4,6 @@ import 'package:sixam_mart/data/model/response/basic_campaign_model.dart';
 import 'package:sixam_mart/helper/date_converter.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
-import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/view/base/custom_image.dart';
 import 'package:sixam_mart/view/base/footer_view.dart';
@@ -44,107 +43,33 @@ class _CampaignScreenState extends State<CampaignScreen> {
             ResponsiveHelper.isDesktop(context) ? SliverToBoxAdapter(
               child: Container(
                 color: const Color(0xFF171A29),
-                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeExtraLarge),
+                padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                 alignment: Alignment.center,
-                child: Center(
-                  child: SizedBox(
-                    width: 1150,
-                    child: Row(children: [
-                      Expanded(
-                        flex: 3,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                          child: CustomImage(
-                            fit: BoxFit.cover, height: 200, width: 1150,
-                            image: '${Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl}/${widget.campaign.image}',
-                          ),
-                        ),
-                      ),
-
-                      Expanded(flex: 2, child: Container(
-                        // color: Colors.green,
-                        padding: const EdgeInsets.only(left: Dimensions.paddingSizeExtraLarge),
-                        child: campaignController.campaign != null ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              campaignController.campaign!.title!,
-                              style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeOverLarge, color: Colors.white),
-                              maxLines: 1, overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                            Text(
-                              campaignController.campaign!.description ?? '', maxLines: 2, overflow: TextOverflow.ellipsis,
-                              style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).disabledColor),
-                            ),
-                            const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-
-                            campaignController.campaign!.startTime != null ? Row(children: [
-                              Image.asset(Images.announcement, height: 15, width: 15, color: Colors.white),
-                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                              Text('${'campaign_schedule'.tr}:', style: robotoRegular.copyWith(
-                                fontSize: Dimensions.fontSizeExtraSmall, color: Colors.white,
-                              )),
-                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                              Text(
-                                '${DateConverter.stringToLocalDateOnly(campaignController.campaign!.availableDateStarts!)}'
-                                    ' - ${DateConverter.stringToLocalDateOnly(campaignController.campaign!.availableDateEnds!)}',
-                                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).primaryColor),
-                              ),
-                            ]) : const SizedBox(),
-                            const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                            campaignController.campaign!.startTime != null ? Row(children: [
-                              const Icon(Icons.access_time_filled, size: 16, color: Colors.white),
-                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                              Text('${'daily_time'.tr}:', style: robotoRegular.copyWith(
-                                fontSize: Dimensions.fontSizeExtraSmall, color: Colors.white,
-                              )),
-                              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                              Text(
-                                '${DateConverter.convertTimeToTime(campaignController.campaign!.startTime!)}'
-                                    ' - ${DateConverter.convertTimeToTime(campaignController.campaign!.endTime!)}',
-                                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).primaryColor),
-                              ),
-                            ]) : const SizedBox(),
-                            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-                          ],
-                        ) : const SizedBox(),
-                      ))
-                    ]),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                  child: CustomImage(
+                    fit: BoxFit.cover, height: 220, width: 1150,
+                    image: '${Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl}/${widget.campaign.image}',
                   ),
                 ),
               ),
             ) : SliverAppBar(
-              expandedHeight: 140,
+              expandedHeight: 230,
               toolbarHeight: 50,
               pinned: true,
               floating: false,
-              backgroundColor: Colors.white,
-              leading: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle, color: Theme.of(context).primaryColor,
-                ),
-                child: IconButton(icon: const Icon(Icons.chevron_left, color: Colors.white), onPressed: () => Get.back()),
-              ),
+              backgroundColor: Theme.of(context).primaryColor,
+              leading: IconButton(icon: const Icon(Icons.chevron_left, color: Colors.white), onPressed: () => Get.back()),
               flexibleSpace: FlexibleSpaceBar(
-                // title: Text(
-                //   widget.campaign.title!,
-                //   style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.black),
-                // ),
+                title: Text(
+                  widget.campaign.title!,
+                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.white),
+                ),
                 background: CustomImage(
                   fit: BoxFit.cover,
                   image: '${Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl}/${widget.campaign.image}',
                 ),
               ),
-              actions: const [
-                SizedBox(),
-              ],
             ),
 
             SliverToBoxAdapter(child: FooterView(child: Container(
@@ -156,7 +81,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
               ),
               child: Column(children: [
 
-                campaignController.campaign != null && !ResponsiveHelper.isDesktop(context) ? Column(
+                campaignController.campaign != null ? Column(
                   children: [
 
                     Row(children: [
@@ -205,22 +130,13 @@ class _CampaignScreenState extends State<CampaignScreen> {
                         style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).primaryColor),
                       ),
                     ]) : const SizedBox(),
-                    const SizedBox(height: Dimensions.paddingSizeDefault),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
                   ],
-                ) : ResponsiveHelper.isDesktop(context) ? SizedBox(
-                  width: 1150,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
-                    child: Text('store_list'.tr, style: robotoBold.copyWith(
-                      fontSize: Dimensions.fontSizeSmall,
-                    )),
-                  ),
                 ) : const SizedBox(),
 
                 ItemsView(
                   isStore: true, items: null,
-                  padding: EdgeInsets.zero,
                   stores: campaignController.campaign != null ? campaignController.campaign!.store : null,
                 ),
 

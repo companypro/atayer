@@ -168,36 +168,4 @@ class DateConverter {
 
     // return DateFormat('${_timeFormatter()} | d-MMM-yyyy ').format(dateTime.toLocal());
   }
-
-  static String convertTodayYesterdayFormat(String createdAt) {
-    final now = DateTime.now();
-    final createdAtDate = DateTime.parse(createdAt).toLocal();
-
-    if (createdAtDate.year == now.year &&
-        createdAtDate.month == now.month &&
-        createdAtDate.day == now.day) {
-      return 'Today, ${DateFormat.jm().format(createdAtDate)}';
-    } else if (createdAtDate.year == now.year &&
-        createdAtDate.month == now.month &&
-        createdAtDate.day == now.day - 1) {
-      return 'Yesterday, ${DateFormat.jm().format(createdAtDate)}';
-    } else {
-      return DateConverter.localDateToIsoStringAMPM(createdAtDate);
-    }
-  }
-
-  static String convertOnlyTodayTime(String createdAt) {
-    final now = DateTime.now();
-    final createdAtDate = DateTime.parse(createdAt).toLocal();
-
-    if (createdAtDate.year == now.year &&
-        createdAtDate.month == now.month &&
-        createdAtDate.day == now.day) {
-      return DateFormat('h:mm a').format(createdAtDate);
-    } else {
-      return DateConverter.localDateToIsoStringAMPM(createdAtDate);
-    }
-  }
-
-
 }

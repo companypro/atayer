@@ -12,7 +12,6 @@ import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
-import 'package:sixam_mart/view/base/organic_tag.dart';
 import 'package:sixam_mart/view/base/rating_bar.dart';
 
 class ItemTitleView extends StatelessWidget {
@@ -51,76 +50,11 @@ class ItemTitleView extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Expanded(
-              child: Row(
-                children: [
-                  // Flexible(
-                  //   child: Text(
-                  //     item?.name ?? '',
-                  //     style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeOverLarge),
-                  //     maxLines: 2, overflow: TextOverflow.ellipsis,
-                  //   ),
-                  // ),
-                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                  ((Get.find<SplashController>().configModel!.moduleConfig!.module!.unit! && item!.unitType != null)
-                  || (Get.find<SplashController>().configModel!.moduleConfig!.module!.vegNonVeg! && Get.find<SplashController>().configModel!.toggleVegNonVeg!)) ? Text(
-                    Get.find<SplashController>().configModel!.moduleConfig!.module!.unit! ? '(${item!.unitType})'
-                        : item!.veg == 0 ? '(${'non_veg'.tr})' : '(${'veg'.tr})',
-                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),
-                  ) : const SizedBox(),
-                ],
-              ),
-            ),
-            const SizedBox(width: Dimensions.paddingSizeSmall),
-
-            item!.availableTimeStarts != null ? const SizedBox() : Container(
-              padding: const EdgeInsets.all(8), alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-              ),
-              child: GetBuilder<WishListController>(
-                  builder: (wishController) {
-                    return InkWell(
-                      onTap: () {
-                        if(Get.find<AuthController>().isLoggedIn()){
-                          if(wishController.wishItemIdList.contains(itemController.item!.id)) {
-                            wishController.removeFromWishList(itemController.item!.id, false);
-                          }else {
-                            wishController.addToWishList(itemController.item, null, false);
-                          }
-                        }else {
-                          showCustomSnackBar('you_are_not_logged_in'.tr);
-                        }
-                      },
-                      child: Icon(
-                        wishController.wishItemIdList.contains(itemController.item!.id) ? Icons.favorite : Icons.favorite_border, size: 25,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    );
-                  }
-              ),
-            ),
-          ]),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
-
-          Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-              decoration: BoxDecoration(
-                color: inStock ? Colors.red.shade50 : Colors.green.shade50, borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-              ),
-              child: Text(inStock ? 'out_of_stock'.tr : 'in_stock'.tr, style: robotoRegular.copyWith(
-                color: Theme.of(context).primaryColor,
-                fontSize: Dimensions.fontSizeExtraSmall,
-              )),
-            ),
-            const SizedBox(width: Dimensions.paddingSizeDefault),
-
-            OrganicTag(item: item!, fromDetails: true),
-          ]),
+          Text(
+            item!.name ?? '',
+            style: robotoMedium.copyWith(fontSize: 30),
+            maxLines: 2, overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
           InkWell(
@@ -128,40 +62,67 @@ class ItemTitleView extends StatelessWidget {
               if(inStorePage) {
                 Get.back();
               }else {
-                Get.offNamed(RouteHelper.getStoreRoute(id: item!.storeId, page: 'item'));
+                Get.offNamed(RouteHelper.getStoreRoute(item!.storeId, 'item'));
               }
             },
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
               child: Text(
                 item!.storeName!,
-                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+                style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
               ),
             ),
           ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
-          RatingBar(rating: item!.avgRating, ratingCount: item!.ratingCount, size: 18),
+          RatingBar(rating: item!.avgRating, ratingCount: item!.ratingCount, size: 21),
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
           Row(children: [
+            Text(
+              '${PriceConverter.convertPrice(startingPrice, discount: discount, discountType: discountType)}'
+                  '${endingPrice!= null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: discount, discountType: discountType)}' : ''}',
+              style: robotoBold.copyWith(color: Theme.of(context).primaryColor, fontSize: 30), textDirection: TextDirection.ltr,
+            ),
+            const SizedBox(width: 10),
             discount! > 0 ? Flexible(
               child: Text(
                 '${PriceConverter.convertPrice(startingPrice)}'
                     '${endingPrice!= null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}',
                 textDirection: TextDirection.ltr,
-                style: robotoRegular.copyWith(
-                  color: Theme.of(context).disabledColor, decoration: TextDecoration.lineThrough,
-                  fontSize: Dimensions.fontSizeExtraSmall,
-                ),
+                style: robotoRegular.copyWith(color: Colors.red, decoration: TextDecoration.lineThrough,fontSize: Dimensions.fontSizeLarge),
               ),
             ) : const SizedBox(),
-            const SizedBox(width: 10),
+            const SizedBox(width: Dimensions.paddingSizeLarge),
+            Column(
+              children: [
 
-            Text(
-              '${PriceConverter.convertPrice(startingPrice, discount: discount, discountType: discountType)}'
-                  '${endingPrice!= null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: discount, discountType: discountType)}' : ''}',
-              style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge), textDirection: TextDirection.ltr,
+                ((Get.find<SplashController>().configModel!.moduleConfig!.module!.unit! && item!.unitType != null)
+                || (Get.find<SplashController>().configModel!.moduleConfig!.module!.vegNonVeg! && Get.find<SplashController>().configModel!.toggleVegNonVeg!)) ? Container(
+                  padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall, horizontal: Dimensions.paddingSizeSmall),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  ),
+                  child: Text(
+                    Get.find<SplashController>().configModel!.moduleConfig!.module!.unit! ? item!.unitType ?? ''
+                        : item!.veg == 0 ? 'non_veg'.tr : 'veg'.tr,
+                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).primaryColor),
+                  ),
+                ) : const SizedBox(),
+                const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+                  decoration: BoxDecoration(
+                    color: inStock ? Colors.red : Colors.green, borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                  ),
+                  child: Text(inStock ? 'out_of_stock'.tr : 'in_stock'.tr, style: robotoRegular.copyWith(
+                    color: Colors.white,
+                    fontSize: Dimensions.fontSizeSmall,
+                  )),
+                ),
+              ],
             ),
           ]),
 
@@ -173,46 +134,46 @@ class ItemTitleView extends StatelessWidget {
         builder: (itemController) {
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-            // Row(children: [
-            //   Expanded(child: Text(
-            //     item!.name ?? '',
-            //     style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
-            //     maxLines: 2, overflow: TextOverflow.ellipsis,
-            //   )),
-            //
-            //   item!.availableTimeStarts != null ? const SizedBox() : GetBuilder<WishListController>(
-            //       builder: (wishController) {
-            //         return Row(
-            //           children: [
-            //             // Text(
-            //             //   wishController.localWishes.contains(item.id) ? (item.wishlistCount+1).toString() : wishController.localRemovedWishes
-            //             //       .contains(item.id) ? (item.wishlistCount-1).toString() : item.wishlistCount.toString(),
-            //             //   style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
-            //             // ),
-            //             // SizedBox(width: 5),
-            //
-            //             InkWell(
-            //               onTap: () {
-            //                 if(isLoggedIn){
-            //                   if(wishController.wishItemIdList.contains(item!.id)) {
-            //                     wishController.removeFromWishList(item!.id, false);
-            //                   }else {
-            //                     wishController.addToWishList(item, null, false);
-            //                   }
-            //                 }else {
-            //                   showCustomSnackBar('you_are_not_logged_in'.tr);
-            //                 }
-            //               },
-            //               child: Icon(
-            //                 wishController.wishItemIdList.contains(item!.id) ? Icons.favorite : Icons.favorite_border, size: 25,
-            //                 color: wishController.wishItemIdList.contains(item!.id) ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
-            //               ),
-            //             ),
-            //           ],
-            //         );
-            //       }
-            //   ),
-            // ]),
+            Row(children: [
+              Expanded(child: Text(
+                item!.name ?? '',
+                style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
+                maxLines: 2, overflow: TextOverflow.ellipsis,
+              )),
+
+              GetBuilder<WishListController>(
+                  builder: (wishController) {
+                    return Row(
+                      children: [
+                        // Text(
+                        //   wishController.localWishes.contains(item.id) ? (item.wishlistCount+1).toString() : wishController.localRemovedWishes
+                        //       .contains(item.id) ? (item.wishlistCount-1).toString() : item.wishlistCount.toString(),
+                        //   style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE),
+                        // ),
+                        // SizedBox(width: 5),
+
+                        InkWell(
+                          onTap: () {
+                            if(isLoggedIn){
+                              if(wishController.wishItemIdList.contains(item!.id)) {
+                                wishController.removeFromWishList(item!.id, false);
+                              }else {
+                                wishController.addToWishList(item, null, false);
+                              }
+                            }else {
+                              showCustomSnackBar('you_are_not_logged_in'.tr);
+                            }
+                          },
+                          child: Icon(
+                            wishController.wishItemIdList.contains(item!.id) ? Icons.favorite : Icons.favorite_border, size: 25,
+                            color: wishController.wishItemIdList.contains(item!.id) ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+              ),
+            ]),
             const SizedBox(height: 5),
 
             InkWell(
@@ -220,27 +181,26 @@ class ItemTitleView extends StatelessWidget {
                 if(inStorePage) {
                   Get.back();
                 }else {
-                  Get.offNamed(RouteHelper.getStoreRoute(id: item!.storeId, page: 'item'));
+                  Get.offNamed(RouteHelper.getStoreRoute(item!.storeId, 'item'));
                 }
               },
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 5, 5, 5),
                 child: Text(
                   item!.storeName!,
-                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
                 ),
               ),
             ),
             const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
             Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Expanded(child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                // Text(
-                //   '${PriceConverter.convertPrice(startingPrice, discount: discount, discountType: discountType)}'
-                //       '${endingPrice!= null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: discount, discountType: discountType)}' : ''}',
-                //   style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge), textDirection: TextDirection.ltr,
-                // ),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(
+                  '${PriceConverter.convertPrice(startingPrice, discount: discount, discountType: discountType)}'
+                      '${endingPrice!= null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: discount, discountType: discountType)}' : ''}',
+                  style: robotoMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge), textDirection: TextDirection.ltr,
+                ),
                 const SizedBox(height: 5),
 
                 discount! > 0 ? Text(
@@ -278,8 +238,6 @@ class ItemTitleView extends StatelessWidget {
                   ),
                 ) : const SizedBox(),
                 const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                OrganicTag(item: item!, fromDetails: true),
 
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),

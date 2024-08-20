@@ -16,7 +16,7 @@ class ApiClient extends GetxService {
   final String appBaseUrl;
   final SharedPreferences sharedPreferences;
   static final String noInternetMessage = 'connection_to_api_server_failed'.tr;
-  final int timeoutInSeconds = 40;
+  final int timeoutInSeconds = 30;
 
   String? token;
   late Map<String, String> _mainHeaders;
@@ -31,7 +31,7 @@ class ApiClient extends GetxService {
       addressModel = AddressModel.fromJson(jsonDecode(sharedPreferences.getString(AppConstants.userAddress)!));
     }catch(_) {}
     int? moduleID;
-    if(GetPlatform.isMobile && sharedPreferences.containsKey(AppConstants.moduleId)) {
+    if(GetPlatform.isWeb && sharedPreferences.containsKey(AppConstants.moduleId)) {
       try {
         moduleID = ModuleModel.fromJson(jsonDecode(sharedPreferences.getString(AppConstants.moduleId)!)).id;
       }catch(_) {}
@@ -43,8 +43,7 @@ class ApiClient extends GetxService {
     );
   }
 
-  Map<String, String> updateHeader(String? token, List<int>? zoneIDs, List<int>? operationIds, String? languageCode, int? moduleID, String? latitude, String? longitude, {bool setHeader = true})
-  {
+  Map<String, String> updateHeader(String? token, List<int>? zoneIDs, List<int>? operationIds, String? languageCode, int? moduleID, String? latitude, String? longitude, {bool setHeader = true}) {
     Map<String, String> header = {};
     if(moduleID != null) {
       header.addAll({AppConstants.moduleId: moduleID.toString()});
@@ -104,7 +103,7 @@ class ApiClient extends GetxService {
     try {
       if(kDebugMode) {
         print('====> API Call: $uri\nHeader: $_mainHeaders');
-        print('====> API Body: ${body} with ${multipartBody.length} picture');
+        print('====> API Body: $body with ${multipartBody.length} picture');
       }
       http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse(appBaseUrl+uri));
       request.headers.addAll(headers ?? _mainHeaders);

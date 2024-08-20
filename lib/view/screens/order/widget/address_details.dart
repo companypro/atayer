@@ -12,7 +12,7 @@ class AddressDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
-        addressDetails!.address ?? '',
+        addressDetails!.address!,
         style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall), maxLines: 4, overflow: TextOverflow.ellipsis,
       ),
       const SizedBox(height: 5),

@@ -12,10 +12,9 @@ class DiscountTag extends StatelessWidget {
   final double? fontSize;
   final bool inLeft;
   final bool? freeDelivery;
-  final bool? isFloating;
   const DiscountTag({Key? key, 
     required this.discount, required this.discountType, this.fromTop = 10, this.fontSize, this.freeDelivery = false,
-    this.inLeft = true, this.isFloating = true,
+    this.inLeft = true,
   }) : super(key: key);
 
   @override
@@ -24,21 +23,21 @@ class DiscountTag extends StatelessWidget {
     String currencySymbol = Get.find<SplashController>().configModel!.currencySymbol!;
 
     return (discount! > 0 || freeDelivery!) ? Positioned(
-      top: fromTop, left: inLeft ? isFloating! ? Dimensions.paddingSizeSmall : 0 : null, right: inLeft ? null : 0,
+      top: fromTop, left: inLeft ? 0 : null, right: inLeft ? null : 0,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.error.withOpacity(0.8),
+          color: Colors.green,
           borderRadius: BorderRadius.horizontal(
-            right: Radius.circular(isFloating! ? Dimensions.radiusLarge : inLeft ? Dimensions.radiusSmall : 0),
-            left: Radius.circular(isFloating! ? Dimensions.radiusLarge : inLeft ? 0 : Dimensions.radiusSmall),
+            right: Radius.circular(inLeft ? Dimensions.radiusSmall : 0),
+            left: Radius.circular(inLeft ? 0 : Dimensions.radiusSmall),
           ),
         ),
         child: Text(
-          discount! > 0 ? '${(isRightSide || discountType == 'percent') ? '' : currencySymbol}$discount${discountType == 'percent' ? '%'
+          discount! > 0 ? '${isRightSide ? '' : currencySymbol}$discount${discountType == 'percent' ? '%'
               : isRightSide ? currencySymbol : ''} ${'off'.tr}' : 'free_delivery'.tr,
           style: robotoMedium.copyWith(
-            color: Theme.of(context).cardColor,
+            color: Colors.white,
             fontSize: fontSize ?? (ResponsiveHelper.isMobile(context) ? 8 : 12),
           ),
           textAlign: TextAlign.center,

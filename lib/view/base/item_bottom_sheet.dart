@@ -3,11 +3,8 @@ import 'package:sixam_mart/controller/cart_controller.dart';
 import 'package:sixam_mart/controller/item_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/controller/wishlist_controller.dart';
-import 'package:sixam_mart/data/model/body/place_order_body.dart';
 import 'package:sixam_mart/data/model/response/cart_model.dart';
 import 'package:sixam_mart/data/model/response/item_model.dart';
-import 'package:sixam_mart/data/model/response/module_model.dart';
-import 'package:sixam_mart/helper/cart_helper.dart';
 import 'package:sixam_mart/helper/date_converter.dart';
 import 'package:sixam_mart/helper/price_converter.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
@@ -41,18 +38,18 @@ class ItemBottomSheet extends StatefulWidget {
 }
 
 class _ItemBottomSheetState extends State<ItemBottomSheet> {
-  bool _newVariation = false;
+  bool? _newVariation = false;
 
   @override
   void initState() {
     super.initState();
 
-    if(Get.find<SplashController>().module == null) {
-      if(Get.find<SplashController>().cacheModule != null) {
+    if(Get.find<SplashController>().module == null){
+      if(Get.find<SplashController>().cacheModule != null){
         Get.find<SplashController>().setCacheConfigModule(Get.find<SplashController>().cacheModule);
       }
     }
-    _newVariation = Get.find<SplashController>().getModuleConfig(widget.item!.moduleType)!.newVariation ?? false;
+    _newVariation = Get.find<SplashController>().getModuleConfig(widget.item!.moduleType).newVariation;
     Get.find<ItemController>().initData(widget.item, widget.cart);
   }
 
@@ -61,9 +58,11 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
     return Container(
       width: 550,
       margin: EdgeInsets.only(top: GetPlatform.isWeb ? 0 : 30),
+      // padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, bottom: Dimensions.paddingSizeDefault),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: GetPlatform.isWeb ? const BorderRadius.all(Radius.circular(Dimensions.radiusDefault)) : const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge)),
+        borderRadius: ResponsiveHelper.isMobile(context) ? const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge))
+            : const BorderRadius.all(Radius.circular(Dimensions.radiusExtraLarge)),
       ),
       child: GetBuilder<ItemController>(builder: (itemController) {
         double? startingPrice;
@@ -85,16 +84,11 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
         double? price = widget.item!.price;
         double variationPrice = 0;
         Variation? variation;
-        double? initialDiscount = (widget.isCampaign || widget.item!.storeDiscount == 0) ? widget.item!.discount : widget.item!.storeDiscount;
         double? discount = (widget.isCampaign || widget.item!.storeDiscount == 0) ? widget.item!.discount : widget.item!.storeDiscount;
         String? discountType = (widget.isCampaign || widget.item!.storeDiscount == 0) ? widget.item!.discountType : 'percent';
         int? stock = widget.item!.stock ?? 0;
 
-        if(discountType == 'amount'){
-          discount = discount! * itemController.quantity!;
-        }
-
-        if(_newVariation) {
+        if(_newVariation!) {
           for(int index = 0; index< widget.item!.foodVariations!.length; index++) {
             for(int i=0; i<widget.item!.foodVariations![index].variationValues!.length; i++) {
               if(itemController.selectedVariations[index][i]!) {
@@ -118,11 +112,11 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
             }
           }
 
-          for (Variation variations in widget.item!.variations!) {
-            if (variations.type == variationType) {
-              price = variations.price;
-              variation = variations;
-              stock = variations.stock;
+          for (Variation variation in widget.item!.variations!) {
+            if (variation.type == variationType) {
+              price = variation.price;
+              variation = variation;
+              stock = variation.stock;
               break;
             }
           }
@@ -131,17 +125,15 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
         price = price! + variationPrice;
         double priceWithDiscount = PriceConverter.convertWithDiscount(price, discount, discountType)!;
         double addonsCost = 0;
-        List<AddOnModel> addOnIdList = [];
+        List<AddOn> addOnIdList = [];
         List<AddOns> addOnsList = [];
         for (int index = 0; index < widget.item!.addOns!.length; index++) {
           if (itemController.addOnActiveList[index]) {
             addonsCost = addonsCost + (widget.item!.addOns![index].price! * itemController.addOnQtyList[index]!);
-            addOnIdList.add(AddOnModel(id: widget.item!.addOns![index].id, quantity: itemController.addOnQtyList[index]));
+            addOnIdList.add(AddOn(id: widget.item!.addOns![index].id, quantity: itemController.addOnQtyList[index]));
             addOnsList.add(widget.item!.addOns![index]);
           }
         }
-        priceWithDiscount = priceWithDiscount;
-        double? priceWithDiscountAndAddons = priceWithDiscount + addonsCost;
         bool isAvailable = DateConverter.isAvailable(widget.item!.availableTimeStarts, widget.item!.availableTimeEnds);
 
         return ConstrainedBox(
@@ -183,7 +175,7 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              DiscountTag(discount: initialDiscount, discountType: discountType, fromTop: 20),
+                              DiscountTag(discount: discount, discountType: discountType, fromTop: 20),
                             ]),
                           ),
                           const SizedBox(width: 10),
@@ -200,11 +192,11 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                     Get.back();
                                   }else {
                                     Get.back();
-                                    // Get.find<CartController>().forcefullySetModule(widget.item!.moduleId!);
-                                    // Get.toNamed(
-                                      // RouteHelper.getStoreRoute(id: widget.item!.storeId, page: 'item'),
-                                    // );
-                                    // Get.offNamed(RouteHelper.getStoreRoute(id: widget.item!.storeId, page: 'item'));
+                                    Get.find<CartController>().forcefullySetModule(widget.item!.moduleId!);
+                                    Get.toNamed(
+                                      RouteHelper.getStoreRoute(widget.item!.storeId, 'item'),
+                                    );
+                                    Get.offNamed(RouteHelper.getStoreRoute(widget.item!.storeId, 'item'));
                                   }
                                 },
                                 child: Padding(
@@ -217,12 +209,12 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                               ),
                               !widget.isCampaign ? RatingBar(rating: widget.item!.avgRating, size: 15, ratingCount: widget.item!.ratingCount) : const SizedBox(),
                               Text(
-                                '${PriceConverter.convertPrice(startingPrice, discount: initialDiscount, discountType: discountType)}'
-                                    '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: initialDiscount,
+                                '${PriceConverter.convertPrice(startingPrice, discount: discount, discountType: discountType)}'
+                                    '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice, discount: discount,
                                     discountType: discountType)}' : ''}',
                                 style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge), textDirection: TextDirection.ltr,
                               ),
-                              price > priceWithDiscountAndAddons ? Text(
+                              price > priceWithDiscount ? Text(
                                 '${PriceConverter.convertPrice(startingPrice)}'
                                     '${endingPrice != null ? ' - ${PriceConverter.convertPrice(endingPrice)}' : ''}', textDirection: TextDirection.ltr,
                                 style: robotoMedium.copyWith(color: Theme.of(context).disabledColor, decoration: TextDecoration.lineThrough),
@@ -248,7 +240,6 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                                       color: Theme.of(context).primaryColor.withOpacity(0.05)
                                   ),
                                   padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                                  margin: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
                                   child: Icon(
                                     wishList.wishItemIdList.contains(widget.item!.id) ? Icons.favorite : Icons.favorite_border,
                                     color: wishList.wishItemIdList.contains(widget.item!.id) ? Theme.of(context).primaryColor
@@ -295,9 +286,8 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                         ) : const SizedBox(),
 
                         // Variation
-                        _newVariation ? NewVariationView(
+                        _newVariation! ? NewVariationView(
                           item: widget.item, itemController: itemController,
-                          discount: initialDiscount, discountType: discountType, showOriginalPrice: price > priceWithDiscount,
                         ) : VariationView(
                           item: widget.item, itemController: itemController,
                         ),
@@ -334,193 +324,127 @@ class _ItemBottomSheetState extends State<ItemBottomSheet> {
                 ),
 
                 ///Bottom side..
-                // (!widget.item!.scheduleOrder! && !isAvailable) ? const SizedBox() : Container(
-                //   decoration: BoxDecoration(
-                //     color: Theme.of(context).cardColor,
-                //     borderRadius: GetPlatform.isWeb ? const BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(40)) : const BorderRadius.all(Radius.circular(0)),
-                //     boxShadow: ResponsiveHelper.isDesktop(context) ? null : [BoxShadow(color: Colors.grey[300]!, blurRadius: 10)]
-                //   ),
-                //   padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
-                //   child: Column(children: [
-                //
-                //     Builder(
-                //       builder: (context) {
-                //        double? cost = PriceConverter.convertWithDiscount((price! * itemController.quantity!), discount, discountType);
-                //        double withAddonCost = cost! + addonsCost;
-                //         return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                //           Text('${'total_amount'.tr}:', style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor)),
-                //           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                //
-                //           Row(children: [
-                //             discount! > 0 ? PriceConverter.convertAnimationPrice(
-                //               (price * itemController.quantity!) + addonsCost,
-                //               textStyle: robotoMedium.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall, decoration: TextDecoration.lineThrough),
-                //             ) : const SizedBox(),
-                //             const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                //
-                //             PriceConverter.convertAnimationPrice(
-                //               withAddonCost,
-                //               textStyle: robotoBold.copyWith(color: Theme.of(context).primaryColor),
-                //             ),
-                //           ]),
-                //         ]);
-                //       }
-                //     ),
-                //     const SizedBox(height: Dimensions.paddingSizeLarge),
-                //     Row(
-                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //
-                //       children: [
-                //
-                //         QuantityButton(
-                //           onTap: () {
-                //             if (itemController.quantity! > 1) {
-                //               itemController.setQuantity(false, stock, widget.item!.quantityLimit, getxSnackBar: true);
-                //             }
-                //           },
-                //           isIncrement: false,
-                //           fromSheet: true,
-                //         ),
-                //         Text(itemController.quantity.toString(), style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
-                //         QuantityButton(
-                //           onTap: () => itemController.setQuantity(true, stock, widget.item!.quantityLimit, getxSnackBar: true),
-                //           isIncrement: true,
-                //           fromSheet: true,
-                //         ),
-                //       ],
-                //     ),
-                //
-                //     // SafeArea(
-                //     //   child: Row(children: [
-                //     //       // Quantity
-                //     //       const SizedBox(width: Dimensions.paddingSizeSmall),
-                //     //
-                //     //       // Expanded(child: GetBuilder<CartController>(
-                //     //       //   builder: (cartController) {
-                //     //       //     return CustomButton(
-                //     //       //       width: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.width / 2.0 : null,
-                //     //       //       /*buttonText: isCampaign ? 'order_now'.tr : isExistInCart ? 'already_added_in_cart'.tr : fromCart
-                //     //       //                 ? 'update_in_cart'.tr : 'add_to_cart'.tr,*/
-                //     //       //       isLoading: cartController.isLoading,
-                //     //       //       buttonText: (Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && stock! <= 0)
-                //     //       //           ? 'out_of_stock'.tr : widget.isCampaign ? 'order_now'.tr
-                //     //       //           : (widget.cart != null || itemController.cartIndex != -1) ? 'update_in_cart'.tr : 'add_to_cart'.tr,
-                //     //       //       onPressed: (Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && stock! <= 0) ? null : () async {
-                //     //       //         String? invalid;
-                //     //       //         if(_newVariation) {
-                //     //       //           for(int index=0; index<widget.item!.foodVariations!.length; index++) {
-                //     //       //             if(!widget.item!.foodVariations![index].multiSelect! && widget.item!.foodVariations![index].required!
-                //     //       //                 && !itemController.selectedVariations[index].contains(true)) {
-                //     //       //               invalid = '${'choose_a_variation_from'.tr} ${widget.item!.foodVariations![index].name}';
-                //     //       //               break;
-                //     //       //             }else if(widget.item!.foodVariations![index].multiSelect! && (widget.item!.foodVariations![index].required!
-                //     //       //                 || itemController.selectedVariations[index].contains(true)) && widget.item!.foodVariations![index].min!
-                //     //       //                 > itemController.selectedVariationLength(itemController.selectedVariations, index)) {
-                //     //       //               invalid = '${'select_minimum'.tr} ${widget.item!.foodVariations![index].min} '
-                //     //       //                   '${'and_up_to'.tr} ${widget.item!.foodVariations![index].max} ${'options_from'.tr}'
-                //     //       //                   ' ${widget.item!.foodVariations![index].name} ${'variation'.tr}';
-                //     //       //               break;
-                //     //       //             }
-                //     //       //           }
-                //     //       //         }
-                //     //       //
-                //     //       //         if(Get.find<SplashController>().moduleList != null) {
-                //     //       //           for(ModuleModel module in Get.find<SplashController>().moduleList!) {
-                //     //       //             if(module.id == widget.item!.moduleId) {
-                //     //       //               Get.find<SplashController>().setModule(module);
-                //     //       //               break;
-                //     //       //             }
-                //     //       //           }
-                //     //       //         }
-                //     //       //
-                //     //       //         if(invalid != null) {
-                //     //       //           showCustomSnackBar(invalid, getXSnackBar: true);
-                //     //       //         }else {
-                //     //       //           CartModel cartModel = CartModel(
-                //     //       //               id: null,
-                //     //       //               price: price,
-                //     //       //               discountedPrice: priceWithDiscountAndAddons,
-                //     //       //               variation: variation != null ? [variation] : [],
-                //     //       //               foodVariations: itemController.selectedVariations,
-                //     //       //               discountAmount: (price! - PriceConverter.convertWithDiscount(price, discount, discountType)!),
-                //     //       //               quantity: itemController.quantity,
-                //     //       //               addOnIds: addOnIdList,
-                //     //       //               addOns: addOnsList,
-                //     //       //               isCampaign: widget.isCampaign,
-                //     //       //               stock: stock,
-                //     //       //               item: widget.item,
-                //     //       //               quantityLimit: widget.item!.quantityLimit != null ? widget.item!.quantityLimit! : null
-                //     //       //           );
-                //     //       //           List<OrderVariation> variations = CartHelper.getSelectedVariations(
-                //     //       //             isFoodVariation: Get.find<SplashController>().getModuleConfig(widget.item!.moduleType).newVariation!,
-                //     //       //             foodVariations: widget.item!.foodVariations!, selectedVariations: itemController.selectedVariations,
-                //     //       //           );
-                //     //       //           List<int?> listOfAddOnId = CartHelper.getSelectedAddonIds(addOnIdList: addOnIdList);
-                //     //       //           List<int?> listOfAddOnQty = CartHelper.getSelectedAddonQtnList(addOnIdList: addOnIdList);
-                //     //       //
-                //     //       //           OnlineCart onlineCart = OnlineCart(
-                //     //       //             widget.cart != null ? widget.cart!.id : null, widget.isCampaign ? null : widget.item!.id, widget.isCampaign ? widget.item!.id : null,
-                //     //       //             priceWithDiscountAndAddons.toString(), '', variation != null ? [variation] : null,
-                //     //       //             Get.find<SplashController>().getModuleConfig(widget.item!.moduleType).newVariation! ? variations : null,
-                //     //       //             itemController.quantity, listOfAddOnId, addOnsList, listOfAddOnQty, 'Item'
-                //     //       //           );
-                //     //       //
-                //     //       //           print('====online cart : ${onlineCart.toJson()}');
-                //     //       //
-                //     //       //           if(widget.isCampaign) {
-                //     //       //             Get.toNamed(RouteHelper.getCheckoutRoute('campaign'), arguments: CheckoutScreen(
-                //     //       //               storeId: null, fromCart: false, cartList: [cartModel],
-                //     //       //             ));
-                //     //       //           }else {
-                //     //       //             if (Get.find<CartController>().existAnotherStoreItem(
-                //     //       //                 cartModel.item!.storeId, Get.find<SplashController>().module != null
-                //     //       //                 ? Get.find<SplashController>().module!.id : Get.find<SplashController>().cacheModule!.id,
-                //     //       //             )) {
-                //     //       //               Get.dialog(ConfirmationDialog(
-                //     //       //                 icon: Images.warning,
-                //     //       //                 title: 'are_you_sure_to_reset'.tr,
-                //     //       //                 description: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
-                //     //       //                     ? 'if_you_continue'.tr : 'if_you_continue_without_another_store'.tr,
-                //     //       //                 onYesPressed: () {
-                //     //       //
-                //     //       //                   Get.back();
-                //     //       //                   Get.find<CartController>().clearCartOnline().then((success) async {
-                //     //       //                     if(success) {
-                //     //       //                       await Get.find<CartController>().addToCartOnline(onlineCart);
-                //     //       //                       Get.back();
-                //     //       //                       showCartSnackBar();
-                //     //       //                     }
-                //     //       //                   });
-                //     //       //
-                //     //       //                 },
-                //     //       //               ), barrierDismissible: false);
-                //     //       //             } else {
-                //     //       //               if(widget.cart != null || itemController.cartIndex != -1){
-                //     //       //                 await Get.find<CartController>().updateCartOnline(onlineCart).then((success) {
-                //     //       //                   if(success) {
-                //     //       //                     Get.back();
-                //     //       //                   }
-                //     //       //                 });
-                //     //       //               } else {
-                //     //       //                 await Get.find<CartController>().addToCartOnline(onlineCart).then((success) {
-                //     //       //                   if(success) {
-                //     //       //                     Get.back();
-                //     //       //                   }
-                //     //       //                 });
-                //     //       //               }
-                //     //       //
-                //     //       //               showCartSnackBar();
-                //     //       //             }
-                //     //       //           }
-                //     //       //         }
-                //     //       //       },
-                //     //       //     );
-                //     //       //   }
-                //     //       // )),
-                //     //     ]),
-                //     // ),
-                //   ]),
-                // ),
+                (!widget.item!.scheduleOrder! && !isAvailable) ? const SizedBox() : Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    boxShadow: ResponsiveHelper.isDesktop(context) ? null : [BoxShadow(color: Colors.grey[300]!, blurRadius: 10)]
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
+                  child: Column(children: [
+
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      Text('${'total_amount'.tr}:', style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor)),
+                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+
+                      Row(children: [
+                        discount! > 0 ? Text(
+                          PriceConverter.convertPrice(
+                            (price * itemController.quantity!) + addonsCost,
+                          ), textDirection: TextDirection.ltr,
+                          style: robotoMedium.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall, decoration: TextDecoration.lineThrough),
+                        ) : const SizedBox(),
+                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+
+                        Text(
+                            PriceConverter.convertPrice(
+                              (price * itemController.quantity!) + addonsCost,
+                              discount: discount, discountType: discountType,
+                            ),
+                            style: robotoBold.copyWith(color: Theme.of(context).primaryColor), textDirection: TextDirection.ltr,
+                          ),
+
+                      ]),
+                    ]),
+                    const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                    Row(children: [
+                        // Quantity
+                        Row(children: [
+                          QuantityButton(
+                            onTap: () {
+                              if (itemController.quantity! > 1) {
+                                itemController.setQuantity(false, stock);
+                              }
+                            },
+                            isIncrement: false,
+                            fromSheet: true,
+                          ),
+                          Text(itemController.quantity.toString(), style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                          QuantityButton(
+                            onTap: () => itemController.setQuantity(true, stock),
+                            isIncrement: true,
+                            fromSheet: true,
+                          ),
+                        ]),
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                        Expanded(child: CustomButton(
+                          width: ResponsiveHelper.isDesktop(context) ? MediaQuery.of(context).size.width / 2.0 : null,
+                          /*buttonText: isCampaign ? 'order_now'.tr : isExistInCart ? 'already_added_in_cart'.tr : fromCart
+                                    ? 'update_in_cart'.tr : 'add_to_cart'.tr,*/
+                          buttonText: (Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && stock! <= 0)
+                              ? 'out_of_stock'.tr : widget.isCampaign ? 'order_now'.tr
+                              : (widget.cart != null || itemController.cartIndex != -1) ? 'update_in_cart'.tr : 'add_to_cart'.tr,
+                          onPressed: (Get.find<SplashController>().configModel!.moduleConfig!.module!.stock! && stock! <= 0) ? null : () {
+
+                            String? invalid;
+                            if(_newVariation!) {
+                              for(int index=0; index<widget.item!.foodVariations!.length; index++) {
+                                if(!widget.item!.foodVariations![index].multiSelect! && widget.item!.foodVariations![index].required!
+                                    && !itemController.selectedVariations[index].contains(true)) {
+                                  invalid = '${'choose_a_variation_from'.tr} ${widget.item!.foodVariations![index].name}';
+                                  break;
+                                }else if(widget.item!.foodVariations![index].multiSelect! && (widget.item!.foodVariations![index].required!
+                                    || itemController.selectedVariations[index].contains(true)) && widget.item!.foodVariations![index].min!
+                                    > itemController.selectedVariationLength(itemController.selectedVariations, index)) {
+                                  invalid = '${'select_minimum'.tr} ${widget.item!.foodVariations![index].min} '
+                                      '${'and_up_to'.tr} ${widget.item!.foodVariations![index].max} ${'options_from'.tr}'
+                                      ' ${widget.item!.foodVariations![index].name} ${'variation'.tr}';
+                                  break;
+                                }
+                              }
+                            }
+
+                            if(invalid != null) {
+                              showCustomSnackBar(invalid, getXSnackBar: true);
+                            }else {
+                              Get.back();
+                              CartModel cartModel = CartModel(
+                                price, priceWithDiscount, variation != null ? [variation] : [], itemController.selectedVariations,
+                                (price! - PriceConverter.convertWithDiscount(price, discount, discountType)!),
+                                itemController.quantity, addOnIdList, addOnsList, widget.isCampaign, stock, widget.item,
+                              );
+                              if(widget.isCampaign) {
+                                Get.toNamed(RouteHelper.getCheckoutRoute('campaign'), arguments: CheckoutScreen(
+                                  storeId: null, fromCart: false, cartList: [cartModel],
+                                ));
+                              }else {
+                                if (Get.find<CartController>().existAnotherStoreItem(cartModel.item!.storeId, Get.find<SplashController>().module != null ? Get.find<SplashController>().module!.id : Get.find<SplashController>().cacheModule!.id)) {
+                                  Get.dialog(ConfirmationDialog(
+                                    icon: Images.warning,
+                                    title: 'are_you_sure_to_reset'.tr,
+                                    description: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
+                                        ? 'if_you_continue'.tr : 'if_you_continue_without_another_store'.tr,
+                                    onYesPressed: () {
+                                      Get.back();
+                                      Get.find<CartController>().removeAllAndAddToCart(cartModel);
+                                      showCartSnackBar();
+                                    },
+                                  ), barrierDismissible: false);
+                                } else {
+                                  Get.find<CartController>().addToCart(
+                                    cartModel, widget.cartIndex ?? itemController.cartIndex,
+                                  );
+                                  showCartSnackBar();
+                                }
+                              }
+                            }
+                          },
+
+                        )),
+                      ]),
+                  ]),
+                ),
               ]),
 
               Positioned(
@@ -587,78 +511,75 @@ class AddonView extends StatelessWidget {
                     itemController.addAddOn(false, index);
                   }
                 },
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeExtraSmall),
-                  child: Row(children: [
+                child: Row(children: [
 
-                    Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
 
-                      Checkbox(
-                        value: itemController.addOnActiveList[index],
-                        activeColor: Theme.of(context).primaryColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
-                        onChanged:(bool? newValue) {
-                          if (!itemController.addOnActiveList[index]) {
-                            itemController.addAddOn(true, index);
-                          } else if (itemController.addOnQtyList[index] == 1) {
-                            itemController.addAddOn(false, index);
-                          }
-                        },
-                        visualDensity: const VisualDensity(horizontal: -3, vertical: -3),
-                        side: BorderSide(width: 2, color: Theme.of(context).hintColor),
-                      ),
-
-                      Text(
-                        item.addOns![index].name!,
-                        maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: itemController.addOnActiveList[index] ? robotoMedium : robotoRegular.copyWith(color: Theme.of(context).hintColor),
-                      ),
-
-                    ]),
-
-                    const Spacer(),
-
-                    Text(
-                      item.addOns![index].price! > 0 ? PriceConverter.convertPrice(item.addOns![index].price) : 'free'.tr,
-                      maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
-                      style: itemController.addOnActiveList[index] ? robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall)
-                          : robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                    Checkbox(
+                      value: itemController.addOnActiveList[index],
+                      activeColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
+                      onChanged:(bool? newValue) {
+                        if (!itemController.addOnActiveList[index]) {
+                          itemController.addAddOn(true, index);
+                        } else if (itemController.addOnQtyList[index] == 1) {
+                          itemController.addAddOn(false, index);
+                        }
+                      },
+                      visualDensity: const VisualDensity(horizontal: -3, vertical: -3),
+                      side: BorderSide(width: 2, color: Theme.of(context).hintColor),
                     ),
 
-                    itemController.addOnActiveList[index] ? Container(
-                      height: 25, width: 90,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), color: Theme.of(context).cardColor),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              if (itemController.addOnQtyList[index]! > 1) {
-                                itemController.setAddOnQuantity(false, index);
-                              } else {
-                                itemController.addAddOn(false, index);
-                              }
-                            },
-                            child: Center(child: Icon(
-                                (itemController.addOnQtyList[index]! > 1) ? Icons.remove : Icons.delete_outline_outlined, size: 18,
-                              color: (itemController.addOnQtyList[index]! > 1) ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.error,
-                            )),
-                          ),
-                        ),
-                        Text(
-                          itemController.addOnQtyList[index].toString(),
-                          style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => itemController.setAddOnQuantity(true, index),
-                            child: Center(child: Icon(Icons.add, size: 18, color: Theme.of(context).primaryColor)),
-                          ),
-                        ),
-                      ]),
-                    ) : const SizedBox(),
+                    Text(
+                      item.addOns![index].name!,
+                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: itemController.addOnActiveList[index] ? robotoMedium : robotoRegular.copyWith(color: Theme.of(context).hintColor),
+                    ),
 
                   ]),
-                ),
+
+                  const Spacer(),
+
+                  Text(
+                    item.addOns![index].price! > 0 ? PriceConverter.convertPrice(item.addOns![index].price) : 'free'.tr,
+                    maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
+                    style: itemController.addOnActiveList[index] ? robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall)
+                        : robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                  ),
+
+                  itemController.addOnActiveList[index] ? Container(
+                    height: 25, width: 90,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), color: Theme.of(context).cardColor),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            if (itemController.addOnQtyList[index]! > 1) {
+                              itemController.setAddOnQuantity(false, index);
+                            } else {
+                              itemController.addAddOn(false, index);
+                            }
+                          },
+                          child: Center(child: Icon(
+                              (itemController.addOnQtyList[index]! > 1) ? Icons.remove : Icons.delete_outline_outlined, size: 18,
+                            color: (itemController.addOnQtyList[index]! > 1) ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.error,
+                          )),
+                        ),
+                      ),
+                      Text(
+                        itemController.addOnQtyList[index].toString(),
+                        style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                      ),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => itemController.setAddOnQuantity(true, index),
+                          child: Center(child: Icon(Icons.add, size: 18, color: Theme.of(context).primaryColor)),
+                        ),
+                      ),
+                    ]),
+                  ) : const SizedBox(),
+
+                ]),
               );
 
           },
@@ -735,10 +656,7 @@ class VariationView extends StatelessWidget {
 class NewVariationView extends StatelessWidget {
   final Item? item;
   final ItemController itemController;
-  final double? discount;
-  final String? discountType;
-  final bool showOriginalPrice;
-  const NewVariationView({Key? key, required this.item, required this.itemController, required this.discount, required this.discountType, required this.showOriginalPrice}) : super(key: key);
+  const NewVariationView({Key? key, required this.item, required this.itemController}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -868,16 +786,8 @@ class NewVariationView extends StatelessWidget {
 
                         const Spacer(),
 
-                        showOriginalPrice ? Text(
-                          '+${PriceConverter.convertPrice(item!.foodVariations![index].variationValues![i].optionPrice)}',
-                          maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
-                          style:/* itemController.selectedVariations[index][i]! ? robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, decoration: TextDecoration.lineThrough)
-                              :*/ robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor, decoration: TextDecoration.lineThrough),
-                        ) : const SizedBox(),
-                        SizedBox(width: showOriginalPrice ? Dimensions.paddingSizeExtraSmall : 0),
-
                         Text(
-                          '+${PriceConverter.convertPrice(item!.foodVariations![index].variationValues![i].optionPrice, discount: discount, discountType: discountType)}',
+                          '+${PriceConverter.convertPrice(item!.foodVariations![index].variationValues![i].optionPrice)}',
                           maxLines: 1, overflow: TextOverflow.ellipsis, textDirection: TextDirection.ltr,
                           style: itemController.selectedVariations[index][i]! ? robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall)
                               : robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor),

@@ -41,6 +41,7 @@ class CookiesView extends StatelessWidget {
               ),
               onPressed: (){
                 Get.find<SplashController>().saveCookiesData(false);
+                Get.find<SplashController>().cookiesStatusChange(Get.find<SplashController>().configModel!.cookiesText ?? 'This is dummy cookies text');
               }, child:  Text(
               'no_thanks'.tr,
               style: robotoRegular.copyWith(color: Colors.white70,fontSize: Dimensions.fontSizeSmall),

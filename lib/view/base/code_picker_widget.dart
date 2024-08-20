@@ -1,4 +1,6 @@
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker/country_codes.dart';
+import 'package:country_code_picker/selection_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 class CodePickerWidget extends StatefulWidget {
@@ -263,31 +265,6 @@ class _CodePickerWidgetState extends State<CodePickerWidget> {
           direction: Axis.horizontal,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-
-
-            if (!widget.hideMainText!)
-              Flexible(
-                fit: widget.alignLeft! ? FlexFit.tight : FlexFit.loose,
-                child: Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Text(
-                    widget.showOnlyCountryWhenClosed!
-                        ? selectedItem!.toCountryStringOnly()
-                        : selectedItem.toString(),
-                    style:
-                    widget.textStyle ?? Theme.of(context).textTheme.labelLarge,
-                    overflow: widget.textOverflow,
-                  ),
-                ),
-              ),
-            if (widget.showDropDownButton!)
-              Icon(
-                Icons.arrow_drop_down,
-                color: Colors.grey,
-                size: widget.flagWidth,
-              ),
-            const SizedBox(width: 5),
-
             if (widget.showFlagMain != null ? widget.showFlagMain! : widget.showFlag!)
               Flexible(
                 flex: 0,
@@ -306,6 +283,26 @@ class _CodePickerWidgetState extends State<CodePickerWidget> {
                     width: widget.flagWidth,
                   ),
                 ),
+              ),
+            const SizedBox(width: 5),
+
+            if (!widget.hideMainText!)
+              Flexible(
+                fit: widget.alignLeft! ? FlexFit.tight : FlexFit.loose,
+                child: Text(
+                  widget.showOnlyCountryWhenClosed!
+                      ? selectedItem!.toCountryStringOnly()
+                      : selectedItem.toString(),
+                  style:
+                  widget.textStyle ?? Theme.of(context).textTheme.labelLarge,
+                  overflow: widget.textOverflow,
+                ),
+              ),
+            if (widget.showDropDownButton!)
+              Icon(
+                Icons.arrow_drop_down,
+                color: Colors.grey,
+                size: widget.flagWidth,
               ),
           ],
         ),

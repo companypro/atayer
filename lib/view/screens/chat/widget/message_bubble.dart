@@ -30,6 +30,9 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
+        Text('${user!.fName} ${user!.lName}', style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+        const SizedBox(height: Dimensions.paddingSizeSmall),
+
         Row(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.start, children: [
 
           ClipRRect(
@@ -48,7 +51,7 @@ class MessageBubble extends StatelessWidget {
               if(message.message != null) Flexible(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(.10),
+                    color: Theme.of(context).secondaryHeaderColor,
                     borderRadius: const BorderRadius.only(
                       bottomRight: Radius.circular(Dimensions.radiusDefault),
                       topRight: Radius.circular(Dimensions.radiusDefault),
@@ -56,7 +59,7 @@ class MessageBubble extends StatelessWidget {
                     ),
                   ),
                   padding: EdgeInsets.all(message.message != null ? Dimensions.paddingSizeDefault : 0),
-                  child: Text(message.message ?? '', style: robotoRegular.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: Dimensions.fontSizeSmall)),
+                  child: Text(message.message ?? ''),
                 ),
               ),
               const SizedBox(height: 8.0),
@@ -97,7 +100,7 @@ class MessageBubble extends StatelessWidget {
         const SizedBox(height: Dimensions.paddingSizeSmall),
 
         Text(
-          DateConverter.convertTodayYesterdayFormat(message.createdAt!),
+          DateConverter.localDateToIsoStringAMPM(DateTime.parse(message.createdAt!)),
           style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeSmall),
         ),
       ]),
@@ -109,6 +112,12 @@ class MessageBubble extends StatelessWidget {
 
         return Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
 
+          Text(
+            '${profileController.userInfoModel != null ? profileController.userInfoModel!.fName ?? '' : ''} '
+                '${profileController.userInfoModel != null ? profileController.userInfoModel!.lName ?? '' : ''}',
+            style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
 
           Row(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.end, children: [
 
@@ -118,7 +127,7 @@ class MessageBubble extends StatelessWidget {
                 (message.message != null && message.message!.isNotEmpty) ? Flexible(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).primaryColor.withOpacity(0.5),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(Dimensions.radiusDefault),
                         bottomRight: Radius.circular(Dimensions.radiusDefault),
@@ -127,7 +136,7 @@ class MessageBubble extends StatelessWidget {
                     ),
                     child: Container(
                       padding: EdgeInsets.all(message.message != null ? Dimensions.paddingSizeDefault : 0),
-                      child: Text(message.message ?? '', style: robotoRegular.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.fontSizeSmall),),
+                      child: Text(message.message ?? ''),
                     ),
                   ),
                 ) : const SizedBox(),
@@ -171,6 +180,13 @@ class MessageBubble extends StatelessWidget {
             ),
             const SizedBox(width: Dimensions.paddingSizeSmall),
 
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: CustomImage(
+                fit: BoxFit.cover, width: 40, height: 40,
+                image: profileController.userInfoModel != null ? '${baseUrl!.customerImageUrl}/${profileController.userInfoModel!.image}' : '',
+              ),
+            ),
           ]),
 
           Icon(
@@ -181,7 +197,7 @@ class MessageBubble extends StatelessWidget {
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
           Text(
-            DateConverter.convertTodayYesterdayFormat(message.createdAt!),
+            DateConverter.localDateToIsoStringAMPM(DateTime.parse(message.createdAt!)),
             style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeSmall),
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),

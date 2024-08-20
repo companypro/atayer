@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:sixam_mart/controller/item_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/data/model/response/item_model.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
-import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/view/base/custom_image.dart';
-
-import '../../../../controller/auth_controller.dart';
-import '../../../../controller/localization_controller.dart';
-import '../../../../controller/wishlist_controller.dart';
-import '../../../base/add_favourite_view.dart';
-import '../../../base/custom_snackbar.dart';
-import '../../../base/not_logged_in_bottom_sheet_widget.dart';
-import '../../favourite/widget/fav_item_view.dart';
 
 class ItemImageView extends StatelessWidget {
   final Item? item;
@@ -33,7 +23,7 @@ class ItemImageView extends StatelessWidget {
     return GetBuilder<ItemController>(
       builder: (itemController) {
         String? baseUrl = item!.availableDateStarts == null ? Get.find<SplashController>().
-        configModel!.baseUrls!.itemImageUrl : Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl;
+            configModel!.baseUrls!.itemImageUrl : Get.find<SplashController>().configModel!.baseUrls!.campaignImageUrl;
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [

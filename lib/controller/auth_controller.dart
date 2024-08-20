@@ -29,13 +29,12 @@ class AuthController extends GetxController implements GetxService {
   }
 
   bool _isLoading = false;
-  bool _guestLoading = false;
   bool _notification = true;
   bool _acceptTerms = true;
   XFile? _pickedLogo;
   XFile? _pickedCover;
   List<ZoneModel>? _zoneList;
-  int? _selectedZoneIndex = 0;
+  int? _selectedZoneIndex = -1;
   LatLng? _restaurantLocation;
   List<int>? _zoneIds;
   XFile? _pickedImage;
@@ -63,7 +62,6 @@ class AuthController extends GetxController implements GetxService {
   bool _showPassView = false;
 
   bool get isLoading => _isLoading;
-  bool get guestLoading => _guestLoading;
   bool get notification => _notification;
   bool get acceptTerms => _acceptTerms;
   XFile? get pickedLogo => _pickedLogo;
@@ -95,23 +93,6 @@ class AuthController extends GetxController implements GetxService {
   String get storeMaxTime => _storeMaxTime;
   String get storeTimeUnit => _storeTimeUnit;
   bool get showPassView => _showPassView;
-
-  Future<ResponseModel> guestLogin() async {
-    _guestLoading = true;
-    update();
-    Response response = await authRepo.guestLogin();
-    ResponseModel responseModel;
-    if (response.statusCode == 200) {
-      authRepo.saveGuestId(response.body['guest_id'].toString());
-
-      responseModel = ResponseModel(true, '${response.body['guest_id']}');
-    } else {
-      responseModel = ResponseModel(false, response.statusText);
-    }
-    _guestLoading = false;
-    update();
-    return responseModel;
-  }
 
   void showHidePass({bool isUpdate = true}){
     _showPassView = ! _showPassView;
@@ -208,7 +189,6 @@ class AuthController extends GetxController implements GetxService {
       if(!Get.find<SplashController>().configModel!.customerVerification!) {
         authRepo.saveUserToken(response.body["token"]);
         await authRepo.updateToken();
-        authRepo.clearGuestId();
         Get.find<UserController>().getUserInfo();
       }
       responseModel = ResponseModel(true, response.body["token"]);
@@ -220,7 +200,7 @@ class AuthController extends GetxController implements GetxService {
     return responseModel;
   }
 
-  Future<ResponseModel> login(String? phone, String password) async {
+  Future<ResponseModel> login(String? phone, String password, {bool alreadyInApp = false}) async {
     _isLoading = true;
     update();
     Response response = await authRepo.login(phone: phone, password: password);
@@ -229,9 +209,8 @@ class AuthController extends GetxController implements GetxService {
       if(Get.find<SplashController>().configModel!.customerVerification! && response.body['is_phone_verified'] == 0) {
 
       }else {
-        authRepo.saveUserToken(response.body['token']);
+        authRepo.saveUserToken(response.body['token'], alreadyInApp: alreadyInApp);
         await authRepo.updateToken();
-        authRepo.clearGuestId();
         Get.find<UserController>().getUserInfo();
       }
       responseModel = ResponseModel(true, '${response.body['is_phone_verified']}${response.body['token']}');
@@ -255,7 +234,6 @@ class AuthController extends GetxController implements GetxService {
         }else {
           authRepo.saveUserToken(response.body['token']);
           await authRepo.updateToken();
-          authRepo.clearGuestId();
           Get.find<LocationController>().navigateToLocationScreen('sign-in');
         }
       }else {
@@ -281,7 +259,6 @@ class AuthController extends GetxController implements GetxService {
       }else {
         authRepo.saveUserToken(response.body['token']);
         await authRepo.updateToken();
-        authRepo.clearGuestId();
         Get.find<LocationController>().navigateToLocationScreen('sign-in');
       }
     } else {
@@ -364,7 +341,6 @@ class AuthController extends GetxController implements GetxService {
     if (response.statusCode == 200) {
       authRepo.saveUserToken(token);
       await authRepo.updateToken();
-      authRepo.clearGuestId();
       Get.find<UserController>().getUserInfo();
       responseModel = ResponseModel(true, response.body["message"]);
     } else {
@@ -383,7 +359,6 @@ class AuthController extends GetxController implements GetxService {
     if (response.statusCode == 200) {
       authRepo.saveUserToken(token!);
       await authRepo.updateToken();
-      authRepo.clearGuestId();
       Get.find<UserController>().getUserInfo();
       responseModel = ResponseModel(true, response.body["message"]);
     } else {
@@ -429,14 +404,6 @@ class AuthController extends GetxController implements GetxService {
 
   bool isLoggedIn() {
     return authRepo.isLoggedIn();
-  }
-
-  bool isGuestLoggedIn() {
-    return authRepo.isGuestLoggedIn();
-  }
-
-  String getGuestId() {
-    return authRepo.getGuestId();
   }
 
   bool clearSharedData() {
@@ -582,26 +549,6 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  void resetStoreRegistration(){
-    _pickedLogo = null;
-    _pickedCover = null;
-    _selectedModuleIndex = -1;
-    _selectedModuleIndex = -1;
-    _storeMinTime = '--';
-    _storeMaxTime = '--';
-    _storeTimeUnit = 'minute';
-    update();
-  }
-
-  void resetDeliveryRegistration(){
-    _identityTypeIndex = 0;
-    _dmTypeIndex = 0;
-    _selectedZoneIndex = -1;
-    _pickedImage = null;
-    _pickedIdentities = [];
-    update();
-  }
-
   // bool _checkIfValidMarker(LatLng tap, List<LatLng> vertices) {
   //   int intersectCount = 0;
   //   for (int j = 0; j < vertices.length - 1; j++) {
@@ -719,11 +666,4 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> saveGuestNumber(String number) async {
-    authRepo.saveGuestContactNumber(number);
-  }
-
-  String getGuestNumber() {
-    return authRepo.getGuestContactNumber();
-  }
 }

@@ -22,8 +22,6 @@ import 'package:sixam_mart/view/base/paginated_list_view.dart';
 import 'package:sixam_mart/view/base/web_menu_bar.dart';
 import 'package:sixam_mart/view/screens/chat/widget/message_bubble.dart';
 
-import '../auth/sign_in_screen.dart';
-
 class ChatScreen extends StatefulWidget {
   final NotificationBody? notificationBody;
   final User? user;
@@ -290,7 +288,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
             ),
-          ) : SignInScreen(exitFromApp: true, backFromThis: true,)
+          ) : NotLoggedInScreen(callBack: (value){
+            initCall();
+            setState(() {});
+          }),
         ),
       );
     });

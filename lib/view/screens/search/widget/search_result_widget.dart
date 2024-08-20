@@ -1,6 +1,5 @@
 import 'package:sixam_mart/controller/search_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
-import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/view/screens/search/widget/filter_widget.dart';
@@ -10,8 +9,7 @@ import 'package:get/get.dart';
 
 class SearchResultWidget extends StatefulWidget {
   final String searchText;
-  final TabController? tabController;
-  const SearchResultWidget({Key? key, required this.searchText, this.tabController}) : super(key: key);
+  const SearchResultWidget({Key? key, required this.searchText}) : super(key: key);
 
   @override
   SearchResultWidgetState createState() => SearchResultWidgetState();
@@ -23,11 +21,8 @@ class SearchResultWidgetState extends State<SearchResultWidget> with TickerProvi
   @override
   void initState() {
     super.initState();
-    if(widget.tabController != null){
-      _tabController = widget.tabController;
-    } else {
-      _tabController = TabController(length: 2, initialIndex: 0, vsync: this);
-    }
+
+    _tabController = TabController(length: 2, initialIndex: 0, vsync: this);
   }
 
   @override
@@ -60,7 +55,7 @@ class SearchResultWidgetState extends State<SearchResultWidget> with TickerProvi
               'results_found'.tr,
               style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
             )),
-            ( ResponsiveHelper.isMobile(context)  && widget.searchText.isNotEmpty) ? InkWell(
+            widget.searchText.isNotEmpty ? InkWell(
               onTap: () {
                 List<double?> prices = [];
                 if(!Get.find<SearchingController>().isStore) {
@@ -78,26 +73,24 @@ class SearchResultWidgetState extends State<SearchResultWidget> with TickerProvi
         )));
       }),
 
-      ResponsiveHelper.isDesktop(context) ? const SizedBox() :
-      // Center(child: Container(
-      //   width: Dimensions.webMaxWidth,
-      //   color: Theme.of(context).cardColor,
-      //   child: TabBar(
-      //     controller: _tabController,
-      //     indicatorColor: Theme.of(context).primaryColor,
-      //     indicatorWeight: 3,
-      //     labelColor: Theme.of(context).primaryColor,
-      //     unselectedLabelColor: Theme.of(context).disabledColor,
-      //     unselectedLabelStyle: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
-      //     labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
-      //
-      //     tabs: [
-      //       Tab(text: 'item'.tr),
-      //       Tab(text: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
-      //           ? 'restaurants'.tr : 'stores'.tr),
-      //     ],
-      //   ),
-      // )),
+      Center(child: Container(
+        width: Dimensions.webMaxWidth,
+        color: Theme.of(context).cardColor,
+        child: TabBar(
+          controller: _tabController,
+          indicatorColor: Theme.of(context).primaryColor,
+          indicatorWeight: 3,
+          labelColor: Theme.of(context).primaryColor,
+          unselectedLabelColor: Theme.of(context).disabledColor,
+          unselectedLabelStyle: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
+          labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+          tabs: [
+            Tab(text: 'item'.tr),
+            Tab(text: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
+                ? 'restaurants'.tr : 'stores'.tr),
+          ],
+        ),
+      )),
 
       Expanded(child: NotificationListener(
         onNotification: (dynamic scrollNotification) {
@@ -107,7 +100,13 @@ class SearchResultWidgetState extends State<SearchResultWidget> with TickerProvi
           }
           return false;
         },
-        child: const ItemView(isItem: false),
+        child: TabBarView(
+          controller: _tabController,
+          children: const [
+            ItemView(isItem: false),
+            ItemView(isItem: true),
+          ],
+        ),
       )),
 
     ]);

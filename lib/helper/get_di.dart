@@ -10,7 +10,6 @@ import 'package:sixam_mart/controller/cart_controller.dart';
 import 'package:sixam_mart/controller/category_controller.dart';
 import 'package:sixam_mart/controller/chat_controller.dart';
 import 'package:sixam_mart/controller/coupon_controller.dart';
-import 'package:sixam_mart/controller/flash_sale_controller.dart';
 import 'package:sixam_mart/controller/localization_controller.dart';
 import 'package:sixam_mart/controller/location_controller.dart';
 import 'package:sixam_mart/controller/notification_controller.dart';
@@ -33,7 +32,6 @@ import 'package:sixam_mart/data/repository/car_selection_repo.dart';
 import 'package:sixam_mart/data/repository/cart_repo.dart';
 import 'package:sixam_mart/data/repository/category_repo.dart';
 import 'package:sixam_mart/data/repository/coupon_repo.dart';
-import 'package:sixam_mart/data/repository/flash_sale_repo.dart';
 import 'package:sixam_mart/data/repository/language_repo.dart';
 import 'package:sixam_mart/data/repository/location_repo.dart';
 import 'package:sixam_mart/data/repository/notification_repo.dart';
@@ -74,18 +72,17 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => StoreRepo(sharedPreferences: Get.find(), apiClient: Get.find()));
   Get.lazyPut(() => WishListRepo(apiClient: Get.find()));
   Get.lazyPut(() => ItemRepo(apiClient: Get.find()));
-  Get.lazyPut(() => CartRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut(() => CartRepo(sharedPreferences: Get.find()));
   Get.lazyPut(() => SearchRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
   Get.lazyPut(() => CouponRepo(apiClient: Get.find()));
   Get.lazyPut(() => OrderRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
   Get.lazyPut(() => NotificationRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
   Get.lazyPut(() => CampaignRepo(apiClient: Get.find()));
   Get.lazyPut(() => ParcelRepo(apiClient: Get.find()));
-  Get.lazyPut(() => WalletRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut(() => WalletRepo(apiClient: Get.find()));
   Get.lazyPut(() => ChatRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
   Get.lazyPut(() => RiderRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
   Get.lazyPut(() => CarSelectionRepo(apiClient: Get.find()));
-  Get.lazyPut(() => FlashSaleRepo(apiClient: Get.find()));
 
   // Controller
   Get.lazyPut(() => ThemeController(sharedPreferences: Get.find()));
@@ -112,7 +109,6 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => RiderController(riderRepo: Get.find()));
   Get.lazyPut(() => CarSelectionController(carSelectionRepo: Get.find()));
   Get.lazyPut(() => BookingCheckoutController(riderRepo: Get.find()));
-  Get.lazyPut(() => FlashSaleController(flashSaleRepo: Get.find()));
 
   // Retrieving localized data
   Map<String, Map<String, String>> languages = {};

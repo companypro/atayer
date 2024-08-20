@@ -15,18 +15,6 @@ class ItemRepo extends GetxService {
     return await apiClient.getData('${AppConstants.reviewedItemUri}?type=$type');
   }
 
-  Future<Response> getFeaturedCategoriesItemList() async {
-    return await apiClient.getData('${AppConstants.featuredCategoriesItemsUri}?limit=30&offset=1');
-  }
-
-  Future<Response> getRecommendedItemList(String type) async {
-    return await apiClient.getData('${AppConstants.recommendedItemsUri}$type&limit=30');
-  }
-
-  Future<Response> getDiscountedItemList() async {
-    return await apiClient.getData('${AppConstants.discountedItemsUri}?offset=1&limit=50');
-  }
-
   Future<Response> submitReview(ReviewBody reviewBody) async {
     return await apiClient.postData(AppConstants.reviewUri, reviewBody.toJson());
   }
@@ -37,18 +25,6 @@ class ItemRepo extends GetxService {
 
   Future<Response> getItemDetails(int? itemID) async {
     return apiClient.getData('${AppConstants.itemDetailsUri}$itemID');
-  }
-
-  Future<Response> getBasicMedicine() async {
-    return apiClient.getData('${AppConstants.basicMedicineUri}?offset=1&limit=50');
-  }
-
-  Future<Response> getCommonConditions() async {
-    return apiClient.getData(AppConstants.commonConditionUri);
-  }
-
-  Future<Response> getConditionsWiseItem(int id) async {
-    return apiClient.getData('${AppConstants.conditionWiseItemUri}$id?limit=15&offset=1');
   }
 
   

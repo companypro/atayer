@@ -19,7 +19,7 @@ class SearchingController extends GetxController implements GetxService {
   String? _itemResultText = '';
   double _lowerValue = 0;
   double _upperValue = 0;
-  List<String> _historyList = [];
+  List<String?> _historyList = [];
   bool _isSearchMode = true;
   final List<String> _sortList = ['ascending'.tr, 'descending'.tr];
   int _sortIndex = -1;

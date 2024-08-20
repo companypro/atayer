@@ -72,8 +72,7 @@ class PaymentFailedDialog extends StatelessWidget {
                 },
                 radius: Dimensions.radiusSmall, height: 40,
               ) : const SizedBox(),
-              SizedBox(height: Get.find<SplashController>().configModel!.cashOnDelivery! ? Dimensions.paddingSizeLarge : 0),
-
+              SizedBox(width: Get.find<SplashController>().configModel!.cashOnDelivery! ? Dimensions.paddingSizeLarge : 0),
               TextButton(
                 onPressed: () {
                   Get.find<OrderController>().cancelOrder(int.parse(orderID!), 'Digital payment issue').then((success) {

@@ -17,7 +17,7 @@ import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/base/footer_view.dart';
 import 'package:sixam_mart/view/base/menu_drawer.dart';
 import 'package:sixam_mart/view/base/not_logged_in_screen.dart';
-import 'package:sixam_mart/view/base/web_page_title_widget.dart';
+// import 'package:sixam_mart/view/base/web_page_title_widget.dart';
 import 'package:sixam_mart/view/screens/refer_and_earn/widget/bottom_sheet_view.dart';
 
 enum ShareType {
@@ -60,7 +60,7 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
           padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.isDesktop(context) ? 0 : Dimensions.paddingSizeLarge),
           child: Column(
             children: [
-              WebScreenTitleWidget(title: 'refer_and_earn'.tr ),
+              // WebScreenTitleWidget(title: 'refer_and_earn'.tr ),
               FooterView(
                 child: Center(
                   child: SizedBox(

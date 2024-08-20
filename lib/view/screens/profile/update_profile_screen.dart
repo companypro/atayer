@@ -42,7 +42,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     initCall();
   }
 
-  void initCall() {
+  void initCall(){
     if(Get.find<AuthController>().isLoggedIn() && Get.find<UserController>().userInfoModel == null) {
       Get.find<UserController>().getUserInfo();
     }
@@ -94,20 +94,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   ),
                   const SizedBox(height: Dimensions.paddingSizeLarge),
 
-                  // Text(
-                  //   'last_name'.tr,
-                  //   style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                  // ),
-                  // const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                  // MyTextField(
-                  //   hintText: 'last_name'.tr,
-                  //   controller: _lastNameController,
-                  //   focusNode: _lastNameFocus,
-                  //   nextFocus: _emailFocus,
-                  //   inputType: TextInputType.name,
-                  //   capitalization: TextCapitalization.words,
-                  // ),
-                  // const SizedBox(height: Dimensions.paddingSizeLarge),
+                  Text(
+                    'last_name'.tr,
+                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                  ),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                  MyTextField(
+                    hintText: 'last_name'.tr,
+                    controller: _lastNameController,
+                    focusNode: _lastNameFocus,
+                    nextFocus: _emailFocus,
+                    inputType: TextInputType.name,
+                    capitalization: TextCapitalization.words,
+                  ),
+                  const SizedBox(height: Dimensions.paddingSizeLarge),
 
                   Text(
                     'email'.tr,
@@ -154,10 +154,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               )),
             ))),
 
-            ResponsiveHelper.isDesktop(context) ? const SizedBox.shrink() : Padding(
-              padding: EdgeInsets.only(bottom: GetPlatform.isIOS ? Dimensions.paddingSizeLarge : 0),
-              child: UpdateProfileButton(isLoading: userController.isLoading, onPressed: () => _updateProfile(userController)),
-            ),
+            ResponsiveHelper.isDesktop(context) ? const SizedBox.shrink() : UpdateProfileButton(isLoading: userController.isLoading, onPressed: () => _updateProfile(userController)),
 
           ]),
         ) : const Center(child: CircularProgressIndicator()) :  NotLoggedInScreen(callBack: (value){
@@ -170,7 +167,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   void _updateProfile(UserController userController) async {
     String firstName = _firstNameController.text.trim();
-    String lastName = '.';
+    String lastName = _lastNameController.text.trim();
     String email = _emailController.text.trim();
     String phoneNumber = _phoneController.text.trim();
     if (userController.userInfoModel!.fName == firstName &&

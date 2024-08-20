@@ -21,14 +21,10 @@ import 'package:sixam_mart/view/base/footer_view.dart';
 import 'package:sixam_mart/view/base/menu_drawer.dart';
 import 'package:sixam_mart/view/base/not_logged_in_screen.dart';
 import 'package:sixam_mart/view/base/paginated_list_view.dart';
-import 'package:sixam_mart/view/screens/chat/widget/web_chat_view.dart';
 import 'package:sixam_mart/view/screens/search/widget/search_field.dart';
 
-import '../auth/sign_in_screen.dart';
-
 class ConversationScreen extends StatefulWidget {
-  final bool fromNavBar;
-  const ConversationScreen({Key? key, this.fromNavBar = false}) : super(key: key);
+  const ConversationScreen({Key? key}) : super(key: key);
 
   @override
   State<ConversationScreen> createState() => _ConversationScreenState();
@@ -48,7 +44,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void initCall(){
     if(Get.find<AuthController>().isLoggedIn()) {
       Get.find<UserController>().getUserInfo();
-      Get.find<ChatController>().getConversationList(1, type: ResponsiveHelper.isDesktop(Get.context) ? 'vendor' : '');
+      Get.find<ChatController>().getConversationList(1);
     }
   }
 
@@ -63,9 +59,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
       }
 
       return Scaffold(
-        appBar: CustomAppBar(title: 'conversation_list'.tr, backButton: !widget.fromNavBar),
+        appBar: CustomAppBar(title: 'conversation_list'.tr),
         endDrawer: const MenuDrawer(),endDrawerEnableOpenDragGesture: false,
-        floatingActionButton: (chatController.conversationModel != null && !chatController.hasAdmin) && !ResponsiveHelper.isDesktop(context) ? FloatingActionButton.extended(
+        floatingActionButton: (chatController.conversationModel != null && !chatController.hasAdmin) ? FloatingActionButton.extended(
           label: SizedBox(
             width: context.width * 0.75,
             child: Text(
@@ -80,15 +76,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
             notificationType: NotificationType.message, adminId: 0,
           ))),
         ) : null,
-        body: ResponsiveHelper.isDesktop(context) ? WebChatView(
-          scrollController: _scrollController,
-          conversation: conversation,
-          chatController: chatController,
-          searchController: _searchController,
-          initCall: initCall,
-        ) : Padding(
-          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+        body: Padding(
+          padding: EdgeInsets.all(ResponsiveHelper.isDesktop(context) ? 0 : Dimensions.paddingSizeSmall),
           child: Column(children: [
+
+            ResponsiveHelper.isDesktop(context) ? const SizedBox(height: Dimensions.paddingSizeLarge) : const SizedBox(),
 
             (Get.find<AuthController>().isLoggedIn() && conversation != null && conversation.conversations != null
             && chatController.conversationModel!.conversations!.isNotEmpty) ? Center(child: SizedBox(width: Dimensions.webMaxWidth, child: SearchField(
@@ -164,7 +156,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                            boxShadow: const [BoxShadow(color: Colors.black12, spreadRadius: 1, blurRadius: 5)],
+                            boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200]!, spreadRadius: 1, blurRadius: 5)],
                           ),
                           child: CustomInkWell(
                             onTap: () {
@@ -244,8 +236,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   )),
                 ),
               ),
-            ) : Center(child: Text('no_conversation_found'.tr)) : const Center(child: CircularProgressIndicator()) :  SignInScreen(exitFromApp: true, backFromThis: true,)
-            ),
+            ) : Center(child: Text('no_conversation_found'.tr)) : const Center(child: CircularProgressIndicator()) :  NotLoggedInScreen(callBack: (value){
+              initCall();
+              setState(() {});
+            })),
 
           ]),
         ),

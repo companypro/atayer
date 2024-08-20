@@ -17,12 +17,4 @@ class BannerRepo {
     return await apiClient.getData('${AppConstants.bannerUri}?featured=1');
   }
 
-  Future<Response> getParcelOtherBannerList() async {
-    return await apiClient.getData(AppConstants.parcelOtherBannerUri);
-  }
-
-  Future<Response> getPromotionalBanner() async {
-    return await apiClient.getData(AppConstants.promotionalBannerUri);
-  }
-
 }

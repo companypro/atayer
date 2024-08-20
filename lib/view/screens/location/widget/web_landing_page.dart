@@ -1,13 +1,12 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
-import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/location_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
-import 'package:sixam_mart/controller/user_controller.dart';
 import 'package:sixam_mart/data/model/response/address_model.dart';
 import 'package:sixam_mart/data/model/response/config_model.dart';
 import 'package:sixam_mart/data/model/response/prediction_model.dart';
@@ -23,10 +22,8 @@ import 'package:sixam_mart/view/base/custom_image.dart';
 import 'package:sixam_mart/view/base/custom_loader.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/base/footer_view.dart';
-import 'package:sixam_mart/view/screens/location/pick_map_screen.dart';
 import 'package:sixam_mart/view/screens/location/widget/landing_card.dart';
 import 'package:sixam_mart/view/screens/location/widget/registration_card.dart';
-import 'package:sixam_mart/view/screens/location/widget/web_landing_page_shimmer_view.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:intl/intl.dart' as intl;
@@ -53,10 +50,9 @@ class _WebLandingPageState extends State<WebLandingPage> {
   void initState() {
     super.initState();
 
+
+    // Get.find<SplashController>().getLandingPageData();
     if(Get.find<SplashController>().moduleList == null) {
-      if (kDebugMode) {
-        print('-------call from web landing page------------');
-      }
       Get.find<SplashController>().getModules(headers: {'Content-Type': 'application/json; charset=UTF-8'});
     }
   }
@@ -75,7 +71,7 @@ class _WebLandingPageState extends State<WebLandingPage> {
       physics: const BouncingScrollPhysics(),
       child: FooterView(child: SizedBox(width: Dimensions.webMaxWidth, child: GetBuilder<SplashController>(
         builder: (splashController) {
-          return splashController.landingModel == null ? const WebLandingPageShimmerView() : Column(children: [
+          return splashController.landingModel == null ? const Center(child: CircularProgressIndicator()) : Column(children: [
 
             const SizedBox(height: Dimensions.paddingSizeLarge),
 
@@ -89,11 +85,11 @@ class _WebLandingPageState extends State<WebLandingPage> {
                 const SizedBox(width: 40),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
 
-                  Text(splashController.landingModel?.fixedHeaderTitle ?? '', style: robotoBold.copyWith(fontSize: 35)),
+                  Text(splashController.landingModel!.fixedHeaderTitle!, style: robotoBold.copyWith(fontSize: 35)),
                   const SizedBox(height: Dimensions.paddingSizeLarge),
 
                   Text(
-                    splashController.landingModel?.fixedHeaderSubTitle ?? '',
+                    splashController.landingModel!.fixedHeaderSubTitle!,
                     style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor),
                   ),
                 ])),
@@ -103,7 +99,7 @@ class _WebLandingPageState extends State<WebLandingPage> {
                     left: _isRtl! ? const Radius.circular(Dimensions.radiusDefault) : const Radius.circular(0),
                   ),
                   child: CustomImage(
-                    image: '${splashController.landingModel?.baseUrls?.fixedHeaderImage ?? ''}/${splashController.landingModel != null
+                    image: '${splashController.landingModel!.baseUrls!.fixedHeaderImage}/${splashController.landingModel != null
                         ? splashController.landingModel!.fixedHeaderImage : ''}',
                     height: 270, fit: BoxFit.cover,
                   ),
@@ -132,7 +128,7 @@ class _WebLandingPageState extends State<WebLandingPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
                         child: Text(
-                          splashController.landingModel?.fixedLocationTitle ?? '', textAlign: TextAlign.center,
+                          splashController.landingModel!.fixedLocationTitle!, textAlign: TextAlign.center,
                           style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
                         ),
                       ),
@@ -165,7 +161,7 @@ class _WebLandingPageState extends State<WebLandingPage> {
                               onPressed: () async {
                                 Get.dialog(const CustomLoader(), barrierDismissible: false);
                                 _address = await Get.find<LocationController>().getCurrentLocation(true);
-                                _controller.text = _address!.address ?? '';
+                                _controller.text = _address!.address!;
                                 Get.back();
                               },
                               icon: Icon(Icons.my_location, color: Theme.of(context).primaryColor),
@@ -184,7 +180,7 @@ class _WebLandingPageState extends State<WebLandingPage> {
                             child: Row(children: [
                               const Icon(Icons.location_on),
                               Expanded(child: Text(
-                                suggestion.description ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
+                                suggestion.description!, maxLines: 1, overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.displayMedium!.copyWith(
                                   color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: Dimensions.fontSizeLarge,
                                 ),
@@ -193,12 +189,11 @@ class _WebLandingPageState extends State<WebLandingPage> {
                           );
                         },
                         onSuggestionSelected: (PredictionModel suggestion) async {
-                          _controller.text = suggestion.description ?? '';
+                          _controller.text = suggestion.description!;
                           _address = await Get.find<LocationController>().setLocation(suggestion.placeId, suggestion.description, null);
                         },
                       )),
                       const SizedBox(width: Dimensions.paddingSizeSmall),
-
                       CustomButton(
                         width: 150, height: 60, fontSize: Dimensions.fontSizeDefault,
                         buttonText: 'set_location'.tr,
@@ -209,20 +204,9 @@ class _WebLandingPageState extends State<WebLandingPage> {
                               _address!.latitude, _address!.longitude, false,
                             );
                             if(response.isSuccess) {
-                              if(!Get.find<AuthController>().isGuestLoggedIn() && !Get.find<AuthController>().isLoggedIn()) {
-                                Get.find<AuthController>().guestLogin().then((response) {
-                                  if(response.isSuccess) {
-                                    Get.find<UserController>().setForceFullyUserEmpty();
-                                    Get.find<LocationController>().saveAddressAndNavigate(
-                                      _address, widget.fromSignUp, widget.route, widget.route != null, ResponsiveHelper.isDesktop(Get.context),
-                                    );
-                                  }
-                                });
-                              } else {
-                                Get.find<LocationController>().saveAddressAndNavigate(
-                                  _address, widget.fromSignUp, widget.route, widget.route != null, ResponsiveHelper.isDesktop(Get.context),
-                                );
-                              }
+                              Get.find<LocationController>().saveAddressAndNavigate(
+                                _address, widget.fromSignUp, widget.route, widget.route != null, ResponsiveHelper.isDesktop(Get.context),
+                              );
                             }else {
                               Get.back();
                               showCustomSnackBar('service_not_available_in_current_location'.tr);
@@ -233,31 +217,13 @@ class _WebLandingPageState extends State<WebLandingPage> {
                         },
                       ),
                       const SizedBox(width: Dimensions.paddingSizeSmall),
-
                       CustomButton(
                         width: 160, height: 60, fontSize: Dimensions.fontSizeDefault,
                         buttonText: 'pick_from_map'.tr,
-                        onPressed: () {
-                          if(ResponsiveHelper.isDesktop(Get.context)) {
-
-                            showGeneralDialog(context: context, pageBuilder: (_,__,___) {
-                              return SizedBox(
-                                height: 300, width: 300,
-                                child: PickMapScreen(
-                                  fromSignUp: widget.fromSignUp, canRoute: widget.route != null, fromAddAddress: false, route: widget.route
-                                    ?? (widget.fromSignUp ? RouteHelper.signUp : RouteHelper.accessLocation), fromLandingPage: true,
-                                ),
-                              );
-                            });
-                          }else {
-                            Get.toNamed(RouteHelper.getPickMapRoute(
-                              widget.route ?? (widget.fromSignUp ? RouteHelper.signUp : RouteHelper.accessLocation), widget.route != null,
-                            ));
-                          }
-                        }
-                        // onPressed: (){
-                        //   Get.dialog(const PickMapScreen(fromSignUp: false, canRoute: false, fromAddAddress: false, route: null ));
-                        // }
+                        onPressed: () => Get.toNamed(RouteHelper.getPickMapRoute(
+                          widget.route ?? (widget.fromSignUp ? RouteHelper.signUp : RouteHelper.accessLocation),
+                          widget.route != null,
+                        )),
                       ),
                     ]),
                   )),
@@ -267,11 +233,11 @@ class _WebLandingPageState extends State<WebLandingPage> {
             const SizedBox(height: 40),
 
             Text(
-              splashController.landingModel?.fixedModuleTitle ?? '',
+              splashController.landingModel!.fixedModuleTitle!,
               style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor),
             ),
             Text(
-              splashController.landingModel?.fixedModuleSubTitle ?? '',
+              splashController.landingModel!.fixedModuleSubTitle!,
               style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).disabledColor),
             ),
             const SizedBox(height: 40),
@@ -297,7 +263,7 @@ class _WebLandingPageState extends State<WebLandingPage> {
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           const SizedBox(height: 80),
                           Text(
-                            splashController.moduleList![index].moduleName ?? '',
+                            splashController.moduleList![index].moduleName!,
                             style: robotoBold.copyWith(fontSize: Dimensions.fontSizeDefault), textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: Dimensions.paddingSizeSmall),
@@ -306,7 +272,7 @@ class _WebLandingPageState extends State<WebLandingPage> {
                           //   padding: EdgeInsets.zero,
                           //   child: Html(
                           //     data: splashController.moduleList![index].description ?? '', shrinkWrap: true,
-                          //     onLinkTap: (String? url,  context, Map<String, String> attributes, element) {
+                          //     onLinkTap: (String? url, RenderContext context, Map<String, String> attributes, element) {
                           //       if(url!.startsWith('www.')) {
                           //         url = 'https://$url';
                           //       }
@@ -367,10 +333,9 @@ class _WebLandingPageState extends State<WebLandingPage> {
             SizedBox(height: AppConstants.whyChooseUsList.isNotEmpty ? 40 : 0),
 
             RegistrationCard(isStore: true, splashController: splashController),
-            SizedBox(height: splashController.landingModel != null && (splashController.landingModel!.downloadUserAppLinks!.playstoreUrlStatus == '1' || splashController.landingModel!.downloadUserAppLinks!.appleStoreUrlStatus == '1')
-                ? 40 : 0),
+            SizedBox(height: splashController.landingModel!.downloadUserAppLinks!.playstoreUrlStatus == '1' || splashController.landingModel!.downloadUserAppLinks!.appleStoreUrlStatus == '1' ? 40 : 0),
 
-            splashController.landingModel != null && (splashController.landingModel!.downloadUserAppLinks!.playstoreUrlStatus == '1' || splashController.landingModel!.downloadUserAppLinks!.appleStoreUrlStatus == '1')
+            splashController.landingModel!.downloadUserAppLinks!.playstoreUrlStatus == '1' || splashController.landingModel!.downloadUserAppLinks!.appleStoreUrlStatus == '1'
             ? Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
               CustomImage(
                 image: '${splashController.landingModel!.baseUrls!.downloadUserAppImage!}/${splashController.landingModel!.downloadUserAppImage}',
@@ -378,33 +343,33 @@ class _WebLandingPageState extends State<WebLandingPage> {
               ),
               Column(children: [
                 Text(
-                  splashController.landingModel!.downloadUserAppTitle ?? '', textAlign: TextAlign.center,
+                  splashController.landingModel!.downloadUserAppTitle!, textAlign: TextAlign.center,
                   style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
                 ),
                 const SizedBox(height: Dimensions.paddingSizeSmall),
 
                 Text(
-                  splashController.landingModel!.downloadUserAppSubTitle ?? '', textAlign: TextAlign.center,
+                  splashController.landingModel!.downloadUserAppSubTitle!, textAlign: TextAlign.center,
                   style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
                 ),
                 const SizedBox(height: Dimensions.paddingSizeLarge),
 
                 Row(children: [
-                  splashController.landingModel != null && splashController.landingModel!.downloadUserAppLinks!.playstoreUrlStatus == '1' ? InkWell(
+                  splashController.landingModel!.downloadUserAppLinks!.playstoreUrlStatus == '1' ? InkWell(
                     onTap: () async {
-                      String url = splashController.landingModel?.downloadUserAppLinks?.playstoreUrl ?? '';
+                      String url = splashController.landingModel!.downloadUserAppLinks!.playstoreUrl!;
                       if(await canLaunchUrlString(url)){
                         launchUrlString(url);
                       }
                     },
                     child: Image.asset(Images.landingGooglePlay, height: 45),
                   ) : const SizedBox(),
-                  SizedBox(width: splashController.landingModel != null && (splashController.landingModel!.downloadUserAppLinks!.playstoreUrlStatus == '1' && splashController.landingModel!.downloadUserAppLinks!.appleStoreUrlStatus == '1')
+                  SizedBox(width: (splashController.landingModel!.downloadUserAppLinks!.playstoreUrlStatus == '1' && splashController.landingModel!.downloadUserAppLinks!.appleStoreUrlStatus == '1')
                       ? Dimensions.paddingSizeLarge : 0),
 
-                  splashController.landingModel != null && splashController.landingModel!.downloadUserAppLinks!.appleStoreUrlStatus == '1' ? InkWell(
+                  splashController.landingModel!.downloadUserAppLinks!.appleStoreUrlStatus == '1' ? InkWell(
                     onTap: () async {
-                      String url = splashController.landingModel!.downloadUserAppLinks!.appleStoreUrl ?? '';
+                      String url = splashController.landingModel!.downloadUserAppLinks!.appleStoreUrl!;
                       if(await canLaunchUrlString(url)){
                         launchUrlString(url);
                       }
@@ -427,10 +392,10 @@ class _WebLandingPageState extends State<WebLandingPage> {
 
   List<Widget> _generateChooseUsList(SplashController splashController) {
     List<Widget> chooseUsList = [];
-    for(int index=0; index < (splashController.landingModel != null && splashController.landingModel!.specialCriterias!.length > 4 ? 4 : splashController.landingModel!.specialCriterias!.length); index++) {
+    for(int index=0; index < (splashController.landingModel!.specialCriterias!.length > 4 ? 4 : splashController.landingModel!.specialCriterias!.length); index++) {
       chooseUsList.add(Expanded(child: Row(children: [
         Expanded(child: LandingCard(icon: '${splashController.landingModel!.baseUrls!.specialCriteriaImage}/${splashController.landingModel!.specialCriterias![index].image}',
-            title: splashController.landingModel!.specialCriterias![index].title ?? '',
+            title: splashController.landingModel!.specialCriterias![index].title!,
         )),
         SizedBox(width: index != splashController.landingModel!.specialCriterias!.length-1 ? 30 : 0),
       ])));

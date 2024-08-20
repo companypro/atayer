@@ -21,7 +21,6 @@ import 'package:sixam_mart/view/base/no_data_screen.dart';
 import 'package:sixam_mart/view/screens/address/widget/address_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sixam_mart/view/screens/location/pick_map_screen.dart';
 import 'package:sixam_mart/view/screens/location/widget/web_landing_page.dart';
 
 class AccessLocationScreen extends StatefulWidget {
@@ -36,14 +35,6 @@ class AccessLocationScreen extends StatefulWidget {
 
 class _AccessLocationScreenState extends State<AccessLocationScreen> {
   bool _canExit = GetPlatform.isWeb ? true : false;
-
-  @override
-  void initState() {
-    super.initState();
-    if(Get.find<AuthController>().isLoggedIn()) {
-      Get.find<LocationController>().getAddressList();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +67,6 @@ class _AccessLocationScreenState extends State<AccessLocationScreen> {
       child: Scaffold(
         appBar: CustomAppBar(title: 'set_location'.tr, backButton: widget.fromHome),
         endDrawer: const MenuDrawer(),endDrawerEnableOpenDragGesture: false,
-        backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(child: Padding(
           padding: ResponsiveHelper.isDesktop(context) ? EdgeInsets.zero : const EdgeInsets.all(Dimensions.paddingSizeSmall),
           child: GetBuilder<LocationController>(builder: (locationController) {
@@ -120,11 +110,11 @@ class _AccessLocationScreenState extends State<AccessLocationScreen> {
                     const SizedBox(height: Dimensions.paddingSizeLarge),
 
                     Text('find_stores_and_items'.tr.toUpperCase(), textAlign: TextAlign.center, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge)),
-                    // Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                    //   child: Text('by_allowing_location_access'.tr, textAlign: TextAlign.center,
-                    //     style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                    //   ),
-                    // ),
+                    Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                      child: Text('by_allowing_location_access'.tr, textAlign: TextAlign.center,
+                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                      ),
+                    ),
                     const SizedBox(height: Dimensions.paddingSizeLarge),
 
                     Padding(
@@ -163,17 +153,8 @@ class BottomButton extends StatelessWidget {
               );
             }else {
               Get.back();
-              if(ResponsiveHelper.isDesktop(Get.context)) {
-                showGeneralDialog(context: Get.context!, pageBuilder: (_,__,___) {
-                  return SizedBox(
-                      height: 300, width: 300,
-                      child: PickMapScreen(fromSignUp: fromSignUp, canRoute: route != null, fromAddAddress: false, route: route ?? RouteHelper.accessLocation)
-                  );
-                });
-              }else {
-                Get.toNamed(RouteHelper.getPickMapRoute(route ?? RouteHelper.accessLocation, route != null));
-                showCustomSnackBar('service_not_available_in_current_location'.tr);
-              }
+              Get.toNamed(RouteHelper.getPickMapRoute(route ?? RouteHelper.accessLocation, route != null));
+              showCustomSnackBar('service_not_available_in_current_location'.tr);
             }
           });
         },
@@ -190,20 +171,9 @@ class BottomButton extends StatelessWidget {
           minimumSize: const Size(Dimensions.webMaxWidth, 50),
           padding: EdgeInsets.zero,
         ),
-        onPressed: () {
-          if(ResponsiveHelper.isDesktop(Get.context)) {
-            showGeneralDialog(context: Get.context!, pageBuilder: (_,__,___) {
-              return SizedBox(
-                  height: 300, width: 300,
-                  child: PickMapScreen(fromSignUp: fromSignUp, canRoute: route != null, fromAddAddress: false, route: route ?? RouteHelper.accessLocation)
-              );
-            });
-          }else {
-            Get.toNamed(RouteHelper.getPickMapRoute(
-              route ?? (fromSignUp ? RouteHelper.signUp : RouteHelper.accessLocation), route != null,
-            ));
-          }
-        },
+        onPressed: () => Get.toNamed(RouteHelper.getPickMapRoute(
+          route ?? (fromSignUp ? RouteHelper.signUp : RouteHelper.accessLocation), route != null,
+        )),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Padding(
             padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),

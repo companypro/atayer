@@ -12,19 +12,10 @@ class CampaignController extends GetxController implements GetxService {
   List<BasicCampaignModel>? _basicCampaignList;
   BasicCampaignModel? _campaign;
   List<Item>? _itemCampaignList;
-  int _currentIndex = 0;
 
   List<BasicCampaignModel>? get basicCampaignList => _basicCampaignList;
   BasicCampaignModel? get campaign => _campaign;
   List<Item>? get itemCampaignList => _itemCampaignList;
-  int get currentIndex => _currentIndex;
-
-  void setCurrentIndex(int index, bool notify) {
-    _currentIndex = index;
-    if(notify) {
-      update();
-    }
-  }
 
   void itemCampaignNull(){
     _itemCampaignList = null;
@@ -60,11 +51,10 @@ class CampaignController extends GetxController implements GetxService {
       if (response.statusCode == 200) {
         _itemCampaignList = [];
         List<Item> campaign = [];
-
         response.body.forEach((camp) => campaign.add(Item.fromJson(camp)));
-
         for (var c in campaign) {
-          if( c.variations!.isEmpty || c.foodVariations!.isNotEmpty) {
+          if(!Get.find<SplashController>().getModuleConfig(c.moduleType).newVariation!
+              || c.variations!.isEmpty || c.foodVariations!.isNotEmpty) {
             _itemCampaignList!.add(c);
           }
         }

@@ -44,10 +44,6 @@ class UserController extends GetxController implements GetxService {
     return responseModel;
   }
 
-  void setForceFullyUserEmpty() {
-    _userInfoModel = null;
-  }
-
   Future<ResponseModel> updateUserInfo(UserInfoModel updateUserModel, String token) async {
     _isLoading = true;
     update();
@@ -96,12 +92,9 @@ class UserController extends GetxController implements GetxService {
     update();
   }
 
-  void initData({bool isUpdate = false}) {
+  void initData() {
     _pickedFile = null;
     _rawFile = null;
-    if(isUpdate){
-      update();
-    }
   }
 
   Future removeUser() async {
@@ -112,6 +105,7 @@ class UserController extends GetxController implements GetxService {
     if (response.statusCode == 200) {
       showCustomSnackBar('your_account_remove_successfully'.tr);
       Get.find<AuthController>().clearSharedData();
+      Get.find<CartController>().clearCartList();
       Get.find<WishListController>().removeWishes();
       Get.offAllNamed(RouteHelper.getSignInRoute(RouteHelper.splash));
 
@@ -119,11 +113,6 @@ class UserController extends GetxController implements GetxService {
       Get.back();
       ApiChecker.checkApi(response);
     }
-  }
-
-  void clearUserInfo() {
-    _userInfoModel = null;
-    update();
   }
 
 }

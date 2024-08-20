@@ -167,7 +167,7 @@ class CategoryController extends GetxController implements GetxService {
             update();
           } else {
             _itemResultText = query;
-            // _searchItemList = [];
+            _searchItemList = [];
             _searchItemList!.addAll(ItemModel.fromJson(response.body).items!);
           }
         }

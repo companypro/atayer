@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/chat_controller.dart';
 import 'package:sixam_mart/controller/notification_controller.dart';
@@ -15,8 +14,6 @@ import 'package:sixam_mart/util/app_constants.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:sixam_mart/view/screens/dashboard/dashboard_screen.dart';
-import 'package:sixam_mart/view/screens/notification/widget/notifiation_popup_dialog.dart';
 
 class NotificationHelper {
 
@@ -32,11 +29,7 @@ class NotificationHelper {
         if(load.payload!.isNotEmpty) {
           payload = NotificationBody.fromJson(jsonDecode(load.payload!));
           if(payload.notificationType == NotificationType.order) {
-            if(Get.find<AuthController>().isGuestLoggedIn()){
-              Get.to(()=> const DashboardScreen(pageIndex: 3, fromSplash: false));
-            } else {
-              Get.offAllNamed(RouteHelper.getOrderDetailsRoute(int.parse(payload.orderId.toString()), fromNotification: true));
-            }
+            Get.offAllNamed(RouteHelper.getOrderDetailsRoute(int.parse(payload.orderId.toString()), fromNotification: true));
           } else if(payload.notificationType == NotificationType.general) {
             Get.offAllNamed(RouteHelper.getNotificationRoute(fromNotification: true));
           } else{
@@ -81,25 +74,6 @@ class NotificationHelper {
           Get.find<NotificationController>().getNotificationList(true);
 
         }
-      }
-
-      Map<String, String> payloadData = {
-        'title' : '${message.data['title']}',
-        'body' : '${message.data['body']}',
-        'order_id' : '${message.data['order_id']}',
-        'image' : '${message.data['image']}',
-        'type' : '${message.data['type']}',
-      };
-
-      PayloadModel payload = PayloadModel.fromJson(payloadData);
-
-      if(kIsWeb) {
-        showDialog(
-            context: Get.context!,
-            builder: (context) => Center(
-              child: NotificationPopUpDialog(payload),
-            )
-        );
       }
     });
 
@@ -241,41 +215,4 @@ Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   // flutterLocalNotificationsPlugin.initialize(initializationsSettings);
   // NotificationHelper.showNotification(message, flutterLocalNotificationsPlugin, true);
-}
-
-
-class PayloadModel {
-  PayloadModel({
-    this.title,
-    this.body,
-    this.orderId,
-    this.image,
-    this.type,
-  });
-
-  String? title;
-  String? body;
-  String? orderId;
-  String? image;
-  String? type;
-
-  factory PayloadModel.fromRawJson(String str) => PayloadModel.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
-  factory PayloadModel.fromJson(Map<String, dynamic> json) => PayloadModel(
-    title: json["title"],
-    body: json["body"],
-    orderId: json["order_id"],
-    image: json["image"],
-    type: json["type"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "title": title,
-    "body": body,
-    "order_id": orderId,
-    "image": image,
-    "type": type,
-  };
 }

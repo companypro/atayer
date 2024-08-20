@@ -18,10 +18,6 @@ class ZoneData {
   int? status;
   bool? cashOnDelivery;
   bool? digitalPayment;
-  bool? offlinePayment;
-  double? increaseDeliveryFee;
-  int? increaseDeliveryFeeStatus;
-  String? increaseDeliveryFeeMessage;
   List<Modules>? modules;
 
   ZoneData(
@@ -29,10 +25,6 @@ class ZoneData {
         this.status,
         this.cashOnDelivery,
         this.digitalPayment,
-        this.offlinePayment,
-        this.increaseDeliveryFee,
-        this.increaseDeliveryFeeStatus,
-        this.increaseDeliveryFeeMessage,
         this.modules});
 
   ZoneData.fromJson(Map<String, dynamic> json) {
@@ -40,10 +32,6 @@ class ZoneData {
     status = json['status'];
     cashOnDelivery = json['cash_on_delivery'];
     digitalPayment = json['digital_payment'];
-    offlinePayment = json['offline_payment'];
-    increaseDeliveryFee = json['increased_delivery_fee']?.toDouble();
-    increaseDeliveryFeeStatus = json['increased_delivery_fee_status'];
-    increaseDeliveryFeeMessage = json['increase_delivery_charge_message'];
     if (json['modules'] != null) {
       modules = <Modules>[];
       json['modules'].forEach((v) {
@@ -58,10 +46,6 @@ class ZoneData {
     data['status'] = status;
     data['cash_on_delivery'] = cashOnDelivery;
     data['digital_payment'] = digitalPayment;
-    data['offline_payment'] = offlinePayment;
-    data['increased_delivery_fee'] = increaseDeliveryFee;
-    data['increased_delivery_fee_status'] = increaseDeliveryFeeStatus;
-    data['increase_delivery_charge_message'] = increaseDeliveryFeeMessage;
     if (modules != null) {
       data['modules'] = modules!.map((v) => v.toJson()).toList();
     }

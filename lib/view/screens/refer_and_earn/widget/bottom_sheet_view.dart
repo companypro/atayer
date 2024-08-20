@@ -41,7 +41,7 @@ class BottomSheetView extends StatelessWidget {
           ),
 
           Padding(
-            padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, top: Dimensions.paddingSizeSmall, right: Dimensions.paddingSizeDefault),
+            padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, top: Dimensions.paddingSizeSmall),
             child: Row(children: [
               const Icon(Icons.error_outline, size: 16),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
@@ -68,7 +68,7 @@ class BottomSheetView extends StatelessWidget {
                 ),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
 
-                Text(AppConstants.dataList[index].tr, style: robotoRegular),
+                Text(AppConstants.dataList[index], style: robotoRegular),
 
               ]),
             );

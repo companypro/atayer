@@ -10,7 +10,6 @@ import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/localization_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/data/model/body/delivery_man_body.dart';
-import 'package:sixam_mart/helper/custom_validator.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/styles.dart';
@@ -21,7 +20,6 @@ import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/base/custom_text_field.dart';
 import 'package:sixam_mart/view/base/footer_view.dart';
 import 'package:sixam_mart/view/base/menu_drawer.dart';
-import 'package:sixam_mart/view/base/web_page_title_widget.dart';
 import 'package:sixam_mart/view/screens/auth/widget/condition_check_box.dart';
 import 'package:sixam_mart/view/screens/auth/widget/pass_view.dart';
 
@@ -114,9 +112,14 @@ class _DeliveryManRegistrationScreenState extends State<DeliveryManRegistrationS
           }
         }
         if(authController.vehicles != null){
-
+          vehicleList.add(DropdownItem<int>(value: 0, child: SizedBox(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('select_vehicle_type'.tr),
+            ),
+          )));
           for(int index=0; index<authController.vehicles!.length; index++) {
-            vehicleList.add(DropdownItem<int>(value: index, child: SizedBox(
+            vehicleList.add(DropdownItem<int>(value: index + 1, child: SizedBox(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text('${authController.vehicles![index].type}'),
@@ -125,12 +128,12 @@ class _DeliveryManRegistrationScreenState extends State<DeliveryManRegistrationS
           }
         }
 
-        return SafeArea(child: ResponsiveHelper.isDesktop(context) ? webView(authController, zoneList, dmTypeList, vehicleList, identityTypeList) : Column(children: [
+        return ResponsiveHelper.isDesktop(context) ? webView(authController, zoneIndexList, dmTypeList) : Column(children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeSmall),
             child: Column(children: [
               Text(
-                'complete_registration_process_to_serve_as_delivery_man'.tr,
+                'complete_registration_process_to_serve_as_delivery_man_in_this_platform'.tr,
                 style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
               ),
 
@@ -348,9 +351,9 @@ class _DeliveryManRegistrationScreenState extends State<DeliveryManRegistrationS
 
                         Expanded(child: authController.zoneList != null ? Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                              color: Theme.of(context).cardColor,
-                              border: Border.all(color: Theme.of(context).primaryColor, width: 0.3)
+                            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                            color: Theme.of(context).cardColor,
+                            border: Border.all(color: Theme.of(context).primaryColor, width: 0.3)
                           ),
                           child: CustomDropdown<int>(
                             onChange: (int? value, int index) {
@@ -525,535 +528,431 @@ class _DeliveryManRegistrationScreenState extends State<DeliveryManRegistrationS
 
           (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isWeb()) ? const SizedBox() : buttonView(),
 
-        ]));
+        ]);
       }),
     );
   }
 
-  //
-
-  Widget webView(AuthController authController, List<DropdownItem<int>> zoneList, List<DropdownItem<int>> typeList,
-      List<DropdownItem<int>> vehicleList, List<DropdownItem<int>> identityTypeList) {
+  Widget webView(AuthController authController, List<int> zoneIndexList, List<DropdownItem<int>> typeList){
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          WebScreenTitleWidget(title: 'join_as_delivery_man'.tr),
-          FooterView(
-            child: Center(
-              child: SizedBox(
-                width: Dimensions.webMaxWidth,
-                child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
-                    ),
-                    padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                    child: Column(children: [
-                      Text('delivery_man_registration'.tr, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
-                      const SizedBox(height: Dimensions.paddingSizeSmall),
+      child: FooterView(
+        child: Center(
+          child: SizedBox(
+            width: Dimensions.webMaxWidth,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
 
-                      Text(
-                        'complete_registration_process_to_serve_as_delivery_man'.tr,
-                        style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                  boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300]!, blurRadius: 5, spreadRadius: 1)],
+                ),
+                padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                child: Column(children: [
+                  Text('delivery_man_registration'.tr, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                  Text(
+                    'complete_registration_process_to_serve_as_delivery_man_in_this_platform'.tr,
+                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
+                  ),
+                  const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                  Align(alignment: Alignment.center, child: Stack(children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                      child: authController.pickedImage != null ? GetPlatform.isWeb ? Image.network(
+                        authController.pickedImage!.path, width: 180, height: 180, fit: BoxFit.cover,
+                      ) : Image.file(
+                        File(authController.pickedImage!.path), width: 180, height: 180, fit: BoxFit.cover,
+                      ) : SizedBox(
+                        width: 180, height: 180,
+                        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+
+                          Icon(Icons.camera_alt, size: 38, color: Theme.of(context).disabledColor),
+                          const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                          Text(
+                            'upload_deliveryman_photo'.tr,
+                            style: robotoMedium.copyWith(color: Theme.of(context).disabledColor), textAlign: TextAlign.center,
+                          ),
+                        ]),
                       ),
-                      const SizedBox(height: Dimensions.paddingSizeLarge),
+                    ),
 
-                      Align(alignment: Alignment.center, child: Stack(children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                          child: authController.pickedImage != null ? GetPlatform.isWeb ? Image.network(
-                            authController.pickedImage!.path, width: 180, height: 180, fit: BoxFit.cover,
-                          ) : Image.file(
-                            File(authController.pickedImage!.path), width: 180, height: 180, fit: BoxFit.cover,
-                          ) : SizedBox(
-                            width: 180, height: 180,
-                            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-
-                              Icon(Icons.camera_alt, size: 38, color: Theme.of(context).disabledColor),
-                              const SizedBox(height: Dimensions.paddingSizeSmall),
-
-                              Text(
-                                'upload_deliveryman_photo'.tr,
-                                style: robotoMedium.copyWith(color: Theme.of(context).disabledColor), textAlign: TextAlign.center,
+                    Positioned(
+                      bottom: 0, right: 0, top: 0, left: 0,
+                      child: InkWell(
+                        onTap: () => authController.pickDmImage(true, false),
+                        child: DottedBorder(
+                          color: Theme.of(context).primaryColor,
+                          strokeWidth: 1,
+                          strokeCap: StrokeCap.butt,
+                          dashPattern: const [5, 5],
+                          padding: const EdgeInsets.all(0),
+                          borderType: BorderType.RRect,
+                          radius: const Radius.circular(Dimensions.radiusDefault),
+                          child: Visibility(
+                            visible: authController.pickedImage != null,
+                            child: Center(
+                              child: Container(
+                                margin: const EdgeInsets.all(25),
+                                decoration: BoxDecoration(border: Border.all(width: 2, color: Colors.white), shape: BoxShape.circle,),
+                                padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                                child: const Icon(Icons.camera_alt, color: Colors.white),
                               ),
-                            ]),
+                            ),
                           ),
                         ),
+                      ),
+                    ),
+                  ])),
+                  const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-                        Positioned(
-                          bottom: 0, right: 0, top: 0, left: 0,
-                          child: InkWell(
-                            onTap: () => authController.pickDmImage(true, false),
+                  Row(children: [
+                    Expanded(child: CustomTextField(
+                      titleText: 'first_name'.tr,
+                      controller: _fNameController,
+                      capitalization: TextCapitalization.words,
+                      inputType: TextInputType.name,
+                      focusNode: _fNameNode,
+                      nextFocus: _lNameNode,
+                      prefixIcon: Icons.person,
+                      showTitle: true,
+                    )),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                    Expanded(child: CustomTextField(
+                      titleText: 'last_name'.tr,
+                      controller: _lNameController,
+                      capitalization: TextCapitalization.words,
+                      inputType: TextInputType.name,
+                      focusNode: _lNameNode,
+                      nextFocus: _phoneNode,
+                      prefixIcon: Icons.person,
+                      showTitle: true,
+                    )),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                    Expanded(
+                      child: CustomTextField(
+                        titleText: 'phone'.tr,
+                        controller: _phoneController,
+                        focusNode: _phoneNode,
+                        nextFocus: _emailNode,
+                        inputType: TextInputType.phone,
+                        isPhone: true,
+                        showTitle: ResponsiveHelper.isDesktop(context),
+                        onCountryChanged: (CountryCode countryCode) {
+                          _countryDialCode = countryCode.dialCode;
+                        },
+                        countryDialCode: _countryDialCode != null ? CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).code
+                            : Get.find<LocalizationController>().locale.countryCode,
+                      ),
+                    ),
+                  ]),
+                  const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+
+                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Expanded(child:CustomTextField(
+                      titleText: 'email'.tr,
+                      controller: _emailController,
+                      focusNode: _emailNode,
+                      nextFocus: _passwordNode,
+                      inputType: TextInputType.emailAddress,
+                      prefixIcon: Icons.email,
+                      showTitle: true,
+                    )),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                    Expanded(child: Column(
+                      children: [
+                        CustomTextField(
+                          titleText: 'password'.tr,
+                          controller: _passwordController,
+                          focusNode: _passwordNode,
+                          nextFocus: _identityNumberNode,
+                          inputAction: TextInputAction.done,
+                          inputType: TextInputType.visiblePassword,
+                          isPassword: true,
+                          prefixIcon: Icons.lock,
+                          showTitle: true,
+                          onChanged: (value){
+                            // authController.validPassCheck(value);
+                            if(value != null && value.isNotEmpty){
+                              if(!authController.showPassView){
+                                authController.showHidePass();
+                              }
+                              authController.validPassCheck(value);
+                            }else{
+                              if(authController.showPassView){
+                                authController.showHidePass();
+                              }
+                            }
+                          },
+                        ),
+
+                        authController.showPassView ? const PassView() : const SizedBox(),
+                      ],
+                    )),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                    Expanded(child: CustomTextField(
+                      titleText: 'confirm_password'.tr,
+                      hintText: '8_character'.tr,
+                      controller: _confirmPasswordController,
+                      focusNode: _confirmPasswordNode,
+                      inputAction: TextInputAction.done,
+                      inputType: TextInputType.visiblePassword,
+                      prefixIcon: Icons.lock,
+                      isPassword: true,
+                      showTitle: true,
+                    ))
+                  ]),
+                ]),
+              ),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
+
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                  boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300]!, blurRadius: 5, spreadRadius: 1)],
+                ),
+                padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                child: Column(children: [
+                  Row(children: [
+                    const Icon(Icons.person),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+                    Text('delivery_man_information'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall))
+                  ]),
+                  const Divider(),
+                  const SizedBox(height: Dimensions.paddingSizeLarge),
+
+
+                  Row(children: [
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('delivery_man_type'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                        const SizedBox(height: Dimensions.paddingSizeDefault),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                              color: Theme.of(context).cardColor,
+                              border: Border.all(color: Theme.of(context).primaryColor, width: 0.3)
+                          ),
+                          child: CustomDropdown<int>(
+                            onChange: (int? value, int index) {
+                              authController.setDMTypeIndex(index, true);
+                            },
+                            dropdownButtonStyle: DropdownButtonStyle(
+                              height: 45,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: Dimensions.paddingSizeExtraSmall,
+                                horizontal: Dimensions.paddingSizeExtraSmall,
+                              ),
+                              primaryColor: Theme.of(context).textTheme.bodyLarge!.color,
+                            ),
+                            dropdownStyle: DropdownStyle(
+                              elevation: 10,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                              padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                            ),
+                            items: typeList,
+                            child: Text('${authController.dmTypeList[0]}'),
+                          ),
+                        ),
+                      ],
+                    )),
+                    const SizedBox(width: Dimensions.paddingSizeLarge),
+
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('zone'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                        const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                        authController.zoneList != null ? Container(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                              border: Border.all(color: Theme.of(context).primaryColor, width: 0.5)
+                          ),
+                          child: DropdownButton<int>(
+                            value: authController.selectedZoneIndex,
+                            items: zoneIndexList.map((int value) {
+                              return DropdownMenuItem<int>(
+                                value: value,
+                                child: Text(authController.zoneList![value].name!),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              authController.setZoneIndex(value);
+                            },
+                            isExpanded: true,
+                            underline: const SizedBox(),
+                          ),
+                        ) : const Center(child: CircularProgressIndicator()),
+                      ],
+                    )),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('vehicle_type'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                        const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                        authController.vehicleIds != null ? Container(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                              border: Border.all(color: Theme.of(context).primaryColor, width: 0.5)
+                          ),
+                          child: DropdownButton<int>(
+                            value: authController.vehicleIndex,
+                            items: authController.vehicleIds!.map((int? value) {
+                              return DropdownMenuItem<int>(
+                                value: authController.vehicleIds!.indexOf(value),
+                                child: Text(value != 0 ? authController.vehicles![(authController.vehicleIds!.indexOf(value)-1)].type! : 'select_vehicle_type'.tr),
+                              );
+                            }).toList(),
+                            onChanged: (int? value) {
+                              authController.setVehicleIndex(value, true);
+                            },
+                            isExpanded: true,
+                            underline: const SizedBox(),
+                          ),
+                        ) : const Center(child: CircularProgressIndicator()),
+                      ],
+                    ),
+                    ),
+
+                  ]),
+                  const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                  Row(children: [
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('identity_type'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                        const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                              border: Border.all(color: Theme.of(context).primaryColor, width: 0.5)
+                          ),
+                          child: DropdownButton<String>(
+                            value: authController.identityTypeList[authController.identityTypeIndex],
+                            items: authController.identityTypeList.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value.tr),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              authController.setIdentityTypeIndex(value, true);
+                            },
+                            isExpanded: true,
+                            underline: const SizedBox(),
+                          )),
+                      ],
+                    ),
+                    ),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+
+                    Expanded(child: CustomTextField(
+                      titleText: authController.identityTypeIndex == 0 ? 'identity_number'.tr
+                          : authController.identityTypeIndex == 1 ? 'driving_license_number'.tr : 'nid_number'.tr,
+                      controller: _identityNumberController,
+                      focusNode: _identityNumberNode,
+                      inputAction: TextInputAction.done,
+                      showTitle: true,
+                    ),),
+
+                    const Expanded(child: SizedBox()),
+
+                  ]),
+                  const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: authController.pickedIdentities.length+1,
+                      itemBuilder: (context, index) {
+                        XFile? file = index == authController.pickedIdentities.length ? null : authController.pickedIdentities[index];
+                        if(index == authController.pickedIdentities.length) {
+                          return InkWell(
+                            onTap: () => authController.pickDmImage(false, false),
                             child: DottedBorder(
                               color: Theme.of(context).primaryColor,
                               strokeWidth: 1,
                               strokeCap: StrokeCap.butt,
                               dashPattern: const [5, 5],
-                              padding: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.all(5),
                               borderType: BorderType.RRect,
                               radius: const Radius.circular(Dimensions.radiusDefault),
-                              child: Visibility(
-                                visible: authController.pickedImage != null,
-                                child: Center(
-                                  child: Container(
-                                    margin: const EdgeInsets.all(25),
-                                    decoration: BoxDecoration(border: Border.all(width: 2, color: Colors.white), shape: BoxShape.circle,),
-                                    padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                                    child: const Icon(Icons.camera_alt, color: Colors.white),
-                                  ),
+                              child: Container(
+                                height: 120, width: 150, alignment: Alignment.center,
+                                padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.camera_alt, color: Theme.of(context).disabledColor),
+                                    Text('upload_identity_image'.tr, style: robotoMedium.copyWith(color: Theme.of(context).disabledColor), textAlign: TextAlign.center),
+                                  ],
                                 ),
                               ),
                             ),
+                          );
+                        }
+                        return Container(
+                          margin: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+                            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                           ),
-                        ),
-                      ])),
-                      const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-
-                      Row(children: [
-                        Expanded(child: CustomTextField(
-                          titleText: 'first_name'.tr,
-                          controller: _fNameController,
-                          capitalization: TextCapitalization.words,
-                          inputType: TextInputType.name,
-                          focusNode: _fNameNode,
-                          nextFocus: _lNameNode,
-                          prefixIcon: Icons.person,
-                          showTitle: true,
-                        )),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                        Expanded(child: CustomTextField(
-                          titleText: 'last_name'.tr,
-                          controller: _lNameController,
-                          capitalization: TextCapitalization.words,
-                          inputType: TextInputType.name,
-                          focusNode: _lNameNode,
-                          nextFocus: _phoneNode,
-                          prefixIcon: Icons.person,
-                          showTitle: true,
-                        )),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                        Expanded(
-                          child: CustomTextField(
-                            titleText: 'phone'.tr,
-                            controller: _phoneController,
-                            focusNode: _phoneNode,
-                            nextFocus: _emailNode,
-                            inputType: TextInputType.phone,
-                            isPhone: true,
-                            showTitle: ResponsiveHelper.isDesktop(context),
-                            onCountryChanged: (CountryCode countryCode) {
-                              _countryDialCode = countryCode.dialCode;
-                            },
-                            countryDialCode: _countryDialCode != null ? CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).code
-                                : Get.find<LocalizationController>().locale.countryCode,
-                          ),
-                        ),
-                      ]),
-                      const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-
-                      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Expanded(child:CustomTextField(
-                          titleText: 'email'.tr,
-                          controller: _emailController,
-                          focusNode: _emailNode,
-                          nextFocus: _passwordNode,
-                          inputType: TextInputType.emailAddress,
-                          prefixIcon: Icons.email,
-                          showTitle: true,
-                        )),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                        Expanded(child: Column(
-                          children: [
-                            CustomTextField(
-                              titleText: 'password'.tr,
-                              controller: _passwordController,
-                              focusNode: _passwordNode,
-                              nextFocus: _identityNumberNode,
-                              inputAction: TextInputAction.done,
-                              inputType: TextInputType.visiblePassword,
-                              isPassword: true,
-                              prefixIcon: Icons.lock,
-                              showTitle: true,
-                              onChanged: (value){
-                                // authController.validPassCheck(value);
-                                if(value != null && value.isNotEmpty){
-                                  if(!authController.showPassView){
-                                    authController.showHidePass();
-                                  }
-                                  authController.validPassCheck(value);
-                                }else{
-                                  if(authController.showPassView){
-                                    authController.showHidePass();
-                                  }
-                                }
-                              },
+                          child: Stack(children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                              child: GetPlatform.isWeb ? Image.network(
+                                file!.path, width: 150, height: 120, fit: BoxFit.cover,
+                              ) : Image.file(
+                                File(file!.path), width: 150, height: 120, fit: BoxFit.cover,
+                              ),
                             ),
-
-                            authController.showPassView ? const PassView() : const SizedBox(),
-                          ],
-                        )),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                        Expanded(child: CustomTextField(
-                          titleText: 'confirm_password'.tr,
-                          hintText: '8_character'.tr,
-                          controller: _confirmPasswordController,
-                          focusNode: _confirmPasswordNode,
-                          inputAction: TextInputAction.done,
-                          inputType: TextInputType.visiblePassword,
-                          prefixIcon: Icons.lock,
-                          isPassword: true,
-                          showTitle: true,
-                        ))
-                      ]),
-                    ]),
+                            Positioned(
+                              right: 0, top: 0,
+                              child: InkWell(
+                                onTap: () => authController.removeIdentityImage(index),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
+                                  child: Icon(Icons.delete_forever, color: Colors.red),
+                                ),
+                              ),
+                            ),
+                          ]),
+                        );
+                      },
+                    ),
                   ),
                   const SizedBox(height: Dimensions.paddingSizeLarge),
 
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5, spreadRadius: 1)],
-                    ),
-                    padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                    child: Column(children: [
-                      Row(children: [
-                        const Icon(Icons.person),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-                        Text('delivery_man_information'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall))
-                      ]),
-                      const Divider(),
-                      const SizedBox(height: Dimensions.paddingSizeLarge),
-
-
-                      Row(children: [
-                        Expanded(child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('delivery_man_type'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                            const SizedBox(height: Dimensions.paddingSizeDefault),
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  color: Theme.of(context).cardColor,
-                                  border: Border.all(color: Theme.of(context).primaryColor, width: 0.3)
-                              ),
-                              child: CustomDropdown<int>(
-                                onChange: (int? value, int index) {
-                                  authController.setDMTypeIndex(index, true);
-                                },
-                                dropdownButtonStyle: DropdownButtonStyle(
-                                  height: 45,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: Dimensions.paddingSizeExtraSmall,
-                                    horizontal: Dimensions.paddingSizeExtraSmall,
-                                  ),
-                                  primaryColor: Theme.of(context).textTheme.bodyLarge!.color,
-                                ),
-                                dropdownStyle: DropdownStyle(
-                                  elevation: 10,
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                                ),
-                                items: typeList,
-                                child: Text('${authController.dmTypeList[0]}'),
-                              ),
-                            ),
-                          ],
-                        )),
-                        const SizedBox(width: Dimensions.paddingSizeLarge),
-
-                        Expanded(child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('zone'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                            const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                            authController.zoneIds != null ?  Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  color: Theme.of(context).cardColor,
-                                  border: Border.all(color: Theme.of(context).primaryColor, width: 0.3)
-                              ),
-                              child: CustomDropdown<int>(
-                                onChange: (int? value, int index) {
-                                  authController.setZoneIndex(value);
-                                },
-                                dropdownButtonStyle: DropdownButtonStyle(
-                                  height: 45,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: Dimensions.paddingSizeExtraSmall,
-                                    horizontal: Dimensions.paddingSizeExtraSmall,
-                                  ),
-                                  primaryColor: Theme.of(context).textTheme.bodyLarge!.color,
-                                ),
-                                dropdownStyle: DropdownStyle(
-                                  elevation: 10,
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                                ),
-                                items: zoneList,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 8),
-                                  child: Text(authController.selectedZoneIndex == -1 ? 'select_zone'.tr : authController.zoneList![authController.selectedZoneIndex!].name.toString()),
-                                ),
-                              ),
-                            ) : Center(child: Text('service_not_available_in_this_area'.tr)),
-                          ],
-                        )),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                        Expanded(child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('vehicle_type'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                            const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                            authController.vehicleIds != null ?  Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  color: Theme.of(context).cardColor,
-                                  border: Border.all(color: Theme.of(context).primaryColor, width: 0.3)
-                              ),
-                              child: CustomDropdown<int>(
-                                onChange: (int? value, int index) {
-                                  authController.setVehicleIndex(value, true);
-                                },
-                                dropdownButtonStyle: DropdownButtonStyle(
-                                  height: 45,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: Dimensions.paddingSizeExtraSmall,
-                                    horizontal: Dimensions.paddingSizeExtraSmall,
-                                  ),
-                                  primaryColor: Theme.of(context).textTheme.bodyLarge!.color,
-                                ),
-                                dropdownStyle: DropdownStyle(
-                                  elevation: 10,
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                                ),
-                                items: vehicleList,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 8),
-                                  child: Text(authController.vehicles![authController.vehicleIndex!].type!),
-                                ),
-                              ),
-                            ) : const Center(child: CircularProgressIndicator()),
-
-                            // authController.vehicleIds != null ? Container(
-                            //   padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                            //   decoration: BoxDecoration(
-                            //       color: Theme.of(context).cardColor,
-                            //       borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                            //       border: Border.all(color: Theme.of(context).primaryColor, width: 0.5)
-                            //   ),
-                            //   child: DropdownButton<int>(
-                            //     value: authController.vehicleIndex,
-                            //     items: authController.vehicleIds!.map((int? value) {
-                            //       return DropdownMenuItem<int>(
-                            //         value: authController.vehicleIds!.indexOf(value),
-                            //         child: Text(value != 0 ? authController.vehicles![(authController.vehicleIds!.indexOf(value)-1)].type! : 'select_vehicle_type'.tr),
-                            //       );
-                            //     }).toList(),
-                            //     onChanged: (int? value) {
-                            //       authController.setVehicleIndex(value, true);
-                            //     },
-                            //     isExpanded: true,
-                            //     underline: const SizedBox(),
-                            //   ),
-                            // ) : const Center(child: CircularProgressIndicator()),
-                          ],
-                        ),
-                        ),
-
-                      ]),
-                      const SizedBox(height: Dimensions.paddingSizeLarge),
-
-                      Row(children: [
-                        Expanded(child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('identity_type'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                            const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                            Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  color: Theme.of(context).cardColor,
-                                  border: Border.all(color: Theme.of(context).primaryColor, width: 0.3)
-                              ),
-                              child: CustomDropdown<int>(
-                                onChange: (int? value, int index) {
-                                  authController.setIdentityTypeIndex(authController.identityTypeList[index], true);
-                                },
-                                dropdownButtonStyle: DropdownButtonStyle(
-                                  height: 45,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: Dimensions.paddingSizeExtraSmall,
-                                    horizontal: Dimensions.paddingSizeExtraSmall,
-                                  ),
-                                  primaryColor: Theme.of(context).textTheme.bodyLarge!.color,
-                                ),
-                                dropdownStyle: DropdownStyle(
-                                  elevation: 10,
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                                ),
-                                items: identityTypeList,
-                                child: Text(authController.identityTypeList[0].tr),
-                              ),
-                            ),
-
-                            // Container(
-                            //     padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                            //     decoration: BoxDecoration(
-                            //         color: Theme.of(context).cardColor,
-                            //         borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                            //         border: Border.all(color: Theme.of(context).primaryColor, width: 0.5)
-                            //     ),
-                            //     child: DropdownButton<String>(
-                            //       value: authController.identityTypeList[authController.identityTypeIndex],
-                            //       items: authController.identityTypeList.map((String value) {
-                            //         return DropdownMenuItem<String>(
-                            //           value: value,
-                            //           child: Text(value.tr),
-                            //         );
-                            //       }).toList(),
-                            //       onChanged: (value) {
-                            //         authController.setIdentityTypeIndex(value, true);
-                            //       },
-                            //       isExpanded: true,
-                            //       underline: const SizedBox(),
-                            //     )),
-                          ],
-                        ),
-                        ),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                        Expanded(child: CustomTextField(
-                          titleText: authController.identityTypeIndex == 0 ? 'identity_number'.tr
-                              : authController.identityTypeIndex == 1 ? 'driving_license_number'.tr : 'nid_number'.tr,
-                          controller: _identityNumberController,
-                          focusNode: _identityNumberNode,
-                          inputAction: TextInputAction.done,
-                          showTitle: true,
-                        ),),
-
-                        const Expanded(child: SizedBox()),
-
-                      ]),
-                      const SizedBox(height: Dimensions.paddingSizeLarge),
-
-                      SizedBox(
-                        height: 120,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: authController.pickedIdentities.length+1,
-                          itemBuilder: (context, index) {
-                            XFile? file = index == authController.pickedIdentities.length ? null : authController.pickedIdentities[index];
-                            if(index == authController.pickedIdentities.length) {
-                              return InkWell(
-                                onTap: () => authController.pickDmImage(false, false),
-                                child: DottedBorder(
-                                  color: Theme.of(context).primaryColor,
-                                  strokeWidth: 1,
-                                  strokeCap: StrokeCap.butt,
-                                  dashPattern: const [5, 5],
-                                  padding: const EdgeInsets.all(5),
-                                  borderType: BorderType.RRect,
-                                  radius: const Radius.circular(Dimensions.radiusDefault),
-                                  child: Container(
-                                    height: 120, width: 150, alignment: Alignment.center,
-                                    padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                                    child: Column(
-                                      children: [
-                                        Icon(Icons.camera_alt, color: Theme.of(context).disabledColor),
-                                        Text('upload_identity_image'.tr, style: robotoMedium.copyWith(color: Theme.of(context).disabledColor), textAlign: TextAlign.center),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                            return Container(
-                              margin: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Theme.of(context).primaryColor, width: 2),
-                                borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                              ),
-                              child: Stack(children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                                  child: GetPlatform.isWeb ? Image.network(
-                                    file!.path, width: 150, height: 120, fit: BoxFit.cover,
-                                  ) : Image.file(
-                                    File(file!.path), width: 150, height: 120, fit: BoxFit.cover,
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 0, top: 0,
-                                  child: InkWell(
-                                    onTap: () => authController.removeIdentityImage(index),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
-                                      child: Icon(Icons.delete_forever, color: Colors.red),
-                                    ),
-                                  ),
-                                ),
-                              ]),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: Dimensions.paddingSizeLarge),
-
-                      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                              border: Border.all(color: Theme.of(context).hintColor)
-                          ),
-                          width: 165,
-                          child: CustomButton(
-                            transparent: true,
-                            textColor: Theme.of(context).hintColor,
-                            radius: Dimensions.radiusSmall,
-                            onPressed: () {
-                              _phoneController.text = '';
-                              _emailController.text = '';
-                              _fNameController.text = '';
-                              _lNameController.text = '';
-                              _lNameController.text = '';
-                              _passwordController.text = '';
-                              _confirmPasswordController.text = '';
-                              _identityNumberController.text = '';
-                              authController.resetDeliveryRegistration();
-                            },
-                            buttonText: 'reset'.tr,
-                            isBold: false,
-                            fontSize: Dimensions.fontSizeSmall,
-                          ),
-                        ),
-
-                        const SizedBox( width: Dimensions.paddingSizeLarge),
-                        SizedBox(width: 165, child: buttonView()),
-                      ])
-
-
-                    ]),
-                  ),
+                  buttonView(),
                 ]),
               ),
-            ),
-          )
-        ],
+            ]),
+          ),
+        ),
       ),
     );
   }
@@ -1061,8 +960,6 @@ class _DeliveryManRegistrationScreenState extends State<DeliveryManRegistrationS
   Widget buttonView(){
     return GetBuilder<AuthController>(builder: (authController) {
         return CustomButton(
-          isBold: ResponsiveHelper.isDesktop(context) ? false : true,
-          radius: ResponsiveHelper.isDesktop(context) ? Dimensions.radiusSmall : Dimensions.radiusDefault,
           isLoading: authController.isLoading,
           buttonText: authController.dmStatus == 0.4 ? 'next'.tr : 'submit'.tr,
           margin: EdgeInsets.all((ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isWeb()) ? 0 : Dimensions.paddingSizeSmall),
@@ -1125,37 +1022,34 @@ class _DeliveryManRegistrationScreenState extends State<DeliveryManRegistrationS
     String identityNumber = _identityNumberController.text.trim();
     String numberWithCountryCode = _countryDialCode!+phone;
 
-    if(ResponsiveHelper.isDesktop(context)) {
-      PhoneValid phoneValid = await CustomValidator.isPhoneValid(numberWithCountryCode);
-      numberWithCountryCode = phoneValid.phone;
+    if(ResponsiveHelper.isDesktop(context)){
+      bool isValid = GetPlatform.isAndroid ? false : true;
+      if(GetPlatform.isAndroid) {
+        try {
+          PhoneNumber phoneNumber = await PhoneNumberUtil().parse(numberWithCountryCode);
+          numberWithCountryCode = '+${phoneNumber.countryCode}${phoneNumber.nationalNumber}';
+          isValid = true;
+        } catch (_) {}
+      }
 
       if(fName.isEmpty) {
         showCustomSnackBar('enter_delivery_man_first_name'.tr);
-        return;
       }else if(lName.isEmpty) {
         showCustomSnackBar('enter_delivery_man_last_name'.tr);
-        return;
       }else if(authController.pickedImage == null) {
         showCustomSnackBar('pick_delivery_man_profile_image'.tr);
-        return;
       }else if(email.isEmpty) {
         showCustomSnackBar('enter_delivery_man_email_address'.tr);
-        return;
       }else if(!GetUtils.isEmail(email)) {
         showCustomSnackBar('enter_a_valid_email_address'.tr);
-        return;
       }else if(phone.isEmpty) {
         showCustomSnackBar('enter_delivery_man_phone_number'.tr);
-        return;
-      }else if(!phoneValid.isValid) {
+      }else if(!isValid) {
         showCustomSnackBar('enter_a_valid_phone_number'.tr);
-        return;
       }else if(password.isEmpty) {
         showCustomSnackBar('enter_password_for_delivery_man'.tr);
-        return;
       }else if(!authController.spatialCheck || !authController.lowercaseCheck || !authController.uppercaseCheck || !authController.numberCheck || !authController.lengthCheck) {
         showCustomSnackBar('provide_valid_password'.tr);
-        return;
       }
     }
 
@@ -1163,14 +1057,14 @@ class _DeliveryManRegistrationScreenState extends State<DeliveryManRegistrationS
       showCustomSnackBar('enter_delivery_man_identity_number'.tr);
     }else if(authController.pickedImage == null) {
       showCustomSnackBar('upload_delivery_man_image'.tr);
-    }else if(authController.vehicleIndex! == -1) {
+    }else if(authController.vehicleIndex!-1 == -1) {
       showCustomSnackBar('please_select_vehicle_for_the_deliveryman'.tr);
     }else {
       authController.registerDeliveryMan(DeliveryManBody(
         fName: fName, lName: lName, password: password, phone: numberWithCountryCode, email: email,
         identityNumber: identityNumber, identityType: authController.identityTypeList[authController.identityTypeIndex],
         earning: authController.dmTypeIndex == 0 ? '1' : '0', zoneId: authController.zoneList![authController.selectedZoneIndex!].id.toString(),
-        vehicleId: authController.vehicles![authController.vehicleIndex!].id.toString(),
+        vehicleId: authController.vehicles![authController.vehicleIndex! - 1].id.toString(),
       ));
     }
   }

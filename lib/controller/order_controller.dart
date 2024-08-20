@@ -1,21 +1,11 @@
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sixam_mart/controller/auth_controller.dart';
-import 'package:sixam_mart/controller/cart_controller.dart';
-import 'package:sixam_mart/controller/coupon_controller.dart';
-import 'package:sixam_mart/controller/localization_controller.dart';
-import 'package:sixam_mart/controller/parcel_controller.dart';
+import 'package:sixam_mart/controller/location_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
-import 'package:sixam_mart/controller/store_controller.dart';
-import 'package:sixam_mart/controller/user_controller.dart';
 import 'package:sixam_mart/data/api/api_checker.dart';
 import 'package:sixam_mart/data/api/api_client.dart';
 import 'package:sixam_mart/data/model/body/place_order_body.dart';
-import 'package:sixam_mart/data/model/response/address_model.dart';
 import 'package:sixam_mart/data/model/response/distance_model.dart';
-import 'package:sixam_mart/data/model/response/offline_method_model.dart';
 import 'package:sixam_mart/data/model/response/order_cancellation_body.dart';
 import 'package:sixam_mart/data/model/response/order_details_model.dart';
 import 'package:sixam_mart/data/model/response/order_model.dart';
@@ -23,21 +13,16 @@ import 'package:sixam_mart/data/model/response/refund_model.dart';
 import 'package:sixam_mart/data/model/response/response_model.dart';
 import 'package:sixam_mart/data/model/response/store_model.dart';
 import 'package:sixam_mart/data/model/response/timeslote_model.dart';
+import 'package:sixam_mart/data/model/response/zone_response_model.dart';
 import 'package:sixam_mart/data/repository/order_repo.dart';
 import 'package:sixam_mart/helper/date_converter.dart';
 import 'package:sixam_mart/helper/network_info.dart';
-import 'package:sixam_mart/helper/price_converter.dart';
-import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/app_constants.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:sixam_mart/view/screens/checkout/widget/order_successfull_dialog.dart';
-import 'package:sixam_mart/view/screens/checkout/widget/partial_pay_dialog.dart';
-import 'package:sixam_mart/view/screens/home/home_screen.dart';
-import 'package:universal_html/html.dart' as html;
 
 class OrderController extends GetxController implements GetxService {
   final OrderRepo orderRepo;
@@ -46,7 +31,7 @@ class OrderController extends GetxController implements GetxService {
   PaginatedOrderModel? _runningOrderModel;
   PaginatedOrderModel? _historyOrderModel;
   List<OrderDetailsModel>? _orderDetails;
-  int _paymentMethodIndex = -1;
+  int _paymentMethodIndex = 0;
   OrderModel? _trackModel;
   ResponseModel? _responseModel;
   bool _isLoading = false;
@@ -61,7 +46,7 @@ class OrderController extends GetxController implements GetxService {
   XFile? _orderAttachment;
   Uint8List? _rawAttachment;
   double _tips = 0.0;
-  int _selectedTips = 0;
+  int _selectedTips = 1;
   bool _canShowTipsField = false;
   bool _showBottomSheet = true;
   bool _showOneOrder = true;
@@ -71,33 +56,11 @@ class OrderController extends GetxController implements GetxService {
   bool _acceptTerms = true;
   double? _extraCharge;
   String? _cancelReason;
-  String? _shareApp;
   List<CancellationData>? _orderCancelReasons;
   bool _isDmTipSave = false;
   String _preferableTime = '';
   int _selectedInstruction = -1;
   bool _isExpanded = false;
-  bool _isPartialPay = false;
-  final TextEditingController couponController = TextEditingController();
-  final TextEditingController noteController = TextEditingController();
-  final TextEditingController streetNumberController = TextEditingController();
-  final TextEditingController houseController = TextEditingController();
-  final TextEditingController floorController = TextEditingController();
-  final TextEditingController tipController = TextEditingController();
-  final FocusNode streetNode = FocusNode();
-  final FocusNode houseNode = FocusNode();
-  final FocusNode floorNode = FocusNode();
-  bool _isExpand = false;
-  int? _mostDmTipAmount;
-  String? _digitalPaymentName;
-  double _viewTotalPrice = 0;
-  AddressModel? _guestAddress;
-  List<OfflineMethodModel>? _offlineMethodList;
-  int _selectedOfflineBankIndex = 0;
-  List<TextEditingController> informationControllerList = [];
-  List<FocusNode> informationFocusList = [];
-  String? countryDialCode = Get.find<AuthController>().getUserCountryCode().isNotEmpty ? Get.find<AuthController>().getUserCountryCode()
-      : CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).dialCode ?? Get.find<LocalizationController>().locale.countryCode;
 
   PaginatedOrderModel? get runningOrderModel => _runningOrderModel;
   PaginatedOrderModel? get historyOrderModel => _historyOrderModel;
@@ -126,51 +89,12 @@ class OrderController extends GetxController implements GetxService {
   bool get acceptTerms => _acceptTerms;
   double? get extraCharge => _extraCharge;
   String? get cancelReason => _cancelReason;
-  String? get shareApp => _shareApp;
   List<CancellationData>? get orderCancelReasons => _orderCancelReasons;
   bool get isDmTipSave => _isDmTipSave;
   String get preferableTime => _preferableTime;
   int get selectedInstruction => _selectedInstruction;
   bool get isExpanded => _isExpanded;
   bool get canShowTipsField => _canShowTipsField;
-  bool get isPartialPay => _isPartialPay;
-  bool get isExpand => _isExpand;
-  int? get mostDmTipAmount => _mostDmTipAmount;
-  String? get digitalPaymentName => _digitalPaymentName;
-  double? get viewTotalPrice => _viewTotalPrice;
-  AddressModel? get guestAddress => _guestAddress;
-  List<OfflineMethodModel>? get offlineMethodList => _offlineMethodList;
-  int get selectedOfflineBankIndex => _selectedOfflineBankIndex;
-
-  void selectOfflineBank(int index, {bool canUpdate = true}){
-    _selectedOfflineBankIndex = index;
-    if(canUpdate) {
-      update();
-    }
-  }
-
-  void setTotalAmount(double amount){
-    _viewTotalPrice = amount;
-  }
-
-  void setGuestAddress(AddressModel? address, {bool isUpdate = true}){
-    _guestAddress = address;
-    if(isUpdate) {
-      update();
-    }
-  }
-
-  void changeDigitalPaymentName(String name){
-    _digitalPaymentName = name;
-    update();
-  }
-
-  void changePartialPayment({bool isUpdate = true}){
-    _isPartialPay = !_isPartialPay;
-    if(isUpdate) {
-      update();
-    }
-  }
 
   void showTipsField(){
     _canShowTipsField = !_canShowTipsField;
@@ -191,85 +115,9 @@ class OrderController extends GetxController implements GetxService {
     update();
   }
 
-  void setPreferenceTimeForView(String time, {bool isUpdate = true}){
+  void setPreferenceTimeForView(String time){
     _preferableTime = time;
-    if(isUpdate) {
-      update();
-    }
-  }
-
-  Future<void> getOfflineMethodList()async {
-    Response response = await orderRepo.getOfflineMethodList();
-    if (response.statusCode == 200) {
-      _offlineMethodList = [];
-
-      response.body.forEach((method) => _offlineMethodList!.add(OfflineMethodModel.fromJson(method)));
-
-    }else{
-      ApiChecker.checkApi(response);
-    }
     update();
-  }
-
-  void changesMethod({bool canUpdate = true}) {
-    List<MethodInformations>? methodInformation = offlineMethodList![selectedOfflineBankIndex].methodInformations!;
-
-    informationControllerList = [];
-    informationFocusList = [];
-
-    for(int index=0; index<methodInformation.length; index++) {
-      informationControllerList.add(TextEditingController());
-      informationFocusList.add(FocusNode());
-    }
-    if(canUpdate) {
-      update();
-    }
-
-  }
-
-  Future<double?> applyPromoCode(dynamic value, double price, double discount, double addOns, double deliveryCharge, double totalPrice) async {
-    if(value != null) {
-      couponController.text = value.toString();
-    }
-    if(couponController.text.isNotEmpty){
-      if(Get.find<CouponController>().discount! < 1 && !Get.find<CouponController>().freeDelivery) {
-        if(couponController.text.isNotEmpty && !Get.find<CouponController>().isLoading) {
-          Get.find<CouponController>().applyCoupon(couponController.text, (price-discount)+addOns, deliveryCharge,
-             Get.find<StoreController>().store!.id).then((discount) {
-            if (discount! > 0) {
-              couponController.text = 'coupon_applied'.tr;
-              showCustomSnackBar(
-                '${'you_got_discount_of'.tr} ${PriceConverter.convertPrice(discount)}',
-                isError: false,
-              );
-              // print('==s=fff=== > ${Get.find<CouponController>().discount!}');
-              // await canApplyPartialPay(totalPrice, discount);
-            }
-          });
-        } else if(couponController.text.isEmpty) {
-          showCustomSnackBar('enter_a_coupon_code'.tr);
-        }
-      } else {
-        Get.find<CouponController>().removeCouponData(true);
-        couponController.text = '';
-      }
-    }
-    return 1;
-  }
-
-  Future<bool> checkBalanceStatus(double totalPrice, double discount) async {
-    totalPrice = (totalPrice - discount);
-    if(Get.find<OrderController>().isPartialPay){
-      Get.find<OrderController>().changePartialPayment();
-    }
-    Get.find<OrderController>().setPaymentMethod(-1);
-    if((Get.find<UserController>().userInfoModel!.walletBalance! < totalPrice) && (Get.find<UserController>().userInfoModel!.walletBalance! != 0.0)){
-      Get.dialog(PartialPayDialog(isPartialPay: true, totalPrice: totalPrice), useSafeArea: false,);
-    }else{
-      Get.dialog(PartialPayDialog(isPartialPay: false, totalPrice: totalPrice), useSafeArea: false,);
-    }
-    update();
-    return true;
   }
 
   Future<void> getOrderCancelReasons()async {
@@ -320,11 +168,9 @@ class OrderController extends GetxController implements GetxService {
     update();
   }
 
-  void showRunningOrders({bool canUpdate = true}){
+  void showRunningOrders(){
     _showBottomSheet = !_showBottomSheet;
-    if(canUpdate) {
-      update();
-    }
+    update();
   }
 
   void pickRefundImage(bool isRemove) async {
@@ -342,7 +188,7 @@ class OrderController extends GetxController implements GetxService {
   //     _prescriptionImage = await NetworkInfo.compressImage(_prescriptionImage);
   //     _rawPrescription = await _prescriptionImage.readAsBytes();
   //   }
-  //   update();print("update - 1");
+  //   update();
   // }
 
   Future<void> getRefundReasons()async {
@@ -355,17 +201,6 @@ class OrderController extends GetxController implements GetxService {
       for (var element in refundModel.refundReasons!) {
         _refundReasons!.add(element.reason);
       }
-    }else{
-      ApiChecker.checkApi(response);
-    }
-    update();
-  }
-
-  Future<void> getDmTipMostTapped()async {
-    _mostDmTipAmount = 0;
-    Response response = await orderRepo.getDmTipMostTapped();
-    if (response.statusCode == 200) {
-      _mostDmTipAmount = response.body['most_tips_amount'];
     }else{
       ApiChecker.checkApi(response);
     }
@@ -447,7 +282,7 @@ class OrderController extends GetxController implements GetxService {
     _showCancelled = false;
 
     if(_trackModel == null || (_trackModel!.orderType != 'parcel' && !_trackModel!.prescriptionOrder!)) {
-      Response response = await orderRepo.getOrderDetails(orderID, Get.find<AuthController>().isLoggedIn() ? null : Get.find<AuthController>().getGuestId());
+      Response response = await orderRepo.getOrderDetails(orderID);
       _isLoading = false;
       if (response.statusCode == 200) {
         _orderDetails = [];
@@ -455,8 +290,7 @@ class OrderController extends GetxController implements GetxService {
       } else {
         ApiChecker.checkApi(response);
       }
-    }
-    else {
+    }else {
       _isLoading = false;
       _orderDetails = [];
     }
@@ -464,16 +298,6 @@ class OrderController extends GetxController implements GetxService {
     return _orderDetails;
   }
 
-  Future<void> getShareApp()async{
-    Response response = await orderRepo.getShareApp();
-    if (response.statusCode == 200) {
-      _shareApp = response.body;
-      print(response.body);
-    }else {
-      ApiChecker.checkApi(response);
-    }
-
-  }
   void setPaymentMethod(int index, {bool isUpdate = true}) {
     _paymentMethodIndex = index;
     if(isUpdate){
@@ -481,13 +305,12 @@ class OrderController extends GetxController implements GetxService {
     }
   }
 
-  Future<void> addTips(double tips)async {
+  void addTips(double tips){
     _tips = tips;
     update();
   }
 
-  Future<ResponseModel?> trackOrder(String? orderID, OrderModel? orderModel, bool fromTracking,
-      {String? contactNumber, bool? fromGuestInput = false}) async {
+  Future<ResponseModel?> trackOrder(String? orderID, OrderModel? orderModel, bool fromTracking) async {
     _trackModel = null;
     _responseModel = null;
     if(!fromTracking) {
@@ -496,13 +319,7 @@ class OrderController extends GetxController implements GetxService {
     _showCancelled = false;
     if(orderModel == null) {
       _isLoading = true;
-      // if(contactNumber != null && fromGuestInput!) {
-      //   update();
-      // }
-      Response response = await orderRepo.trackOrder(
-        orderID, Get.find<AuthController>().isLoggedIn() ? null : Get.find<AuthController>().getGuestId(),
-        contactNumber: contactNumber,
-      );
+      Response response = await orderRepo.trackOrder(orderID);
       if (response.statusCode == 200) {
         _trackModel = OrderModel.fromJson(response.body);
         _responseModel = ResponseModel(true, response.body.toString());
@@ -519,13 +336,10 @@ class OrderController extends GetxController implements GetxService {
     return _responseModel;
   }
 
-  Future<ResponseModel?> timerTrackOrder(String orderID, {String? contactNumber}) async {
+  Future<ResponseModel?> timerTrackOrder(String orderID) async {
     _showCancelled = false;
 
-    Response response = await orderRepo.trackOrder(
-      orderID, Get.find<AuthController>().isLoggedIn() ? null : Get.find<AuthController>().getGuestId(),
-      contactNumber: contactNumber,
-    );
+    Response response = await orderRepo.trackOrder(orderID);
     if (response.statusCode == 200) {
       _trackModel = OrderModel.fromJson(response.body);
       _responseModel = ResponseModel(true, response.body.toString());
@@ -538,305 +352,30 @@ class OrderController extends GetxController implements GetxService {
     return _responseModel;
   }
 
-  // Future<String> placeOrder(PlaceOrderBody placeOrderBody, int? zoneID, double amount, double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive, {bool forParcel = false, bool isOfflinePay = false}) async
-  // {
-  //   _isLoading = true;
-  //   update();
-  //   String orderID = '';
-  //   Response response = await orderRepo.placeOrder(placeOrderBody, _orderAttachment );
-  //   print('///////////////////x//////////////////${placeOrderBody.cart!}');
-  //
-  //   _isLoading = false;
-  //   if (response.statusCode == 200) {
-  //     String? message = response.body['message'];
-  //     orderID = response.body['order_id'].toString();
-  //     if(!isOfflinePay) {
-  //       if(forParcel) {
-  //         parcelCallback(false, message, orderID, zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-  //       } else {
-  //         callback(true, message, orderID, zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber!);
-  //
-  //       }
-  //       Get.find<CartController>().cartList.clear();
-  //       update();
-  //     } else {
-  //       Get.find<CartController>().cartList.clear();
-  //       Get.find<CartController>().onlineCartList.clear();
-  //       // Get.find<CartController>().getCartDataOnline();
-  //       update();
-  //
-  //     }
-  //     _orderAttachment = null;
-  //     _rawAttachment = null;
-  //     if (kDebugMode) {
-  //       print('-------- Order placed successfully $orderID ----------');
-  //     }
-  //   } else {
-  //     if(!isOfflinePay) {
-  //       if(forParcel){
-  //         parcelCallback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-  //       } else {
-  //         callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-  //       }
-  //     } else {
-  //       print(response.statusText);
-  //       showCustomSnackBar(response.statusText);
-  //     }
-  //   }
-  //   update();
-  //
-  //   return orderID;
-  // }
-  // Future<String> placeOrder(PlaceOrderBody placeOrderBody, int? zoneID, double amount, double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive, {bool forParcel = false, bool isOfflinePay = false}) async
-  // {
-  //   _isLoading = true;
-  //   update();
-  //   String orderID = '';
-  //   Response response = await orderRepo.placeOrder(placeOrderBody, _orderAttachment );
-  //
-  //   _isLoading = false;
-  //   if (response.statusCode == 200) {
-  //     // Place order successfully
-  //     String? message = response.body['message'];
-  //     orderID = response.body['order_id'].toString();
-  //     if (!isOfflinePay) {
-  //       if (forParcel) {
-  //         parcelCallback(false, message, orderID, zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-  //       } else {
-  //         callback(true, message, orderID, zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber!);
-  //       }
-  //       // Clear the local cart list after successful order placement
-  //       Get.find<CartController>().cartList.clear();
-  //       // Clear the online cart list as well
-  //       Get.find<CartController>().onlineCartList.clear();
-  //       update();
-  //     } else {
-  //       Get.find<CartController>().cartList.clear();
-  //       Get.find<CartController>().onlineCartList.clear();
-  //       update();
-  //
-  //     }
-  //     _orderAttachment = null;
-  //     _rawAttachment = null;
-  //     if (kDebugMode) {
-  //       print('-------- Order placed successfully $orderID ----------');
-  //     }
-  //   } else {
-  //     if (!isOfflinePay) {
-  //       if (forParcel){
-  //         parcelCallback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-  //       } else {
-  //         callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-  //       }
-  //     } else {
-  //       print(response.statusText);
-  //       showCustomSnackBar(response.statusText);
-  //     }
-  //   }
-  //   update();
-  //
-  //   return orderID;
-  // }
-  bool hasPaid = false; // متغير على مستوى الفئة
-
-// مثال على تعديل الدالة placeOrder لتفريغ القوائم بعد عملية الدفع
-  Future<String> placeOrder(PlaceOrderBody placeOrderBody, int? zoneID, double amount, double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive, {bool forParcel = false, bool isOfflinePay = false}) async {
+  Future<void> placeOrder(PlaceOrderBody placeOrderBody, int? zoneID, Function(bool isSuccess, String? message, String orderID, int? zoneID, double amount, double? maximumCodOrderAmount) callback, double amount, double? maximumCodOrderAmount) async {
     _isLoading = true;
     update();
-    String orderID = '';
     Response response = await orderRepo.placeOrder(placeOrderBody, _orderAttachment);
-
     _isLoading = false;
     if (response.statusCode == 200) {
-      hasPaid = true; // تحديث حالة الدفع
-
       String? message = response.body['message'];
-      orderID = response.body['order_id'].toString();
-
-      if (!isOfflinePay) {
-        // إجراء الدالة الخاصة بالإخطار حسب نوع الطلب
-        if (forParcel) {
-          parcelCallback(false, message, orderID, zoneID, amount, maximumCodOrderAmount, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-        } else {
-          callback(true, message, orderID, zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber!);
-        }
-
-        // تفريغ جميع القوائم بعد تأكيد الدفع
-        Get.find<CartController>().cartList.clear();
-        Get.find<CartController>().freshCartList.clear();
-        Get.find<CartController>().onlineCartList.clear();
-        print('cartList callback ${Get.find<CartController>().cartList}');
-        update();
+      String orderID = response.body['order_id'].toString();
+      callback(true, message, orderID, zoneID, amount, maximumCodOrderAmount);
+      _orderAttachment = null;
+      _rawAttachment = null;
+      if (kDebugMode) {
+        print('-------- Order placed successfully $orderID ----------');
       }
     } else {
-      hasPaid = false; // التأكد من أن الحالة تُعدّل في حال فشل الدفع
-
-      if (!isOfflinePay) {
-        callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount, fromCart, isCashOnDeliveryActive, placeOrderBody.contactPersonNumber);
-        // تفريغ القوائم في حال فشل الدفع
-        Get.find<CartController>().cartList.clear();
-        Get.find<CartController>().freshCartList.clear();
-        Get.find<CartController>().onlineCartList.clear();
-      } else {
-        print(response.statusText);
-        showCustomSnackBar(response.statusText);
-      }
-      update();
-    }
-
-    _orderAttachment = null;
-    _rawAttachment = null;
-    if (kDebugMode) {
-      print('-------- Order placed successfully $orderID ----------');
-    }
-
-    return orderID;
-  }
-
-
-  Future<void> parcelCallback(bool isSuccess, String? message, String orderID, int? zoneID, double orderAmount, double? maxCodAmount, bool isCashOnDeliveryActive, String? contactNumber,) async
-  {
-
-    Get.find<ParcelController>().startLoader(false);
-    if(isSuccess) {
-      if(Get.find<OrderController>().isDmTipSave){
-        Get.find<AuthController>().saveDmTipIndex(Get.find<OrderController>().selectedTips.toString());
-      }
-      Get.find<OrderController>().setGuestAddress(null);
-      if(Get.find<ParcelController>().paymentIndex == 2) {
-        if(GetPlatform.isWeb) {
-          // Get.back();
-          await Get.find<AuthController>().saveGuestNumber(contactNumber ?? '');
-          String? hostname = html.window.location.hostname;
-          String protocol = html.window.location.protocol;
-          print('===customer id: ${Get.find<UserController>().userInfoModel?.id} /// guest id: ${Get.find<AuthController>().getGuestId()}');
-          String selectedUrl = '${AppConstants.baseUrl}/payment-mobile?order_id=$orderID&&customer_id=${Get.find<UserController>().userInfoModel?.id ?? Get.find<AuthController>().getGuestId()}'
-              '&payment_method=${Get.find<ParcelController>().digitalPaymentName}&payment_platform=web&&callback=$protocol//$hostname${RouteHelper.orderSuccess}?id=$orderID&status=';
-          html.window.open(selectedUrl,"_self");
-        } else{
-          Get.offNamed(RouteHelper.getPaymentRoute(
-            orderID, Get.find<UserController>().userInfoModel?.id ?? 0, 'parcel', orderAmount, isCashOnDeliveryActive,
-            Get.find<ParcelController>().digitalPaymentName, guestId: Get.find<AuthController>().getGuestId(),
-            contactNumber: contactNumber,
-          ));
-        }
-      }else {
-        Get.offNamed(RouteHelper.getOrderSuccessRoute(orderID, contactNumber));
-      }
-      Get.find<OrderController>().updateTips(0, notify: false);
-    }else {
-      showCustomSnackBar(message);
-    }
-  }
-
-  void callback(
-      bool isSuccess, String? message, String orderID, int? zoneID, double amount,
-      double? maximumCodOrderAmount, bool fromCart, bool isCashOnDeliveryActive, String? contactNumber,
-      ) async {
-    if(isSuccess) {
-      if(fromCart) {
-        Get.find<CartController>().clearCartList();
-        Get.find<CartController>().cartList.clear();
-        Get.find<CartController>().freshCartList.clear();
-        Get.find<CartController>().onlineCartList.clear();
-        Get.find<CartController>().getCartDataOnline();
-        Get.find<CartController>().addItem();
-        Get.find<CartController>().clearCard();
-        print('Get.find<CartController>().cartList ${Get.find<CartController>().cartList}');
-        print('Get.find<CartController>().freshCartList ${Get.find<CartController>().freshCartList}');
-      }
-      Get.find<CartController>().cartList.clear();
-      Get.find<CartController>().freshCartList.clear();
-      Get.find<CartController>().onlineCartList.clear();
-      Get.find<CartController>().getCartDataOnline();
-      Get.find<CartController>().addItem();
-      Get.find<CartController>().clearCard();
-      Get.find<OrderController>().setGuestAddress(null);
-      if(!Get.find<OrderController>().showBottomSheet){
-        Get.find<OrderController>().showRunningOrders(canUpdate: false);
-      }
-      if(Get.find<OrderController>().isDmTipSave){
-        Get.find<AuthController>().saveDmTipIndex(Get.find<OrderController>().selectedTips.toString());
-      }
-      Get.find<CartController>().cartList.clear();
-      Get.find<CartController>().freshCartList.clear();
-      Get.find<CartController>().onlineCartList.clear();
-      Get.find<OrderController>().stopLoader(canUpdate: false);
-      HomeScreen.loadData(true);
-      if(Get.find<OrderController>().paymentMethodIndex == 2) {
-        if(GetPlatform.isWeb) {
-          // Get.back();
-          await Get.find<AuthController>().saveGuestNumber(contactNumber ?? '');
-          String? hostname = html.window.location.hostname;
-          String protocol = html.window.location.protocol;
-          String selectedUrl;
-          print('===customer id: ${Get.find<UserController>().userInfoModel?.id} /// guest id: ${Get.find<AuthController>().getGuestId()}');
-          selectedUrl = '${AppConstants.baseUrl}/payment-mobile?order_id=$orderID&&customer_id=${Get.find<UserController>().userInfoModel?.id ?? Get.find<AuthController>().getGuestId()}'
-              '&payment_method=${Get.find<OrderController>().digitalPaymentName}&payment_platform=web&&callback=$protocol//$hostname${RouteHelper.orderSuccess}?id=$orderID&status=';
-
-          html.window.open(selectedUrl,"_self");
-        } else{
-          Get.offNamed(RouteHelper.getPaymentRoute(
-            orderID, Get.find<UserController>().userInfoModel?.id ?? 0, Get.find<OrderController>().orderType, amount,
-            isCashOnDeliveryActive, Get.find<OrderController>().digitalPaymentName, guestId: Get.find<AuthController>().getGuestId(),
-            contactNumber: contactNumber,
-          ));
-        }
-      } else {
-        double total = ((amount / 100) * Get.find<SplashController>().configModel!.loyaltyPointItemPurchasePoint!);
-        if(Get.find<AuthController>().isLoggedIn()) {
-          Get.find<AuthController>().saveEarningPoint(total.toStringAsFixed(0));
-        }
-        if (ResponsiveHelper.isDesktop(Get.context) && Get.find<AuthController>().isLoggedIn()){
-          Get.offNamed(RouteHelper.getInitialRoute());
-          Future.delayed(const Duration(seconds: 2) , () => Get.dialog(Center(child: SizedBox(height: 350, width : 500, child: OrderSuccessfulDialog( orderID: orderID)))));
-        } else {
-          Get.offNamed(RouteHelper.getOrderSuccessRoute(orderID, contactNumber));
-        }
-      }
-      Get.find<OrderController>().clearPrevData(zoneID);
-      Get.find<CouponController>().removeCouponData(false);
-      Get.find<OrderController>().updateTips(
-        Get.find<AuthController>().getDmTipIndex().isNotEmpty ? int.parse(Get.find<AuthController>().getDmTipIndex()) : 0,
-        notify: false,
-      );
-    }else {
-      showCustomSnackBar(message);
-    }
-  }
-
-  Future<bool> saveOfflineInfo(String data) async {
-    _isLoading = true;
-    bool success = false;
-    update();
-    Response response = await orderRepo.saveOfflineInfo(data);
-    if (response.statusCode == 200) {
-      success = true;
-      _isLoading = false;
-    } else {
-      ApiChecker.checkApi(response);
+      callback(false, response.statusText, '-1', zoneID, amount, maximumCodOrderAmount);
     }
     update();
-    return success;
-  }
-
-  Future<bool> updateOfflineInfo(String data) async {
-    _isLoading = true;
-    bool success = false;
-    update();
-    Response response = await orderRepo.updateOfflineInfo(data);
-    if (response.statusCode == 200) {
-      success = true;
-      _isLoading = false;
-    } else {
-      ApiChecker.checkApi(response);
-    }
-    update();
-    return success;
   }
 
   Future<void> placePrescriptionOrder(int? storeId, int? zoneID, double? distance, String address, String longitude, String latitude, String note, List<XFile> orderAttachment,
-      String dmTips, String deliveryInstruction, double orderAmount, double maxCodAmount, bool fromCart, bool isCashOnDeliveryActive) async {
+      String dmTips, String deliveryInstruction,
+      Function(bool isSuccess, String? message, String orderID, int? zoneID, double orderAmount, double maxCodAmount) callback,  double orderAmount, double maxCodAmount) async {
+
     List<MultipartBody> multiParts = [];
     for(XFile file in orderAttachment) {
       multiParts.add(MultipartBody('order_attachment[]', file));
@@ -848,38 +387,35 @@ class OrderController extends GetxController implements GetxService {
     if (response.statusCode == 200) {
       String? message = response.body['message'];
       String orderID = response.body['order_id'].toString();
-      callback(true, message, orderID, zoneID, orderAmount, maxCodAmount, fromCart, isCashOnDeliveryActive, null);
+      callback(true, message, orderID, zoneID, orderAmount, maxCodAmount);
       _orderAttachment = null;
       _rawAttachment = null;
       if (kDebugMode) {
         print('-------- Order placed successfully $orderID ----------');
       }
     } else {
-      callback(false, response.statusText, '-1', zoneID, orderAmount, maxCodAmount, fromCart, isCashOnDeliveryActive, null);
+      callback(false, response.statusText, '-1', zoneID, orderAmount, maxCodAmount);
     }
     update();
   }
 
-  void stopLoader({bool canUpdate = true}) {
+  void stopLoader() {
     _isLoading = false;
-    if(canUpdate) {
-      update();
-    }
+    update();
   }
 
   void clearPrevData(int? zoneID) {
     _addressIndex = 0;
     _acceptTerms = true;
-    // try {
-    //   ZoneData zoneData = Get.find<LocationController>().getUserAddress()!.zoneData!.firstWhere((element) => element.id == zoneID);
-    //   _paymentMethodIndex = zoneData.cashOnDelivery! ? 0 : zoneData.digitalPayment! ? 1
-    //       : Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? 2 : 0;
-    // }catch(e) {
-    //   _paymentMethodIndex = Get.find<SplashController>().configModel!.cashOnDelivery! ? 0
-    //       : Get.find<SplashController>().configModel!.digitalPayment! ? 1
-    //       : Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? 2 : 0;
-    // }
-    _paymentMethodIndex = -1;
+    try {
+      ZoneData zoneData = Get.find<LocationController>().getUserAddress()!.zoneData!.firstWhere((element) => element.id == zoneID);
+      _paymentMethodIndex = zoneData.cashOnDelivery! ? 0 : zoneData.digitalPayment! ? 1
+          : Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? 2 : 0;
+    }catch(e) {
+      _paymentMethodIndex = Get.find<SplashController>().configModel!.cashOnDelivery! ? 0
+          : Get.find<SplashController>().configModel!.digitalPayment! ? 1
+          : Get.find<SplashController>().configModel!.customerWalletStatus == 1 ? 2 : 0;
+    }
     _selectedDateSlot = 0;
     _selectedTimeSlot = 0;
     _distance = null;
@@ -902,15 +438,13 @@ class OrderController extends GetxController implements GetxService {
     if (response.statusCode == 200) {
       success = true;
       OrderModel? orderModel;
-      if(_runningOrderModel != null) {
-        for(OrderModel order in _runningOrderModel!.orders!) {
-          if(order.id == orderID) {
-            orderModel = order;
-            break;
-          }
+      for(OrderModel order in _runningOrderModel!.orders!) {
+        if(order.id == orderID) {
+          orderModel = order;
+          break;
         }
-        _runningOrderModel!.orders!.remove(orderModel);
       }
+      _runningOrderModel!.orders!.remove(orderModel);
       _showCancelled = true;
       showCustomSnackBar(response.body['message'], isError: false);
     } else {
@@ -1014,7 +548,6 @@ class OrderController extends GetxController implements GetxService {
     Response response = await orderRepo.switchToCOD(orderID);
     bool isSuccess;
     if (response.statusCode == 200) {
-      _isLoading = false;
       await Get.offAllNamed(RouteHelper.getInitialRoute());
       showCustomSnackBar(response.body['message'], isError: false);
       isSuccess = true;
@@ -1053,6 +586,7 @@ class OrderController extends GetxController implements GetxService {
     if(!fromDashboard) {
       await getExtraCharge(_distance);
     }
+
     update();
     return _distance;
   }
@@ -1070,7 +604,7 @@ class OrderController extends GetxController implements GetxService {
     _selectedTips = index;
     if(_selectedTips == 0 || _selectedTips == 5) {
       _tips = 0;
-    }else {
+    }else{
       _tips = double.parse(AppConstants.tips[index]);
     }
     if(notify) {
@@ -1082,69 +616,5 @@ class OrderController extends GetxController implements GetxService {
     _isDmTipSave = !_isDmTipSave;
     update();
   }
-
-  void toggleExpand(){
-    _isExpand = !_isExpand;
-    update();
-  }
-
-  void paymentRedirect({required String url, required bool canRedirect, required String? contactNumber,
-    required Function onClose, required final String? addFundUrl, required final String orderID}) {
-
-    if(canRedirect) {
-      bool isSuccess = url.contains('success') && url.contains(AppConstants.baseUrl);
-      bool isFailed = url.contains('fail') && url.contains(AppConstants.baseUrl);
-      bool isCancel = url.contains('cancel') && url.contains(AppConstants.baseUrl);
-      if (isSuccess || isFailed || isCancel) {
-        canRedirect = false;
-        onClose();
-      }
-
-      if((addFundUrl == '' && addFundUrl!.isEmpty)){
-        if (isSuccess) {
-          Get.offNamed(RouteHelper.getOrderSuccessRoute(orderID, contactNumber));
-        } else if (isFailed || isCancel) {
-          Get.offNamed(RouteHelper.getOrderSuccessRoute(orderID, contactNumber));
-        }
-      } else{
-        if(isSuccess || isFailed || isCancel) {
-          if(Get.currentRoute.contains(RouteHelper.payment)) {
-            Get.back();
-          }
-          Get.back();
-          Get.toNamed(RouteHelper.getWalletRoute(true, fundStatus: isSuccess ? 'success' : isFailed ? 'fail' : 'cancel', token: UniqueKey().toString()));
-        }
-      }
-
-    }
-  }
-
-
-
-  // void placeOrder() {
-  //   orderController.placeOrder(PlaceOrderBody(
-  //     cart: carts, couponDiscountAmount: Get.find<CouponController>().discount, distance: orderController.distance,
-  //     scheduleAt: !storeController.store!.scheduleOrder! ? null : (orderController.selectedDateSlot == 0
-  //         && orderController.selectedTimeSlot == 0) ? null : DateConverter.dateToDateAndTime(scheduleEndDate),
-  //     orderAmount: total, orderNote: Get.find<OrderController>().noteController.text, orderType: orderController.orderType,
-  //     paymentMethod: orderController.paymentMethodIndex == 0 ? 'cash_on_delivery'
-  //         : orderController.paymentMethodIndex == 1 ? 'wallet'
-  //         : orderController.paymentMethodIndex == 2 ? 'digital_payment' : 'offline_payment',
-  //     couponCode: (Get.find<CouponController>().discount! > 0 || (Get.find<CouponController>().coupon != null
-  //         && Get.find<CouponController>().freeDelivery)) ? Get.find<CouponController>().coupon!.code : null,
-  //     storeId: _cartList![0]!.item!.storeId,
-  //     address: finalAddress!.address, latitude: finalAddress.latitude, longitude: finalAddress.longitude, addressType: finalAddress.addressType,
-  //     contactPersonName: finalAddress.contactPersonName ?? '${Get.find<UserController>().userInfoModel!.fName} '
-  //         '${Get.find<UserController>().userInfoModel!.lName}',
-  //     contactPersonNumber: finalAddress.contactPersonNumber ?? Get.find<UserController>().userInfoModel!.phone,
-  //     streetNumber: orderController.streetNumberController.text.trim(), house: orderController.houseController.text.trim(), floor: orderController.floorController.text.trim(),
-  //     discountAmount: discount, taxAmount: tax, receiverDetails: null, parcelCategoryId: null,
-  //     chargePayer: null, dmTips: (orderController.orderType == 'take_away' || orderController.tipController.text == 'not_now') ? '' : orderController.tipController.text.trim(),
-  //     cutlery: Get.find<CartController>().addCutlery ? 1 : 0,
-  //     unavailableItemNote: Get.find<CartController>().notAvailableIndex != -1 ? Get.find<CartController>().notAvailableList[Get.find<CartController>().notAvailableIndex] : '',
-  //     deliveryInstruction: orderController.selectedInstruction != -1 ? AppConstants.deliveryInstructionList[orderController.selectedInstruction] : '',
-  //     partialPayment: orderController.isPartialPay ? 1 : 0, guestId: isGuestLogIn ? int.parse(Get.find<AuthController>().getGuestId()) : 0,
-  //   ), storeController.store!.zoneId, _callback, total, maxCodOrderAmount);
-  // }
 
 }

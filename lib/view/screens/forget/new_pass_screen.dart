@@ -1,4 +1,5 @@
 import 'package:sixam_mart/controller/auth_controller.dart';
+import 'package:sixam_mart/controller/location_controller.dart';
 import 'package:sixam_mart/controller/user_controller.dart';
 import 'package:sixam_mart/data/model/response/userinfo_model.dart';
 import 'package:sixam_mart/util/dimensions.dart';
@@ -12,9 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/view/base/footer_view.dart';
 import 'package:sixam_mart/view/base/menu_drawer.dart';
-import 'package:sixam_mart/view/screens/auth/sign_in_screen.dart';
-import 'package:sixam_mart/helper/responsive_helper.dart';
-import 'package:sixam_mart/helper/route_helper.dart';
 
 class NewPassScreen extends StatefulWidget {
   final String? resetToken;
@@ -90,7 +88,7 @@ class _NewPassScreenState extends State<NewPassScreen> {
               return GetBuilder<AuthController>(builder: (authBuilder) {
                 return CustomButton(
                   buttonText: 'submit'.tr,
-                  isLoading: authBuilder.isLoading || userController.isLoading,
+                  isLoading: authBuilder.isLoading && userController.isLoading,
                   onPressed: () => _resetPassword(),
                 );
               });
@@ -126,14 +124,7 @@ class _NewPassScreenState extends State<NewPassScreen> {
         Get.find<AuthController>().resetPassword(widget.resetToken, '+${widget.number!.trim()}', password, confirmPassword).then((value) {
           if (value.isSuccess) {
             Get.find<AuthController>().login('+${widget.number!.trim()}', password).then((value) async {
-              Get.offAllNamed(RouteHelper.getSignInRoute('reset-password'));
-              if(!ResponsiveHelper.isDesktop(context)) {
-                Get.offAllNamed(RouteHelper.getSignInRoute(Get.currentRoute));
-              }else{
-                Get.offAllNamed(RouteHelper.getInitialRoute(fromSplash: false))?.then((value) {
-                  Get.dialog(const SignInScreen(exitFromApp: true, backFromThis: true));
-                });
-              }
+              Get.find<LocationController>().navigateToLocationScreen('reset-password');
             });
           } else {
             showCustomSnackBar(value.message);

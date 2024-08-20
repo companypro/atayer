@@ -1,24 +1,16 @@
-import 'package:get/get.dart';
 import 'package:sixam_mart/data/model/response/choose_us_model.dart';
 import 'package:sixam_mart/data/model/response/language_model.dart';
 import 'package:sixam_mart/util/images.dart';
 
 class AppConstants {
-  static const String appName = 'Wafarly';
-  static const double appVersion = 2.5;
+  static const String appName = 'ATAYER';
+  static const double appVersion = 2.2;
 
-  static const String fontFamily = 'CodecPro-Regular';
-  static const bool payInWevView = false;
-  static const int balanceInputLen = 10;
-  static const String webHostedUrl = 'https://lest.lisre.online';
-
-  static const String baseUrl = 'https://lest.lisre.online';
+  static const String baseUrl = "https://atayr.stoor.online";
   static const String categoryUri = '/api/v1/categories';
   static const String bannerUri = '/api/v1/banners';
   static const String storeItemUri = '/api/v1/items/latest';
   static const String popularItemUri = '/api/v1/items/popular';
-  static const String modelHome = '/api/v1/items/module-products';
-  static const String share = '/api/v1/customer/share/app-link';
   static const String reviewedItemUri = '/api/v1/items/most-reviewed';
   static const String searchItemUri = '/api/v1/items/details/';
   static const String subCategoryUri = '/api/v1/categories/childes/';
@@ -112,44 +104,14 @@ class AppConstants {
   static const String orderCancellationUri = '/api/v1/customer/order/cancellation-reasons';
   static const String cartStoreSuggestedItemsUri = '/api/v1/items/suggested';
   static const String landingPageUri = '/api/v1/flutter-landing-page';
-  static const String mostTipsUri = '/api/v1/most-tips';
-  static const String addFundUri = '/api/v1/customer/wallet/add-fund';
-  static const String walletBonusUri = '/api/v1/customer/wallet/bonuses';
-  static const String guestLoginUri = '/api/v1/auth/guest/request';
-  static const String offlineMethodListUri = '/api/v1/offline_payment_method_list';
-  static const String offlinePaymentSaveInfoUri = '/api/v1/customer/order/offline-payment';
-  static const String offlinePaymentUpdateInfoUri = '/api/v1/customer/order/offline-payment-update';
-  static const String storeBannersUri = '/api/v1/banners/';
-  static const String recommendedItemsUri = '/api/v1/items/recommended?filter=';
-  static const String visitAgainStoreUri = '/api/v1/customer/visit-again';
-  static const String discountedItemsUri = '/api/v1/items/discounted';
-  static const String parcelOtherBannerUri = '/api/v1/other-banners';
-  static const String whyChooseUri = '/api/v1/other-banners/why-choose';
-  static const String videoContentUri = '/api/v1/other-banners/video-content';
-  static const String promotionalBannerUri = '/api/v1/other-banners';
-  static const String basicMedicineUri = '/api/v1/items/basic';
-  static const String commonConditionUri = '/api/v1/common-condition';
-  static const String conditionWiseItemUri = '/api/v1/common-condition/items/';
-  static const String flashSaleUri = '/api/v1/flash-sales';
-  static const String flashSaleProductsUri = '/api/v1/flash-sales/items';
-  static const String featuredCategoriesItemsUri = '/api/v1/categories/featured/items';
-  static const String recommendedStoreUri = '/api/v1/stores/recommended';
-  static const String parcelInstructionUri = '/api/v1/customer/order/parcel-instructions';
 
-  /// MESSAGING
+  //MESSAGING
   static const String conversationListUri = '/api/v1/customer/message/list';
   static const String searchConversationListUri = '/api/v1/customer/message/search-list';
   static const String messageListUri = '/api/v1/customer/message/details';
   static const String sendMessageUri = '/api/v1/customer/message/send';
 
-  /// Cart
-  static const String getCartListUri = '/api/v1/customer/cart/list';
-  static const String addCartUri = '/api/v1/customer/cart/add';
-  static const String updateCartUri = '/api/v1/customer/cart/update';
-  static const String removeAllCartUri = '/api/v1/customer/cart/remove';
-  static const String removeItemCartUri = '/api/v1/customer/cart/remove-item';
-
-  /// Shared Key
+  // Shared Key
   static const String theme = '6ammart_theme';
   static const String token = '6ammart_token';
   static const String countryCode = '6ammart_country_code';
@@ -166,10 +128,6 @@ class AppConstants {
   static const String dmTipIndex = '6ammart_dm_tip_index';
   static const String earnPoint = '6ammart_earn_point';
   static const String acceptCookies = '6ammart_accept_cookies';
-  static const String suggestedLocation = '6ammart_suggested_location';
-  static const String walletAccessToken = '6ammart_wallet_access_token';
-  static const String guestId = '6ammart_guest_id';
-  static const String guestNumber = '6ammart_guest_number';
 
   static const String topic = 'all_zone_customer';
   static const String zoneId = 'zoneId';
@@ -183,19 +141,15 @@ class AppConstants {
 
 
   ///Refer & Earn work flow list..
-  static final dataList = [
-    'invite_your_friends_and_business'.tr,
-    '${'they_register'.tr} ${AppConstants.appName} ${'with_special_offer'.tr}',
-    'you_made_your_earning'.tr,
-  ];
+  static const dataList = ['Invite your friends & businesses', 'They register eFood with special offer', 'You made your earning !'];
 
   /// Delivery Tips
-  static List<String> tips = ['0' ,'15', '10', '20', '40', 'custom'];
+  static List<String> tips = ['not_now' ,'15', '10', '20', '40', 'custom'];
   static List<String> deliveryInstructionList = [
-    'deliver_to_front_door'.tr,
-    'deliver_the_reception_desk'.tr,
-    'avoid_calling_phone'.tr,
-    'come_with_no_sound'.tr,
+    'Deliver to front door',
+    'Deliver to the reception desk',
+    'Avoid Calling Phone',
+    'Come with no sound',
   ];
 
   static List<ChooseUsModel> whyChooseUsList = [
@@ -212,7 +166,6 @@ class AppConstants {
   static const String confirmed = 'confirmed';
   static const String handover = 'handover';
   static const String pickedUp = 'picked_up';
-  static const String delivered = 'delivered';
 
   ///user type..
   static const String user = 'user';
@@ -221,46 +174,9 @@ class AppConstants {
   static const String deliveryMan = 'delivery_man';
   static const String vendor = 'vendor';
 
-  ///modules..
-  // static const String pharmacy = 'pharmacy';
-  // static const String food = 'food';
-  // static const String ecommerce = 'ecommerce';
-  static const String grocery = 'grocery';
-
   static List<LanguageModel> languages = [
-    LanguageModel(imageUrl: Images.arabic, languageName: 'عربى', countryCode: 'SA', languageCode: 'ar'),
     LanguageModel(imageUrl: Images.english, languageName: 'English', countryCode: 'US', languageCode: 'en'),
-
-    // LanguageModel(imageUrl: Images.arabic, languageName: 'Spanish', countryCode: 'ES', languageCode: 'es'),
-    // LanguageModel(imageUrl: Images.bengali, languageName: 'Bengali', countryCode: 'BN', languageCode: 'bn'),
-  ];
-
-  static List<String> joinDropdown = [
-    'join_us',
-    'become_a_seller',
-    'become_a_delivery_man'
-  ];
-
-  static final List<Map<String, String>> walletTransactionSortingList = [
-    {
-      'title' : 'all_transactions',
-      'value' : 'all'
-    },
-    {
-      'title' : 'order_transactions',
-      'value' : 'order'
-    },
-    {
-      'title' : 'converted_from_loyalty_point',
-      'value' : 'loyalty_point'
-    },
-    {
-      'title' : 'added_via_payment_method',
-      'value' : 'add_fund'
-    },
-    {
-      'title' : 'earned_by_referral',
-      'value' : 'referrer'
-    },
+    LanguageModel(imageUrl: Images.arabic, languageName: 'عربى', countryCode: 'SA', languageCode: 'ar'),
+    LanguageModel(imageUrl: Images.arabic, languageName: 'Spanish', countryCode: 'ES', languageCode: 'es'),
   ];
 }

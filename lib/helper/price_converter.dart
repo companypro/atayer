@@ -1,47 +1,8 @@
-import 'package:animated_flip_counter/animated_flip_counter.dart';
-import 'package:flutter/material.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:get/get.dart';
-import 'package:sixam_mart/util/styles.dart';
 
 class PriceConverter {
-
-
   static String convertPrice(double? price, {double? discount, String? discountType, bool forDM = false}) {
-    if (price == null) {
-      return 'Price unavailable';
-    }
-
-    if (discount != null && discountType != null) {
-      if (discountType == 'amount') {
-        price -= discount;
-      } else if (discountType == 'percent') {
-        price -= (discount / 100) * price;
-      }
-    }
-
-    var splashController = Get.find<SplashController>();
-    var configModel = splashController.configModel;
-
-    if (configModel == null) {
-      return 'Configuration not available';
-    }
-
-    String formattedPrice = toFixed(price)
-        .toStringAsFixed(forDM ? 0 : configModel.digitAfterDecimalPoint!)
-        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
-
-    String currencySymbol = 'pound'.tr;
-    String currentLocale = Get.locale.toString();
-
-    // Correctly handle the directionality at the widget level instead
-    if (currentLocale.startsWith('ar')) {
-      return '$formattedPrice $currencySymbol';
-    } else {
-      return '$formattedPrice $currencySymbol';
-    }
-  }
-  static Widget convertAnimationPrice(double? price, {double? discount, String? discountType, bool forDM = false, TextStyle? textStyle}) {
     if(discount != null && discountType != null){
       if(discountType == 'amount') {
         price = price! - discount;
@@ -50,17 +11,10 @@ class PriceConverter {
       }
     }
     bool isRightSide = Get.find<SplashController>().configModel!.currencySymbolDirection == 'right';
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: AnimatedFlipCounter(
-        duration: const Duration(milliseconds: 500),
-        value: toFixed(price!),
-        textStyle: textStyle ?? robotoMedium,
-        fractionDigits: forDM ? 0 : Get.find<SplashController>().configModel!.digitAfterDecimalPoint!,
-        prefix: isRightSide ? '' : 'pound'.tr,
-        suffix: isRightSide ? Get.find<SplashController>().configModel!.country! : '',
-      ),
-    );
+    return '${isRightSide ? '' : '${Get.find<SplashController>().configModel!.currencySymbol!} '}'
+        '${toFixed(price!).toStringAsFixed(forDM ? 0 : Get.find<SplashController>().configModel!.digitAfterDecimalPoint!)
+        .replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'
+        '${isRightSide ? ' ${Get.find<SplashController>().configModel!.currencySymbol!}' : ''}';
   }
 
   static double? convertWithDiscount(double? price, double? discount, String? discountType) {
@@ -71,15 +25,7 @@ class PriceConverter {
     }
     return price;
   }
-  static int? convertWithDiscountHome(int? price, int? discount, String? discountType) {
-    if(discountType == 'amount') {
-      price = price! - discount!;
-    } else if(discountType == 'percent') {
-      double discountAmount = (discount! / 100) * price!;
-      price = (price! - discountAmount).toInt();
-    }
-    return price;
-  }
+
   static double calculation(double amount, double? discount, String type, int quantity) {
     double calculatedAmount = 0;
     if(type == 'amount') {
@@ -96,7 +42,7 @@ class PriceConverter {
 
   static double toFixed(double val) {
     num mod = power(10, Get.find<SplashController>().configModel!.digitAfterDecimalPoint!);
-    return (((val * mod).toPrecision(Get.find<SplashController>().configModel!.digitAfterDecimalPoint!)).floor().toDouble() / mod);
+    return ((val * mod).floor().toDouble() / mod);
   }
 
   static int power(int x, int n) {

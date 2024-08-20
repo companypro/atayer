@@ -35,7 +35,7 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     title = json['title'];
-    description = json['description'].toString();
+    description = json['description'];
     image = json['image'];
     type = json['type'];
   }

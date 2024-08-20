@@ -1,9 +1,6 @@
 import 'package:sixam_mart/controller/location_controller.dart';
 import 'package:sixam_mart/data/api/api_checker.dart';
 import 'package:sixam_mart/data/model/response/banner_model.dart';
-import 'package:sixam_mart/data/model/response/others_banner_model.dart';
-import 'package:sixam_mart/data/model/response/promotional_banner_model.dart';
-import 'package:sixam_mart/data/model/response/zone_response_model.dart';
 import 'package:sixam_mart/data/repository/banner_repo.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
@@ -19,8 +16,6 @@ class BannerController extends GetxController implements GetxService {
   List<dynamic>? _taxiBannerDataList;
   List<dynamic>? _featuredBannerDataList;
   int _currentIndex = 0;
-  ParcelOtherBannerModel? _parcelOtherBannerModel;
-  PromotionalBanner? _promotionalBanner;
 
   List<String?>? get bannerImageList => _bannerImageList;
   List<String?>? get featuredBannerList => _featuredBannerList;
@@ -29,8 +24,6 @@ class BannerController extends GetxController implements GetxService {
   int get currentIndex => _currentIndex;
   List<String?>? get taxiBannerImageList => _taxiBannerImageList;
   List<dynamic>? get taxiBannerDataList => _taxiBannerDataList;
-  ParcelOtherBannerModel? get parcelOtherBannerModel => _parcelOtherBannerModel;
-  PromotionalBanner? get promotionalBanner => _promotionalBanner;
 
   Future<void> getFeaturedBanner() async {
     Response response = await bannerRepo.getFeaturedBannerList();
@@ -39,8 +32,8 @@ class BannerController extends GetxController implements GetxService {
       _featuredBannerDataList = [];
       BannerModel bannerModel = BannerModel.fromJson(response.body);
       List<int?> moduleIdList = [];
-      for (ZoneData zone in Get.find<LocationController>().getUserAddress()!.zoneData!) {
-        for (Modules module in zone.modules ?? []) {
+      for (var zone in Get.find<LocationController>().getUserAddress()!.zoneData!) {
+        for (var module in zone.modules!) {
           moduleIdList.add(module.id);
         }
       }
@@ -90,6 +83,10 @@ class BannerController extends GetxController implements GetxService {
             _bannerDataList!.add(null);
           }
         }
+        if(ResponsiveHelper.isDesktop(Get.context) && _bannerImageList!.length % 2 != 0){
+          _bannerImageList!.add(_bannerImageList![0]);
+          _bannerDataList!.add(_bannerDataList![0]);
+        }
       } else {
         ApiChecker.checkApi(response);
       }
@@ -125,30 +122,6 @@ class BannerController extends GetxController implements GetxService {
           _taxiBannerImageList!.add(_taxiBannerImageList![0]);
           _taxiBannerDataList!.add(_taxiBannerDataList![0]);
         }
-      } else {
-        ApiChecker.checkApi(response);
-      }
-      update();
-    }
-  }
-
-  Future<void> getParcelOtherBannerList(bool reload) async {
-    if(_parcelOtherBannerModel == null || reload) {
-      Response response = await bannerRepo.getParcelOtherBannerList();
-      if (response.statusCode == 200) {
-        _parcelOtherBannerModel = ParcelOtherBannerModel.fromJson(response.body);
-      } else {
-        ApiChecker.checkApi(response);
-      }
-      update();
-    }
-  }
-
-  Future<void> getPromotionalBanner(bool reload) async {
-    if(_promotionalBanner == null || reload) {
-      Response response = await bannerRepo.getPromotionalBanner();
-      if (response.statusCode == 200) {
-        _promotionalBanner = PromotionalBanner.fromJson(response.body);
       } else {
         ApiChecker.checkApi(response);
       }

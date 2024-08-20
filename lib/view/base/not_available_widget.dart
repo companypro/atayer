@@ -6,9 +6,7 @@ import 'package:get/get.dart';
 class NotAvailableWidget extends StatelessWidget {
   final double fontSize;
   final bool isStore;
-  final bool isAllSideRound;
-  final double? radius;
-  const NotAvailableWidget({Key? key, this.fontSize = 12, this.isStore = false, this.isAllSideRound = true, this.radius = Dimensions.radiusSmall}) : super(key: key);
+  const NotAvailableWidget({Key? key, this.fontSize = 8, this.isStore = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +14,10 @@ class NotAvailableWidget extends StatelessWidget {
       top: 0, left: 0, bottom: 0, right: 0,
       child: Container(
         alignment: Alignment.center,
-        decoration: BoxDecoration(borderRadius: isAllSideRound ? BorderRadius.circular(radius!) :  BorderRadius.vertical(top: Radius.circular(radius!)), color: Colors.black.withOpacity(0.6)),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), color: Colors.black.withOpacity(0.6)),
         child: Text(
           isStore ? 'closed_now'.tr : 'not_available_now_break'.tr, textAlign: TextAlign.center,
-          style: robotoMedium.copyWith(color: Colors.white, fontSize: fontSize),
+          style: robotoRegular.copyWith(color: Colors.white, fontSize: fontSize),
         ),
       ),
     );

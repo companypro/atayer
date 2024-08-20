@@ -15,8 +15,6 @@ import 'package:sixam_mart/view/base/no_internet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../auth/sign_in_screen.dart';
-
 class SplashScreen extends StatefulWidget {
   final NotificationBody? body;
   const SplashScreen({Key? key, required this.body}) : super(key: key);
@@ -54,9 +52,7 @@ class SplashScreenState extends State<SplashScreen> {
     });
 
     Get.find<SplashController>().initSharedData();
-    if((Get.find<AuthController>().getGuestId().isNotEmpty || Get.find<AuthController>().isLoggedIn()) && Get.find<SplashController>().cacheModule != null) {
-      Get.find<CartController>().getCartData();
-    }
+    Get.find<CartController>().getCartData();
     _route();
 
   }
@@ -93,9 +89,7 @@ class SplashScreenState extends State<SplashScreen> {
               if (Get.find<AuthController>().isLoggedIn()) {
                 Get.find<AuthController>().updateToken();
                 if (Get.find<LocationController>().getUserAddress() != null) {
-                  if(Get.find<SplashController>().module != null) {
-                    await Get.find<WishListController>().getWishList();
-                  }
+                  await Get.find<WishListController>().getWishList();
                   Get.offNamed(RouteHelper.getInitialRoute(fromSplash: true));
                 } else {
                   Get.find<LocationController>().navigateToLocationScreen('splash', offNamed: true);
@@ -108,15 +102,7 @@ class SplashScreenState extends State<SplashScreen> {
                     Get.offNamed(RouteHelper.getOnBoardingRoute());
                   }
                 } else {
-                  if(Get.find<AuthController>().isGuestLoggedIn()) {
-                    if (Get.find<LocationController>().getUserAddress() != null) {
-                      Get.offNamed(RouteHelper.getInitialRoute(fromSplash: true));
-                    } else {
-                      Get.find<LocationController>().navigateToLocationScreen('splash', offNamed: true);
-                    }
-                  } else {
-                    Get.offNamed(RouteHelper.getSignInRoute(RouteHelper.splash));
-                  }
+                  Get.offNamed(RouteHelper.getSignInRoute(RouteHelper.splash));
                 }
               }
             }
@@ -134,7 +120,6 @@ class SplashScreenState extends State<SplashScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Color(0xFF007058),
       key: _globalKey,
       body: GetBuilder<SplashController>(builder: (splashController) {
         return Center(

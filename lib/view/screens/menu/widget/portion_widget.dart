@@ -18,7 +18,7 @@ class PortionWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
         child: Column(children: [
           Row(children: [
-            Image.asset(icon, height: 20, width: 20,color: Theme.of(context).primaryColor,),
+            Image.asset(icon, height: 16, width: 16),
             const SizedBox(width: Dimensions.paddingSizeSmall),
 
             Expanded(child: Text(title, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault))),
@@ -29,13 +29,10 @@ class PortionWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
               ),
               padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall, horizontal: Dimensions.paddingSizeSmall),
-              child: Text(suffix!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Colors.white), textDirection: TextDirection.ltr),
+              child: Text(suffix!, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).cardColor)),
             ) : const SizedBox(),
-            Spacer(),
-            Icon(Icons.arrow_forward_ios_outlined,size: 15,)
           ]),
-          const SizedBox(height: 7,)
-          // hideDivider ? const SizedBox() : const Divider()
+          hideDivider ? const SizedBox() : const Divider()
         ]),
       ),
     );

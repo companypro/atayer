@@ -1,15 +1,13 @@
 import 'package:get/get.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
-import 'package:sixam_mart/data/model/response/basic_medicine_model.dart';
 
 class ItemModel {
   int? totalSize;
   String? limit;
   int? offset;
   List<Item>? items;
-  List<Categories>? categories;
 
-  ItemModel({this.totalSize, this.limit, this.offset, this.items, this.categories});
+  ItemModel({this.totalSize, this.limit, this.offset, this.items});
 
   ItemModel.fromJson(Map<String, dynamic> json) {
     totalSize = json['total_size'];
@@ -18,27 +16,11 @@ class ItemModel {
     if (json['products'] != null) {
       items = [];
       json['products'].forEach((v) {
-        if(v['module_type'] == null || !Get.find<SplashController>().getModuleConfig(v['module_type'])!.newVariation!
+        if(v['module_type'] == null || !Get.find<SplashController>().getModuleConfig(v['module_type']).newVariation!
             || v['variations'] == null || v['variations'].isEmpty
             || (v['food_variations'] != null && v['food_variations'].isNotEmpty)) {
           items!.add(Item.fromJson(v));
         }
-      });
-    }
-    if (json['items'] != null) {
-      items = [];
-      json['items'].forEach((v) {
-        if(v['module_type'] == null || !Get.find<SplashController>().getModuleConfig(v['module_type'])!.newVariation!
-            || v['variations'] == null || v['variations'].isEmpty
-            || (v['food_variations'] != null && v['food_variations'].isNotEmpty)) {
-          items!.add(Item.fromJson(v));
-        }
-      });
-    }
-    if (json['categories'] != null) {
-      categories = <Categories>[];
-      json['categories'].forEach((v) {
-        categories!.add(Categories.fromJson(v));
       });
     }
   }
@@ -50,9 +32,6 @@ class ItemModel {
     data['offset'] = offset;
     if (items != null) {
       data['products'] = items!.map((v) => v.toJson()).toList();
-    }
-    if (categories != null) {
-      data['categories'] = categories!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -90,8 +69,6 @@ class Item {
   int? stock;
   String? availableDateStarts;
   int? organic;
-  int? quantityLimit;
-  int? flashSale;
 
   Item(
       {this.id,
@@ -124,8 +101,6 @@ class Item {
         this.unitType,
         this.stock,
         this.organic,
-        this.quantityLimit,
-        this.flashSale,
       });
 
   Item.fromJson(Map<String, dynamic> json) {
@@ -155,15 +130,9 @@ class Item {
     }
     if (json['add_ons'] != null) {
       addOns = [];
-      if (json['add_ons'].length > 0 && json['add_ons'][0] != '[') {
-        json['add_ons'].forEach((v) {
-          addOns!.add(AddOns.fromJson(v));
-        });
-      } else if(json['addons'] != null){
-        json['addons'].forEach((v) {
-          addOns!.add(AddOns.fromJson(v));
-        });
-      }
+      json['add_ons'].forEach((v) {
+        addOns!.add(AddOns.fromJson(v));
+      });
     }
     if (json['choice_options'] != null) {
       choiceOptions = [];
@@ -191,8 +160,6 @@ class Item {
     unitType = json['unit_type'];
     availableDateStarts = json['available_date_starts'];
     organic = json['organic'];
-    quantityLimit = json['maximum_cart_quantity'];
-    flashSale = json['flash_sale'];
   }
 
   Map<String, dynamic> toJson() {
@@ -239,8 +206,6 @@ class Item {
     data['unit_type'] = unitType;
     data['available_date_starts'] = availableDateStarts;
     data['organic'] = organic;
-    data['maximum_cart_quantity'] = quantityLimit;
-    data['flash_sale'] = flashSale;
     return data;
   }
 }
@@ -270,7 +235,7 @@ class Variation {
 
   Variation.fromJson(Map<String, dynamic> json) {
     type = json['type'];
-    price = json['price']?.toDouble();
+    price = json['price'].toDouble();
     stock = int.parse(json['stock'] != null ? json['stock'].toString() : '0');
   }
 
@@ -373,21 +338,18 @@ class FoodVariation {
 class VariationValue {
   String? level;
   double? optionPrice;
-  bool? isSelected;
 
-  VariationValue({this.level, this.optionPrice, this.isSelected});
+  VariationValue({this.level, this.optionPrice});
 
   VariationValue.fromJson(Map<String, dynamic> json) {
     level = json['label'];
     optionPrice = double.parse(json['optionPrice'].toString());
-    isSelected = json['isSelected'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['label'] = level;
     data['optionPrice'] = optionPrice;
-    data['isSelected'] = isSelected;
     return data;
   }
 }

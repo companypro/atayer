@@ -8,21 +8,17 @@ import 'package:sixam_mart/view/base/item_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sixam_mart/view/base/menu_drawer.dart';
-import 'package:sixam_mart/view/base/web_page_title_widget.dart';
 
 class AllStoreScreen extends StatefulWidget {
   final bool isPopular;
   final bool isFeatured;
-  final bool isNearbyStore;
-  const AllStoreScreen({Key? key, required this.isPopular, required this.isFeatured, required this.isNearbyStore}) : super(key: key);
+  const AllStoreScreen({Key? key, required this.isPopular, required this.isFeatured}) : super(key: key);
 
   @override
   State<AllStoreScreen> createState() => _AllStoreScreenState();
 }
 
 class _AllStoreScreenState extends State<AllStoreScreen> {
-
-  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -45,7 +41,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
           appBar: CustomAppBar(
             title: widget.isFeatured ? 'featured_stores'.tr :  widget.isPopular
               ? Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
-              ? widget.isNearbyStore ? 'best_store_nearby'.tr : 'popular_restaurants'.tr : widget.isNearbyStore ? 'best_store_nearby'.tr : 'popular_stores'.tr : '${'new_on'.tr} ${AppConstants.appName}',
+              ? 'popular_restaurants'.tr : 'popular_stores'.tr : '${'new_on'.tr} ${AppConstants.appName}',
             type: widget.isFeatured ? null : storeController.type,
             onVegFilterTap: (String type) {
               if(widget.isPopular) {
@@ -70,27 +66,18 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
                 );
               }
             },
-            child: Scrollbar(controller: scrollController, child: SingleChildScrollView(
-              controller: scrollController, child: FooterView(child: Column(
-                children: [
-                  WebScreenTitleWidget(title: widget.isFeatured ? 'featured_stores'.tr :  widget.isPopular
-                      ? Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
-                      ? 'popular_restaurants'.tr : 'popular_stores'.tr : '${'new_on'.tr} ${AppConstants.appName}',
-                  ),
-                  SizedBox(
-                  width: Dimensions.webMaxWidth,
-                  child: GetBuilder<StoreController>(builder: (storeController) {
-                    return ItemsView(
-                      isStore: true, items: null, isFeatured: widget.isFeatured,
-                      noDataText: widget.isFeatured ? 'no_store_available'.tr : Get.find<SplashController>().configModel!.moduleConfig!
-                          .module!.showRestaurantText! ? 'no_restaurant_available'.tr : 'no_store_available'.tr,
-                      stores: widget.isFeatured ? storeController.featuredStoreList : widget.isPopular ? storeController.popularStoreList
-                          : storeController.latestStoreList,
-                    );
-                  }),
-            ),
-                ],
-              )))),
+            child: Scrollbar(child: SingleChildScrollView(child: FooterView(child: SizedBox(
+              width: Dimensions.webMaxWidth,
+              child: GetBuilder<StoreController>(builder: (storeController) {
+                return ItemsView(
+                  isStore: true, items: null, isFeatured: widget.isFeatured,
+                  noDataText: widget.isFeatured ? 'no_store_available'.tr : Get.find<SplashController>().configModel!.moduleConfig!
+                      .module!.showRestaurantText! ? 'no_restaurant_available'.tr : 'no_store_available'.tr,
+                  stores: widget.isFeatured ? storeController.featuredStoreList : widget.isPopular ? storeController.popularStoreList
+                      : storeController.latestStoreList,
+                );
+              }),
+            )))),
           ),
         );
       }

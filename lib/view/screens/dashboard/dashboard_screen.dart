@@ -1,27 +1,19 @@
 import 'dart:async';
 
 import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/location_controller.dart';
 import 'package:sixam_mart/controller/order_controller.dart';
-import 'package:sixam_mart/controller/parcel_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/data/model/response/order_model.dart';
 import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
-import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/view/base/cart_widget.dart';
 import 'package:sixam_mart/view/base/custom_dialog.dart';
-import 'package:sixam_mart/view/base/custom_snackbar.dart';
-import 'package:sixam_mart/view/screens/address/address_screen.dart';
-import 'package:sixam_mart/view/screens/chat/conversation_screen.dart';
 import 'package:sixam_mart/view/screens/checkout/widget/congratulation_dialogue.dart';
 import 'package:sixam_mart/view/screens/dashboard/widget/address_bottom_sheet.dart';
 import 'package:sixam_mart/view/screens/dashboard/widget/bottom_nav_item.dart';
-import 'package:sixam_mart/view/screens/dashboard/widget/navbar_custom_painter.dart';
-import 'package:sixam_mart/view/screens/dashboard/widget/parcel_bottom_sheet.dart';
 import 'package:sixam_mart/view/screens/favourite/favourite_screen.dart';
 import 'package:sixam_mart/view/screens/home/home_screen.dart';
 import 'package:sixam_mart/view/screens/menu/menu_screen_new.dart';
@@ -29,8 +21,6 @@ import 'package:sixam_mart/view/screens/order/order_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../search/search_screen.dart';
-import '../sections/sections.dart';
 import 'widget/running_order_view_widget.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -50,6 +40,15 @@ class DashboardScreenState extends State<DashboardScreen> {
   bool _canExit = GetPlatform.isWeb ? true : false;
 
   GlobalKey<ExpandableBottomSheetState> key = GlobalKey();
+  // final GlobalKey<ScaffoldState> _drawerKey = GlobalKey<ScaffoldState>();
+
+  // void _openEndDrawer() {
+  //   _drawerKey.currentState!.openEndDrawer();
+  // }
+
+  // void _closeEndDrawer() {
+  //   Navigator.of(context).pop();
+  // }
 
 
   late bool _isLogin;
@@ -73,13 +72,13 @@ class DashboardScreenState extends State<DashboardScreen> {
     _pageIndex = widget.pageIndex;
 
     _pageController = PageController(initialPage: widget.pageIndex);
-    Get.find<OrderController>().getShareApp();
 
     _screens = [
       const HomeScreen(),
-      const Sections(),
+      const FavouriteScreen(),
+      // const CartScreen(fromNav: true),
       const SizedBox(),
-      const SearchScreen(queryText: ''),
+      const OrderScreen(),
       const MenuScreenNew()
     ];
 
@@ -90,8 +89,9 @@ class DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> suggestAddressBottomSheet() async {
+
     active = await Get.find<LocationController>().checkLocationActive();
-    if(widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) {
+    if(widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active){
       Future.delayed(const Duration(seconds: 1), () {
         showModalBottomSheet(
           context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
@@ -106,190 +106,124 @@ class DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-    bool keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
-    return GetBuilder<SplashController>(
-      builder: (splashController) {
-        return WillPopScope(
-          onWillPop: () async {
-            if (_pageIndex != 0) {
-              _setPage(0);
+    return WillPopScope(
+      onWillPop: () async {
+        if (_pageIndex != 0) {
+          _setPage(0);
+          return false;
+        } else {
+          if(!ResponsiveHelper.isDesktop(context) && Get.find<SplashController>().module != null && Get.find<SplashController>().configModel!.module == null) {
+            Get.find<SplashController>().setModule(null);
+            return false;
+          }else {
+            if(_canExit) {
+              return true;
+            }else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('back_press_again_to_exit'.tr, style: const TextStyle(color: Colors.white)),
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: Colors.green,
+                duration: const Duration(seconds: 2),
+                margin: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+              ));
+              _canExit = true;
+              Timer(const Duration(seconds: 2), () {
+                _canExit = false;
+              });
               return false;
-            } else {
-              if(splashController.isRefreshing) {
-                showCustomSnackBar('please_wait_until_refresh_complete'.tr, isError: true);
-                return false;
-              }
-              if(!ResponsiveHelper.isDesktop(context) && Get.find<SplashController>().module != null && Get.find<SplashController>().configModel!.module == null) {
-                Get.find<SplashController>().setModule(null);
-                return false;
-              }else {
-                if(_canExit) {
-                  return true;
-                }else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('back_press_again_to_exit'.tr, style: const TextStyle(color: Colors.white)),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Colors.green,
-                    duration: const Duration(seconds: 2),
-                    margin: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                  ));
-                  _canExit = true;
-                  Timer(const Duration(seconds: 2), () {
-                    _canExit = false;
-                  });
-                  return false;
-                }
-              }
             }
-          },
-          child: GetBuilder<OrderController>(
-            builder: (orderController) {
-              List<OrderModel> runningOrder = orderController.runningOrderModel != null ? orderController.runningOrderModel!.orders! : [];
+          }
+        }
+      },
+      child: GetBuilder<OrderController>(
+        builder: (orderController) {
+          List<OrderModel> runningOrder = orderController.runningOrderModel != null ? orderController.runningOrderModel!.orders! : [];
 
-              List<OrderModel> reversOrder =  List.from(runningOrder.reversed);
+          List<OrderModel> reversOrder =  List.from(runningOrder.reversed);
 
-              return Scaffold(
-                key: _scaffoldKey,
-                body: ExpandableBottomSheet(
-                  background: Stack(children: [
-                    PageView.builder(
-                        controller: _pageController,
-                        itemCount: _screens.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return _screens[index];
-                        },
-                      ),
+          return Scaffold(
+            key: _scaffoldKey,
 
-                      ResponsiveHelper.isDesktop(context) || keyboardVisible ? const SizedBox() : Align(
-                        alignment: Alignment.bottomCenter,
-                        child: GetBuilder<SplashController>(
-                          builder: (splashController) {
-                            bool isParcel = splashController.module != null && splashController.configModel!.moduleConfig!.module!.isParcel!;
+            // endDrawer: const MenuScreenNew(),
 
-                            _screens = [
-                              const HomeScreen(),
-                              isParcel ? const AddressScreen(fromDashboard: true) : const Sections(),
-                              const SizedBox(),
-                              const SearchScreen(queryText: ''),
-                              const MenuScreenNew()
-                            ];
-                            return Container(
-                              width: size.width, height: GetPlatform.isIOS ? 80 : 65,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusLarge)),
-                                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5)],
-                              ),
-                              child: Stack(children: [
-                                // CustomPaint(size: Size(size.width, GetPlatform.isIOS ? 95 : 80), painter: BNBCustomPainter()),
+            floatingActionButton: ResponsiveHelper.isDesktop(context) ? null : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? null
+                : (orderController.showBottomSheet && orderController.runningOrderModel != null && orderController.runningOrderModel!.orders!.isNotEmpty)
+                ? const SizedBox() : FloatingActionButton(
+                  elevation: 5,
+                  backgroundColor: _pageIndex == 2 ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
+                  onPressed: () {
+                      // _setPage(2);
+                    Get.toNamed(RouteHelper.getCartRoute());
+                  },
+                  child: CartWidget(color: _pageIndex == 2 ? Theme.of(context).cardColor : Theme.of(context).disabledColor, size: 30),
+                ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-                                Center(
-                                  heightFactor: 0.6,
-                                  child: ResponsiveHelper.isDesktop(context) ? null : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? null
-                                    : (orderController.showBottomSheet && orderController.runningOrderModel != null && orderController.runningOrderModel!.orders!.isNotEmpty && _isLogin) ? const SizedBox() : Container(
-                                      width: 60, height: 60,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Theme.of(context).cardColor, width: 5),
-                                        borderRadius: BorderRadius.circular(30),
-                                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 2, offset: const Offset(0, -2), spreadRadius: 0)]
-                                      ),
-                                      // margin: EdgeInsets.only(bottom: GetPlatform.isIOS ? 0 : Dimensions.paddingSizeLarge),
-                                      child: FloatingActionButton(
-                                        backgroundColor: Theme.of(context).primaryColor,
-                                        onPressed: () {
-                                          if(isParcel) {
-                                            showModalBottomSheet(
-                                              context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
-                                              builder: (con) => ParcelBottomSheet(parcelCategoryList: Get.find<ParcelController>().parcelCategoryList),
-                                            );
-                                          } else {
-                                            Get.toNamed(RouteHelper.getCartRoute());
-                                          }
-                                        },
-                                        elevation: 0,
-                                        child: isParcel
-                                            ? Icon(CupertinoIcons.add, size: 34, color: Theme.of(context).cardColor)
-                                            : CartWidget(color: Theme.of(context).cardColor, size: 22),
-                                      ),
-                                  ),
-                                ),
+            bottomNavigationBar: ResponsiveHelper.isDesktop(context) ? const SizedBox() : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? const SizedBox()
+                : (orderController.showBottomSheet && orderController.runningOrderModel != null && orderController.runningOrderModel!.orders!.isNotEmpty) ? const SizedBox() :  BottomAppBar(
+                  elevation: 5,
+                  notchMargin: 5,
+                  clipBehavior: Clip.antiAlias,
+                  shape: const CircularNotchedRectangle(),
 
-                                ResponsiveHelper.isDesktop(context) ? const SizedBox() : (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? const SizedBox()
-                                : (orderController.showBottomSheet && orderController.runningOrderModel != null && orderController.runningOrderModel!.orders!.isNotEmpty && _isLogin) ? const SizedBox() : Center(
-                                  child: SizedBox(
-                                      width: size.width, height: 80,
-                                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                                        BottomNavItem(
-                                          title: 'home'.tr, selectedIcon: Images.homeSelect,
-                                          unSelectedIcon: Images.homeUnselect, isSelected: _pageIndex == 0,
-                                          onTap: () => _setPage(0),
-                                        ),
-                                        BottomNavItem(
-                                          title: isParcel ? 'address'.tr : 'sections'.tr,
-                                          selectedIcon: isParcel ? Images.addressSelect : Images.moduleIcon,
-                                          unSelectedIcon: isParcel ? Images.addressUnselect : Images.sectionsEmpty,
-                                          isSelected: _pageIndex == 1, onTap: () => _setPage(1),
-                                        ),
-                                        Container(width: size.width * 0.2),
-                                        BottomNavItem(
-                                          title: 'search'.tr, selectedIcon: Images.searchIcon, unSelectedIcon: Images.searchIcon,
-                                          isSelected: _pageIndex == 3, onTap: () => _setPage(3),
-                                        ),
-                                        BottomNavItem(
-                                          title: 'menu'.tr, selectedIcon: Images.menu, unSelectedIcon: Images.menu,
-                                          isSelected: _pageIndex == 4, onTap: () => _setPage(4),
-                                        ),
-                                      ]),
-                                  ),
-                                ),
-                              ],
-                              ),
-                            );
-                          }
-                        ),
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                    child: Row(children: [
+                      BottomNavItem(iconData: Icons.home, isSelected: _pageIndex == 0, onTap: () => _setPage(0)),
+                      BottomNavItem(iconData: Icons.favorite, isSelected: _pageIndex == 1, onTap: () => _setPage(1)),
+                      const Expanded(child: SizedBox()),
+                      BottomNavItem(iconData: Icons.shopping_bag, isSelected: _pageIndex == 3, onTap: () => _setPage(3)),
+                      BottomNavItem(iconData: Icons.menu, isSelected: _pageIndex == 4, onTap: () => _setPage(4)),
+                      // BottomNavItem(iconData: Icons.menu, isSelected: _pageIndex == 4, onTap: () => _openEndDrawer()),
+                      // BottomNavItem(iconData: Icons.menu, isSelected: _pageIndex == 4, onTap: () {
+                      //   Get.bottomSheet(const MenuScreen(), backgroundColor: Colors.transparent, isScrollControlled: true);
+                      // }),
                     ]),
-
-                  persistentContentHeight: (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? 0 : 100 ,
-
-                  onIsContractedCallback: () {
-                    if(!orderController.showOneOrder) {
-                      orderController.showOrders();
-                    }
+                  ),
+                ),
+            body: ExpandableBottomSheet(
+              background: PageView.builder(
+                  controller: _pageController,
+                  itemCount: _screens.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return _screens[index];
                   },
-                  onIsExtendedCallback: () {
-                    if(orderController.showOneOrder) {
-                      orderController.showOrders();
-                    }
-                  },
+                ),
 
-                  enableToggle: true,
+              persistentContentHeight:  (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active) ? 0 : 100 ,
 
-                  expandableContent: (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active && !ResponsiveHelper.isDesktop(context)) ?  const SizedBox()
+              onIsContractedCallback: () {
+                if(!orderController.showOneOrder) {
+                  orderController.showOrders();
+                }
+              },
+              onIsExtendedCallback: () {
+                if(orderController.showOneOrder) {
+                  orderController.showOrders();
+                }
+              },
+
+              enableToggle: true,
+
+              expandableContent: (widget.fromSplash && Get.find<LocationController>().showLocationSuggestion && active && !ResponsiveHelper.isDesktop(context)) ?  const SizedBox()
                   : (ResponsiveHelper.isDesktop(context) || !_isLogin || orderController.runningOrderModel == null
                   || orderController.runningOrderModel!.orders!.isEmpty || !orderController.showBottomSheet) ? const SizedBox()
                   : Dismissible(
-                    key: UniqueKey(),
-                    onDismissed: (direction) {
-                      if(orderController.showBottomSheet){
-                        orderController.showRunningOrders();
-                      }
-                    },
-                    child: RunningOrderViewWidget(reversOrder: reversOrder, onOrderTap: () {
-                      _setPage(3);
-                      if(orderController.showBottomSheet){
-                        orderController.showRunningOrders();
-                      }
-                    }),
+                      key: UniqueKey(),
+                      onDismissed: (direction) {
+                        if(orderController.showBottomSheet){
+                          orderController.showRunningOrders();
+                        }
+                      },
+                      child: RunningOrderViewWidget(reversOrder: reversOrder),
                   ),
-                ),
-              );
-            }
-          ),
-        );
-      }
+
+            ),
+
+          );
+        }
+      ),
     );
   }
 

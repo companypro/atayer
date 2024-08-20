@@ -1,4 +1,3 @@
-import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sixam_mart/controller/category_controller.dart';
 import 'package:sixam_mart/controller/coupon_controller.dart';
@@ -9,7 +8,6 @@ import 'package:sixam_mart/data/model/response/cart_suggested_item_model.dart';
 import 'package:sixam_mart/data/model/response/category_model.dart';
 import 'package:sixam_mart/data/model/response/item_model.dart';
 import 'package:sixam_mart/data/model/response/recommended_product_model.dart';
-import 'package:sixam_mart/data/model/response/store_banner_model.dart';
 import 'package:sixam_mart/data/model/response/store_model.dart';
 import 'package:sixam_mart/data/model/response/review_model.dart';
 import 'package:sixam_mart/data/model/response/zone_response_model.dart';
@@ -20,8 +18,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/screens/home/home_screen.dart';
 
-import '../view/screens/sections/sections.dart';
-
 class StoreController extends GetxController implements GetxService {
   final StoreRepo storeRepo;
   StoreController({required this.storeRepo});
@@ -30,7 +26,6 @@ class StoreController extends GetxController implements GetxService {
   List<Store>? _popularStoreList;
   List<Store>? _latestStoreList;
   List<Store>? _featuredStoreList;
-  List<Store>? _visitAgainStoreList;
   Store? _store;
   ItemModel? _storeItemModel;
   ItemModel? _storeSearchItemModel;
@@ -47,15 +42,11 @@ class StoreController extends GetxController implements GetxService {
   List<XFile> _pickedPrescriptions = [];
   RecommendedItemModel? _recommendedItemModel;
   CartSuggestItemModel? _cartSuggestItemModel;
-  bool _isSearching = false;
-  List<StoreBannerModel>? _storeBanners;
-  List<Store>? _recommendedStoreList;
 
   StoreModel? get storeModel => _storeModel;
   List<Store>? get popularStoreList => _popularStoreList;
   List<Store>? get latestStoreList => _latestStoreList;
   List<Store>? get featuredStoreList => _featuredStoreList;
-  List<Store>? get visitAgainStoreList => _visitAgainStoreList;
   Store? get store => _store;
   ItemModel? get storeItemModel => _storeItemModel;
   ItemModel? get storeSearchItemModel => _storeSearchItemModel;
@@ -72,20 +63,7 @@ class StoreController extends GetxController implements GetxService {
   List<XFile> get pickedPrescriptions => _pickedPrescriptions;
   RecommendedItemModel? get recommendedItemModel => _recommendedItemModel;
   CartSuggestItemModel? get cartSuggestItemModel => _cartSuggestItemModel;
-  bool get isSearching => _isSearching;
-  List<StoreBannerModel>? get  storeBanners => _storeBanners;
-  List<Store>? get recommendedStoreList => _recommendedStoreList;
 
-  String filteringUrl(String slug){
-    List<String> routes = Get.currentRoute.split('?');
-    String replace = '';
-    if(slug.isNotEmpty){
-      replace = '${routes[0]}?slug=$slug';
-    }else {
-      replace = '${routes[0]}?slug=${_store!.id}';
-    }
-    return replace;
-  }
 
   void pickPrescriptionImage({required bool isRemove, required bool isCamera}) async {
     if(isRemove) {
@@ -147,17 +125,6 @@ class StoreController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> getStoreBannerList(int? storeId) async {
-    Response response = await storeRepo.getStoreBannerList(storeId);
-    if (response.statusCode == 200) {
-      _storeBanners = [];
-      response.body.forEach((banner) => _storeBanners!.add(StoreBannerModel.fromJson(banner)));
-    } else {
-      ApiChecker.checkApi(response);
-    }
-    update();
-  }
-
   Future<void> getStoreList(int offset, bool reload) async {
     if(reload) {
       _storeModel = null;
@@ -195,7 +162,7 @@ class StoreController extends GetxController implements GetxService {
       Response response = await storeRepo.getPopularStoreList(type);
       if (response.statusCode == 200) {
         _popularStoreList = [];
-        response.body['stores'].forEach((store) => _popularStoreList!.add(Store.fromJson(store)));
+        response.body.forEach((store) => _popularStoreList!.add(Store.fromJson(store)));
       } else {
         ApiChecker.checkApi(response);
       }
@@ -215,7 +182,7 @@ class StoreController extends GetxController implements GetxService {
       Response response = await storeRepo.getLatestStoreList(type);
       if (response.statusCode == 200) {
         _latestStoreList = [];
-        response.body['stores'].forEach((store) => _latestStoreList!.add(Store.fromJson(store)));
+        response.body.forEach((store) => _latestStoreList!.add(Store.fromJson(store)));
       } else {
         ApiChecker.checkApi(response);
       }
@@ -228,8 +195,8 @@ class StoreController extends GetxController implements GetxService {
     if (response.statusCode == 200) {
       _featuredStoreList = [];
       List<Modules> moduleList = [];
-      for (ZoneData zone in Get.find<LocationController>().getUserAddress()!.zoneData ?? []) {
-        for (Modules module in zone.modules ?? []) {
+      for (var zone in Get.find<LocationController>().getUserAddress()!.zoneData!) {
+        for (var module in zone.modules!) {
           moduleList.add(module);
         }
       }
@@ -248,33 +215,6 @@ class StoreController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> getVisitAgainStoreList() async {
-    _visitAgainStoreList = null;
-    Response response = await storeRepo.getVisitAgainStoreList();
-    if (response.statusCode == 200) {
-      _visitAgainStoreList = [];
-      List<Modules> moduleList = [];
-      for (ZoneData zone in Get.find<LocationController>().getUserAddress()!.zoneData ?? []) {
-        for (Modules module in zone.modules ?? []) {
-          moduleList.add(module);
-        }
-      }
-      response.body.forEach((store) {
-        for (var module in moduleList) {
-          if(module.id == Store.fromJson(store).moduleId){
-            if(module.pivot!.zoneId == Store.fromJson(store).zoneId){
-              _visitAgainStoreList!.add(Store.fromJson(store));
-            }
-          }
-        }
-      });
-      print('---------ss-------$_visitAgainStoreList');
-    } else {
-      ApiChecker.checkApi(response);
-    }
-    update();
-  }
-
   void setCategoryList() {
     if(Get.find<CategoryController>().categoryList != null && _store != null) {
       _categoryList = [];
@@ -287,25 +227,36 @@ class StoreController extends GetxController implements GetxService {
     }
   }
 
-  Future<void> initCheckoutData(int? storeId) async {
+  ///it changes to initCheckoutData2 for test
+  // void initCheckoutData(int? storeID) {
+  //   if(_store == null || _store!.id != storeID || Get.find<OrderController>().distance == null) {
+  //     Get.find<CouponController>().removeCouponData(false);
+  //     Get.find<OrderController>().clearPrevData(null);
+  //     Get.find<StoreController>().getStoreDetails(Store(id: storeID), false);
+  //   }else {
+  //     Get.find<OrderController>().initializeTimeSlot(_store!);
+  //   }
+  // }
+
+  Future<void> initCheckoutData2(int? storeId) async {
     Get.find<CouponController>().removeCouponData(false);
     Get.find<OrderController>().clearPrevData(null);
     await Get.find<StoreController>().getStoreDetails(Store(id: storeId), false);
     Get.find<OrderController>().initializeTimeSlot(_store!);
   }
 
-  Future<Store?> getStoreDetails(Store store, bool fromModule, {bool fromCart = false, String slug = ''}) async {
+  Future<Store?> getStoreDetails(Store store, bool fromModule, {bool fromCart = false}) async {
     _categoryIndex = 0;
     if(store.name != null) {
       _store = store;
     }else {
       _isLoading = true;
       _store = null;
-      Response response = await storeRepo.getStoreDetails(store.id.toString(), fromCart, slug);
+      Response response = await storeRepo.getStoreDetails(store.id.toString(), fromCart);
       if (response.statusCode == 200) {
         _store = Store.fromJson(response.body);
         Get.find<OrderController>().initializeTimeSlot(_store!);
-        if(!fromCart && slug.isEmpty){
+        if(!fromCart){
           Get.find<OrderController>().getDistanceInKM(
             LatLng(
               double.parse(Get.find<LocationController>().getUserAddress()!.latitude!),
@@ -314,14 +265,9 @@ class StoreController extends GetxController implements GetxService {
             LatLng(double.parse(_store!.latitude!), double.parse(_store!.longitude!)),
           );
         }
-        if(slug.isNotEmpty){
-          await Get.find<LocationController>().setStoreAddressToUserAddress(LatLng(double.parse(_store!.latitude!), double.parse(_store!.longitude!)));
-        }
         if(fromModule) {
           HomeScreen.loadData(true);
-          Sections.loadData(true);
-        }
-        else {
+        }else {
           Get.find<OrderController>().clearPrevData(_store!.zoneId);
         }
       } else {
@@ -335,18 +281,6 @@ class StoreController extends GetxController implements GetxService {
       update();
     }
     return _store;
-  }
-
-  Future<void> getRecommendedStoreList() async {
-    _recommendedStoreList = null;
-    Response response = await storeRepo.getRecommendedStoreList();
-    if (response.statusCode == 200) {
-      _recommendedStoreList = [];
-      response.body['stores'].forEach((store) => _recommendedStoreList!.add(Store.fromJson(store)));
-    } else {
-      ApiChecker.checkApi(response);
-    }
-    update();
   }
 
   Future<void> getStoreItemList(int? storeID, int offset, String type, bool notify) async {
@@ -380,17 +314,13 @@ class StoreController extends GetxController implements GetxService {
     if(searchText.isEmpty) {
       showCustomSnackBar('write_item_name'.tr);
     }else {
-      _isSearching = true;
       _searchText = searchText;
-      _type = type;
       if(offset == 1 || _storeSearchItemModel == null) {
         _searchType = type;
         _storeSearchItemModel = null;
         update();
       }
-      Response response = await storeRepo.getStoreSearchItemList(searchText, storeID, offset, type,
-          (_store != null && _store!.categoryIds!.isNotEmpty && _categoryIndex != 0)
-          ? _categoryList![_categoryIndex].id : 0);
+      Response response = await storeRepo.getStoreSearchItemList(searchText, storeID, offset, type);
       if (response.statusCode == 200) {
         if (offset == 1) {
           _storeSearchItemModel = ItemModel.fromJson(response.body);
@@ -406,28 +336,15 @@ class StoreController extends GetxController implements GetxService {
     }
   }
 
-  void changeSearchStatus({bool isUpdate = true}) {
-    _isSearching = !_isSearching;
-    if(isUpdate) {
-      update();
-    }
-  }
-
   void initSearchData() {
     _storeSearchItemModel = ItemModel(items: []);
     _searchText = '';
   }
 
-  void setCategoryIndex(int index, {bool itemSearching = false}) {
+  void setCategoryIndex(int index) {
     _categoryIndex = index;
-    if(itemSearching){
-      _storeSearchItemModel = null;
-      getStoreSearchItemList(_searchText, _store!.id.toString(), 1, type);
-    } else {
-      _storeItemModel = null;
-      getStoreItemList(_store!.id, 1, Get.find<StoreController>().type, false);
-    }
-
+    _storeItemModel = null;
+    getStoreItemList(_store!.id, 1, Get.find<StoreController>().type, false);
     update();
   }
 

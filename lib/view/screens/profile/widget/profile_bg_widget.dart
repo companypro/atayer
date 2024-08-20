@@ -1,4 +1,3 @@
-import 'package:sixam_mart/controller/localization_controller.dart';
 import 'package:sixam_mart/util/dimensions.dart';
 import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/util/styles.dart';
@@ -30,7 +29,7 @@ class ProfileBgWidget extends StatelessWidget {
         ),
 
         Positioned(
-          top: 125, left: 0, right: 0, bottom: 0,
+          top: 100, left: 0, right: 0, bottom: 0,
           child: Center(
             child: Container(
               width: Dimensions.webMaxWidth,
@@ -51,9 +50,7 @@ class ProfileBgWidget extends StatelessWidget {
         ),
 
         backButton ? Positioned(
-          top: MediaQuery.of(context).padding.top,
-          left: Get.find<LocalizationController>().isLtr ? 10 : null,
-          right: Get.find<LocalizationController>().isLtr ? null : 10,
+          top: MediaQuery.of(context).padding.top, left: 10,
           child: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).cardColor, size: 20),
             onPressed: () => Get.back(),
@@ -61,7 +58,7 @@ class ProfileBgWidget extends StatelessWidget {
         ) : const SizedBox(),
 
         Positioned(
-          top: 80, left: 0, right: 0,
+          top: 70, left: 0, right: 0,
           child: circularImage,
         ),
 

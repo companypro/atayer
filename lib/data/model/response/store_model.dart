@@ -1,9 +1,5 @@
 import 'dart:convert';
 
-import 'package:get/get.dart';
-import 'package:sixam_mart/controller/splash_controller.dart';
-import 'package:sixam_mart/data/model/response/item_model.dart';
-
 class StoreModel {
   int? totalSize;
   String? limit;
@@ -75,11 +71,6 @@ class Store {
   int? vendorId;
   bool? prescriptionOrder;
   bool? cutlery;
-  String? slug;
-  bool? announcementActive;
-  String? announcementMessage;
-  int? itemCount;
-  List<Items>? items;
 
   Store(
       {this.id,
@@ -120,11 +111,6 @@ class Store {
         this.vendorId,
         this.prescriptionOrder,
         this.cutlery,
-        this.slug,
-        this.announcementActive,
-        this.announcementMessage,
-        this.itemCount,
-        this.items,
       });
 
   Store.fromJson(Map<String, dynamic> json) {
@@ -171,16 +157,6 @@ class Store {
     vendorId = json['vendor_id'];
     prescriptionOrder = json['prescription_order'] ?? false;
     cutlery = json['cutlery'];
-    slug = json['slug'];
-    announcementActive = json['announcement'] == 1;
-    announcementMessage = json['announcement_message'];
-    itemCount = json['total_items'];
-    if (json['items'] != null) {
-      items = <Items>[];
-      json['items'].forEach((v) {
-        items!.add(Items.fromJson(v));
-      });
-    }
   }
 
   Map<String, dynamic> toJson() {
@@ -227,13 +203,6 @@ class Store {
     data['vendor_id'] = vendorId;
     data['prescription_order'] = prescriptionOrder;
     data['cutlery'] = cutlery;
-    data['slug'] = slug;
-    data['announcement'] = announcementActive;
-    data['announcement_message'] = announcementMessage;
-    data['total_items'] = itemCount;
-    if (items != null) {
-      data['items'] = items!.map((v) => v.toJson()).toList();
-    }
     return data;
   }
 }
@@ -369,168 +338,6 @@ class Refund {
     data['customer_reason'] = customerReason;
     data['customer_note'] = customerNote;
     data['admin_note'] = adminNote;
-    return data;
-  }
-}
-
-class Items {
-  int? id;
-  String? name;
-  String? description;
-  String? image;
-  int? categoryId;
-  String? categoryIds;
-  String? variations;
-  String? addOns;
-  String? attributes;
-  String? choiceOptions;
-  double? price;
-  double? tax;
-  String? taxType;
-  double? discount;
-  String? discountType;
-  String? availableTimeStarts;
-  String? availableTimeEnds;
-  int? veg;
-  int? status;
-  int? storeId;
-  String? createdAt;
-  String? updatedAt;
-  int? orderCount;
-  double? avgRating;
-  int? ratingCount;
-  String? rating;
-  int? moduleId;
-  int? stock;
-  int? unitId;
-  List<String>? images;
-  String? foodVariations;
-  String? slug;
-  int? recommended;
-  int? organic;
-  int? maximumCartQuantity;
-  int? isApproved;
-  String? unitType;
-
-  Items(
-      {this.id,
-        this.name,
-        this.description,
-        this.image,
-        this.categoryId,
-        this.categoryIds,
-        this.variations,
-        this.addOns,
-        this.attributes,
-        this.choiceOptions,
-        this.price,
-        this.tax,
-        this.taxType,
-        this.discount,
-        this.discountType,
-        this.availableTimeStarts,
-        this.availableTimeEnds,
-        this.veg,
-        this.status,
-        this.storeId,
-        this.createdAt,
-        this.updatedAt,
-        this.orderCount,
-        this.avgRating,
-        this.ratingCount,
-        this.rating,
-        this.moduleId,
-        this.stock,
-        this.unitId,
-        this.images,
-        this.foodVariations,
-        this.slug,
-        this.recommended,
-        this.organic,
-        this.maximumCartQuantity,
-        this.isApproved,
-        this.unitType,
-      });
-
-  Items.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    description = json['description'];
-    image = json['image'];
-    categoryId = json['category_id'];
-    categoryIds = json['category_ids'];
-    variations = json['variations'];
-    addOns = json['add_ons'];
-    attributes = json['attributes'];
-    choiceOptions = json['choice_options'];
-    price = json['price']?.toDouble();
-    tax = json['tax']?.toDouble();
-    taxType = json['tax_type'];
-    discount = json['discount']?.toDouble();
-    discountType = json['discount_type'];
-    availableTimeStarts = json['available_time_starts'];
-    availableTimeEnds = json['available_time_ends'];
-    veg = json['veg'];
-    status = json['status'];
-    storeId = json['store_id'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    orderCount = json['order_count'];
-    avgRating = json['avg_rating']?.toDouble();
-    ratingCount = json['rating_count'];
-    rating = json['rating'];
-    moduleId = json['module_id'];
-    stock = json['stock'];
-    unitId = json['unit_id'];
-    images = json['images'].cast<String>();
-    foodVariations = json['food_variations'];
-    slug = json['slug'];
-    recommended = json['recommended'];
-    organic = json['organic'];
-    maximumCartQuantity = json['maximum_cart_quantity'];
-    isApproved = json['is_approved'];
-    unitType = json['unit_type'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
-    data['description'] = description;
-    data['image'] = image;
-    data['category_id'] = categoryId;
-    data['category_ids'] = categoryIds;
-    data['variations'] = variations;
-    data['add_ons'] = addOns;
-    data['attributes'] = attributes;
-    data['choice_options'] = choiceOptions;
-    data['price'] = price;
-    data['tax'] = tax;
-    data['tax_type'] = taxType;
-    data['discount'] = discount;
-    data['discount_type'] = discountType;
-    data['available_time_starts'] = availableTimeStarts;
-    data['available_time_ends'] = availableTimeEnds;
-    data['veg'] = veg;
-    data['status'] = status;
-    data['store_id'] = storeId;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    data['order_count'] = orderCount;
-    data['avg_rating'] = avgRating;
-    data['rating_count'] = ratingCount;
-    data['rating'] = rating;
-    data['module_id'] = moduleId;
-    data['stock'] = stock;
-    data['unit_id'] = unitId;
-    data['images'] = images;
-    data['food_variations'] = foodVariations;
-    data['slug'] = slug;
-    data['recommended'] = recommended;
-    data['organic'] = organic;
-    data['maximum_cart_quantity'] = maximumCartQuantity;
-    data['is_approved'] = isApproved;
-    data['unit_type'] = unitType;
     return data;
   }
 }

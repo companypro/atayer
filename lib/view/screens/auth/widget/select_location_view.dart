@@ -18,10 +18,8 @@ import 'package:sixam_mart/view/screens/location/widget/location_search_dialog.d
 
 class SelectLocationView extends StatefulWidget {
   final bool fromView;
-  final bool mapView;
-  final bool zoneModuleView;
   final GoogleMapController? mapController;
-  const SelectLocationView({Key? key, required this.fromView, this.mapController, this.mapView = false, this.zoneModuleView = false}) : super(key: key);
+  const SelectLocationView({Key? key, required this.fromView, this.mapController}) : super(key: key);
 
   @override
   State<SelectLocationView> createState() => _SelectLocationViewState();
@@ -57,6 +55,13 @@ class _SelectLocationViewState extends State<SelectLocationView> {
         padding: EdgeInsets.all(widget.fromView ? 0 : Dimensions.paddingSizeSmall),
         child: SingleChildScrollView(
           child: ResponsiveHelper.isDesktop(context)? webView(authController, zoneList): Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+            // widget.fromView ? Center(
+            //   child: Text(
+            //     'set_your_store_location'.tr,
+            //     style: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall),
+            //   ),
+            // ) : const SizedBox(),
             const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
             Row(children: [
@@ -90,40 +95,27 @@ class _SelectLocationViewState extends State<SelectLocationView> {
 
   Widget webView(AuthController authController, List<DropdownItem<int>> zoneList) {
     return Row(children: [
-      (widget.fromView && widget.zoneModuleView) ?  Expanded(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('module'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+        const SizedBox(height: Dimensions.paddingSizeDefault),
 
-        Expanded(
-          child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('module'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-              const SizedBox(height: Dimensions.paddingSizeDefault),
+        authController.moduleList != null ? const ModuleViewWidget() : const SizedBox(),
+        SizedBox(height: authController.moduleList != null ? Dimensions.paddingSizeLarge : 0),
 
-              authController.moduleList != null ? const ModuleViewWidget() : const SizedBox(),
-              SizedBox(height: authController.moduleList != null ? Dimensions.paddingSizeLarge : 0),
-            ],
-          ),
-        ),
+        Text('zone'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+        const SizedBox(height: Dimensions.paddingSizeDefault),
 
-        (widget.fromView && widget.zoneModuleView) ? const SizedBox(width: Dimensions.paddingSizeLarge)  : const SizedBox(),
-        Expanded(
-          child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('zone'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-              const SizedBox(height: Dimensions.paddingSizeDefault),
-              zoneSection(authController, zoneList),
-            ],
-          ),
-        ),
+        zoneSection(authController, zoneList),
+      ])),
+      const SizedBox(width: Dimensions.paddingSizeLarge),
 
-      ])) :  const SizedBox(),
-
-      (widget.fromView && widget.zoneModuleView) ?  const SizedBox() : const SizedBox(width: Dimensions.paddingSizeLarge),
-
-      (widget.fromView && widget.mapView) ?  Expanded(child: Column(
+      Expanded(child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: Dimensions.paddingSizeLarge),
           mapView(authController),
         ],
-      )) : const SizedBox(),
+      )),
     ]);
   }
 
@@ -235,10 +227,10 @@ class _SelectLocationViewState extends State<SelectLocationView> {
               top: 10, right: 0,
               child: InkWell(
                 onTap: () {
-                    Get.to(() => Scaffold(
+                  Get.to(Scaffold(
                       appBar: CustomAppBar(title: 'set_your_store_location'.tr),
-                      body: SelectLocationView(fromView: false, mapController: _mapController),
-                    ));
+                      body: SelectLocationView(fromView: false, mapController: _mapController)),
+                  );
                 },
                 child: Container(
                   width: 30, height: 30,

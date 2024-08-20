@@ -10,8 +10,6 @@ import 'package:sixam_mart/data/model/response/store_model.dart';
 import 'package:sixam_mart/data/model/response/zone_response_model.dart';
 import 'package:sixam_mart/helper/route_helper.dart';
 import 'package:sixam_mart/util/dimensions.dart';
-import 'package:sixam_mart/util/images.dart';
-import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/view/base/custom_image.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/screens/store/store_screen.dart';
@@ -74,7 +72,7 @@ class BannerView extends StatelessWidget {
                           Get.find<SplashController>().setModule(ModuleModel(id: module.id, moduleName: module.moduleName, moduleType: module.moduleType, themeId: module.themeId, storesCount: module.storesCount));
                         }
                         Get.toNamed(
-                          RouteHelper.getStoreRoute(id: store!.id, page: isFeatured ? 'module' : 'banner'),
+                          RouteHelper.getStoreRoute(store!.id, isFeatured ? 'module' : 'banner'),
                           arguments: StoreScreen(store: store, fromModule: isFeatured),
                         );
                       }else if(bannerDataList[index] is BasicCampaignModel) {
@@ -92,11 +90,11 @@ class BannerView extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                         boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200]!, spreadRadius: 1, blurRadius: 5)],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                        borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
                         child: GetBuilder<SplashController>(builder: (splashController) {
                           return CustomImage(
                             image: '$baseUrl/${bannerList[index]}',
@@ -115,17 +113,11 @@ class BannerView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: bannerList.map((bnr) {
                 int index = bannerList.indexOf(bnr);
-                int totalBanner = bannerList.length;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  child: index == bannerController.currentIndex ? Container(
-                    decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                    child: Text('${(index) + 1}/$totalBanner', style: robotoRegular.copyWith(color: Theme.of(context).cardColor, fontSize: 12)),
-                  ) : Container(
-                    height: 5, width: 6,
-                    decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.5), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
-                  ),
+                return TabPageSelectorIndicator(
+                  backgroundColor: index == bannerController.currentIndex ? Theme.of(context).primaryColor
+                      : Theme.of(context).primaryColor.withOpacity(0.5),
+                  borderColor: Theme.of(context).colorScheme.background,
+                  size: index == bannerController.currentIndex ? 10 : 7,
                 );
               }).toList(),
             ),

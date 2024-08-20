@@ -8,10 +8,9 @@ class SearchField extends StatefulWidget {
   final IconData suffixIcon;
   final Function iconPressed;
   final Color? filledColor;
-  final Color? iconColor;
   final Function? onSubmit;
   final Function? onChanged;
-  const SearchField({Key? key, required this.controller, required this.hint, required this.suffixIcon, required this.iconPressed, this.filledColor, this.onSubmit, this.onChanged, this.iconColor}) : super(key: key);
+  const SearchField({Key? key, required this.controller, required this.hint, required this.suffixIcon, required this.iconPressed, this.filledColor, this.onSubmit, this.onChanged}) : super(key: key);
 
   @override
   State<SearchField> createState() => _SearchFieldState();
@@ -24,18 +23,14 @@ class _SearchFieldState extends State<SearchField> {
       controller: widget.controller,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 10),
         hintText: widget.hint,
         hintStyle: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), borderSide: BorderSide.none,),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSmall), borderSide: BorderSide.none),
         filled: true, fillColor: widget.filledColor ?? Theme.of(context).cardColor,
         isDense: true,
-        suffixIcon: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: IconButton(
-            onPressed: widget.iconPressed as void Function()?,
-            icon: Icon(widget.suffixIcon, color: widget.iconColor ?? Theme.of(context).textTheme.bodyLarge!.color),
-          ),
+        suffixIcon: IconButton(
+          onPressed: widget.iconPressed as void Function()?,
+          icon: Icon(widget.suffixIcon, color: Theme.of(context).textTheme.bodyLarge!.color),
         ),
       ),
       onSubmitted: widget.onSubmit as void Function(String)?,

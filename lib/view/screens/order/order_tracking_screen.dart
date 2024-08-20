@@ -25,8 +25,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class OrderTrackingScreen extends StatefulWidget {
   final String? orderID;
-  final String? contactNumber;
-  const OrderTrackingScreen({Key? key, required this.orderID, this.contactNumber}) : super(key: key);
+  const OrderTrackingScreen({Key? key, required this.orderID}) : super(key: key);
 
   @override
   OrderTrackingScreenState createState() => OrderTrackingScreenState();
@@ -40,7 +39,7 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
   Timer? _timer;
 
   void _loadData() async {
-    await Get.find<OrderController>().trackOrder(widget.orderID, null, true, contactNumber: widget.contactNumber);
+    await Get.find<OrderController>().trackOrder(widget.orderID, null, true);
     await Get.find<LocationController>().getCurrentLocation(true, notify: false, defaultLatLng: LatLng(
       double.parse(Get.find<LocationController>().getUserAddress()!.latitude!),
       double.parse(Get.find<LocationController>().getUserAddress()!.longitude!),
@@ -49,7 +48,7 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
   void _startApiCall(){
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      Get.find<OrderController>().timerTrackOrder(widget.orderID.toString(), contactNumber: widget.contactNumber);
+      Get.find<OrderController>().timerTrackOrder(widget.orderID.toString());
     });
   }
 

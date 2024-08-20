@@ -10,8 +10,6 @@ import 'package:sixam_mart/view/screens/favourite/widget/fav_item_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../auth/sign_in_screen.dart';
-
 class FavouriteScreen extends StatefulWidget {
   const FavouriteScreen({Key? key}) : super(key: key);
 
@@ -42,30 +40,39 @@ class FavouriteScreenState extends State<FavouriteScreen> with SingleTickerProvi
     return Scaffold(
       appBar: CustomAppBar(title: 'favourite'.tr, backButton: false),
       endDrawer: const MenuDrawer(),endDrawerEnableOpenDragGesture: false,
-      body: Get.find<AuthController>().isLoggedIn() ? const SafeArea(child: Column(children: [
+      body: Get.find<AuthController>().isLoggedIn() ? SafeArea(child: Column(children: [
 
-        // Container(
-        //   width: Dimensions.webMaxWidth,
-        //   color: Theme.of(context).cardColor,
-        //   child: TabBar(
-        //     controller: _tabController,
-        //     indicatorColor: Theme.of(context).primaryColor,
-        //     indicatorWeight: 3,
-        //     labelColor: Theme.of(context).primaryColor,
-        //     unselectedLabelColor: Theme.of(context).disabledColor,
-        //     unselectedLabelStyle: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
-        //     labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
-        //     tabs: [
-        //       Tab(text: 'item'.tr),
-        //       Tab(text: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
-        //           ? 'restaurants'.tr : 'stores'.tr),
-        //     ],
-        //   ),
-        // ),
+        Container(
+          width: Dimensions.webMaxWidth,
+          color: Theme.of(context).cardColor,
+          child: TabBar(
+            controller: _tabController,
+            indicatorColor: Theme.of(context).primaryColor,
+            indicatorWeight: 3,
+            labelColor: Theme.of(context).primaryColor,
+            unselectedLabelColor: Theme.of(context).disabledColor,
+            unselectedLabelStyle: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
+            labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+            tabs: [
+              Tab(text: 'item'.tr),
+              Tab(text: Get.find<SplashController>().configModel!.moduleConfig!.module!.showRestaurantText!
+                  ? 'restaurants'.tr : 'stores'.tr),
+            ],
+          ),
+        ),
 
-        Expanded(child:   FavItemView(isStore: false),),
+        Expanded(child: TabBarView(
+          controller: _tabController,
+          children: const [
+            FavItemView(isStore: false),
+            FavItemView(isStore: true),
+          ],
+        )),
 
-      ])) : const SignInScreen(exitFromApp: true, backFromThis: true,),
+      ])) : NotLoggedInScreen(callBack: (value){
+        initCall();
+        setState(() {});
+      }),
     );
   }
 }

@@ -11,7 +11,6 @@ import 'package:sixam_mart/data/model/response/conversation_model.dart';
 import 'package:sixam_mart/data/model/response/chat_model.dart';
 import 'package:sixam_mart/data/repository/chat_repo.dart';
 import 'package:sixam_mart/helper/date_converter.dart';
-import 'package:sixam_mart/helper/responsive_helper.dart';
 import 'package:sixam_mart/util/app_constants.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 
@@ -33,10 +32,6 @@ class ChatController extends GetxController implements GetxService {
   ConversationsModel? _conversationModel;
   ConversationsModel? _searchConversationModel;
   bool _hasAdmin = true;
-  NotificationBody? _notificationBody;
-  int? _selectedIndex;
-  String _type = 'vendor';
-  bool _clickTab = false;
 
   bool get isLoading => _isLoading;
   List<bool>? get showDate => _showDate;
@@ -52,25 +47,11 @@ class ChatController extends GetxController implements GetxService {
   ConversationsModel? get conversationModel => _conversationModel;
   ConversationsModel? get searchConversationModel => _searchConversationModel;
   bool get hasAdmin => _hasAdmin;
-  NotificationBody? get notificationBody => _notificationBody;
-  int? get selectedIndex => _selectedIndex;
-  String? get type => _type;
-  bool get clickTab => _clickTab;
 
-  void setType(String type) {
-    _type = type;
-    update();
-  }
-
-  void setTabSelect() {
-    _clickTab = !_clickTab;
-    // update();
-  }
-
-  Future<void> getConversationList(int offset, {String type = ''}) async {
+  Future<void> getConversationList(int offset) async {
     _hasAdmin = true;
     _searchConversationModel = null;
-    Response response = await chatRepo.getConversationList(offset, type);
+    Response response = await chatRepo.getConversationList(offset);
     if(response.statusCode == 200) {
       if(offset == 1) {
         _conversationModel = ConversationsModel.fromJson(response.body);
@@ -93,7 +74,7 @@ class ChatController extends GetxController implements GetxService {
         }
       }
       _hasAdmin = false;
-      if(index0 != -1 && !ResponsiveHelper.isDesktop(Get.context)) {
+      if(index0 != -1) {
         _hasAdmin = true;
         if(sender) {
           _conversationModel!.conversations![index0]!.sender = User(
@@ -179,7 +160,7 @@ class ChatController extends GetxController implements GetxService {
       if (offset == 1) {
 
         /// Unread-read
-        if(conversationID != null && _conversationModel != null && !ResponsiveHelper.isDesktop(Get.context)) {
+        if(conversationID != null && _conversationModel != null) {
           int index0 = -1;
           for(int index=0; index<_conversationModel!.conversations!.length; index++) {
             if(conversationID == _conversationModel!.conversations![index]!.id) {
@@ -278,8 +259,7 @@ class ChatController extends GetxController implements GetxService {
       }else if(index != null && _conversationModel != null) {
         _conversationModel!.conversations![index]!.lastMessageTime = DateConverter.isoStringToLocalString(_messageModel!.messages![0].createdAt!);
       }
-      if(_conversationModel != null && !_hasAdmin && (_messageModel!.conversation!.senderType == AppConstants.admin || _messageModel!.conversation!.receiverType == AppConstants.admin)
-          && !ResponsiveHelper.isDesktop(Get.context)) {
+      if(_conversationModel != null && !_hasAdmin && (_messageModel!.conversation!.senderType == AppConstants.admin || _messageModel!.conversation!.receiverType == AppConstants.admin)) {
         _conversationModel!.conversations!.add(_messageModel!.conversation);
         _hasAdmin = true;
       }
@@ -357,16 +337,5 @@ class ChatController extends GetxController implements GetxService {
     }
     return XFile.fromData(output.rawBytes);
   }
-
-  void setNotificationBody(NotificationBody notificationBody) {
-    _notificationBody = notificationBody;
-    update();
-  }
-
-  void setSelectedIndex(int index) {
-    _selectedIndex = index;
-    update();
-  }
-
 
 }

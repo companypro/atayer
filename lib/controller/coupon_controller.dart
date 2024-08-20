@@ -1,4 +1,3 @@
-import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:sixam_mart/data/api/api_checker.dart';
 import 'package:sixam_mart/data/model/response/coupon_model.dart';
 import 'package:sixam_mart/data/repository/coupon_repo.dart';
@@ -16,7 +15,6 @@ class CouponController extends GetxController implements GetxService {
   double? _discount = 0.0;
   bool _isLoading = false;
   bool _freeDelivery = false;
-  int _currentIndex = 0;
 
   CouponModel? get coupon => _coupon;
   double? get discount => _discount;
@@ -24,24 +22,12 @@ class CouponController extends GetxController implements GetxService {
   bool get freeDelivery => _freeDelivery;
   List<CouponModel>? get couponList => _couponList;
   List<CouponModel>? get taxiCouponList => _taxiCouponList;
-  int get currentIndex => _currentIndex;
-
-  void setCurrentIndex(int index, bool notify) {
-    _currentIndex = index;
-    if(notify) {
-      update();
-    }
-  }
 
   Future<void> getCouponList() async {
     Response response = await couponRepo.getCouponList();
     if (response.statusCode == 200) {
       _couponList = [];
-      response.body.forEach((category) {
-        CouponModel coupon = CouponModel.fromJson(category);
-        coupon.toolTip = JustTheController();
-        _couponList!.add(coupon);
-      });
+      response.body.forEach((category) => _couponList!.add(CouponModel.fromJson(category)));
       update();
     } else {
       ApiChecker.checkApi(response);
@@ -104,7 +90,6 @@ class CouponController extends GetxController implements GetxService {
       ApiChecker.checkApi(response);
     }
     _isLoading = false;
-
     update();
     return _discount;
   }

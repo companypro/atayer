@@ -31,7 +31,8 @@ class VegFilterWidget extends StatelessWidget {
       ])));
     }
 
-    return (Get.find<SplashController>().configModel!.moduleConfig!.module!.vegNonVeg! && Get.find<SplashController>().configModel!.toggleVegNonVeg!) ? Padding(
+    return (Get.find<SplashController>().configModel!.moduleConfig!.module!.vegNonVeg!
+    && Get.find<SplashController>().configModel!.toggleVegNonVeg!) ? Padding(
       padding: fromAppBar ? EdgeInsets.zero : EdgeInsets.only(left: ltr ? Dimensions.paddingSizeSmall : 0, right: ltr ? 0 : Dimensions.paddingSizeSmall),
       child: PopupMenuButton<dynamic>(
         offset: const Offset(-20, 20),

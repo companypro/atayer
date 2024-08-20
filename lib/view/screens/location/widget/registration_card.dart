@@ -45,6 +45,7 @@ class RegistrationCard extends StatelessWidget {
                 buttonText: isStore ? splashController.landingModel!.joinSellerButtonName! : splashController.landingModel!.joinDeliveryManButtonName!, fontSize: Dimensions.fontSizeSmall,
                 width: 100, height: 40,
                 onPressed: () async {
+                  // String url = isStore ? '${AppConstants.baseUrl}/store/apply' : '${AppConstants.baseUrl}/deliveryman/apply';
                   String url = isStore ? splashController.landingModel!.joinSellerButtonUrl! : splashController.landingModel!.joinDeliveryManButtonUrl!;
                   if(await canLaunchUrlString(url)) {
                     launchUrlString(url);

@@ -14,17 +14,4 @@ class ParcelRepo {
     return await apiClient.getData('${AppConstants.placeDetailsUri}?placeid=$placeID');
   }
 
-  Future<Response> getWhyChooseDetails() async {
-    return await apiClient.getData(AppConstants.whyChooseUri);
-  }
-
-  ///get video content uri
-  Future<Response> getVideoContentDetails() async {
-    return await apiClient.getData(AppConstants.videoContentUri);
-  }
-
-  Future<Response> getParcelInstruction(int offset) async {
-    return await apiClient.getData('${AppConstants.parcelInstructionUri}?limit=10&offset=$offset');
-  }
-
 }

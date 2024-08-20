@@ -20,32 +20,24 @@ class PaymentButtonNew extends StatelessWidget {
           onTap: onTap as void Function()?,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-              border: Border.all(color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).disabledColor.withOpacity(0.5))
+              color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+              boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200]!, blurRadius: 5, spreadRadius: 1)],
             ),
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeLarge),
+            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
             child: Row(children: [
               Image.asset(
                 icon, width: 20, height: 20,
+                color: isSelected ? Theme.of(context).cardColor : Theme.of(context).disabledColor,
               ),
               const SizedBox(width: Dimensions.paddingSizeSmall),
 
               Expanded(
                 child: Text(
-                  title, maxLines: 2, overflow: TextOverflow.ellipsis,
-                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                  title,
+                  style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: isSelected ? Theme.of(context).cardColor : Theme.of(context).disabledColor),
                 ),
               ),
-
-              isSelected ? Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).primaryColor,
-                ),
-                padding: const EdgeInsets.all(2),
-                child: const Icon(Icons.check, color: Colors.white, size: 18),
-              ) : const SizedBox(),
-
             ]),
 
           ),
