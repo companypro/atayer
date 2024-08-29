@@ -104,6 +104,7 @@ class AppConstants {
   static const String orderCancellationUri = '/api/v1/customer/order/cancellation-reasons';
   static const String cartStoreSuggestedItemsUri = '/api/v1/items/suggested';
   static const String landingPageUri = '/api/v1/flutter-landing-page';
+  static const String guestLoginUri = '/api/v1/auth/guest/request';
 
   //MESSAGING
   static const String conversationListUri = '/api/v1/customer/message/list';
@@ -138,6 +139,8 @@ class AppConstants {
   static const String latitude = 'latitude';
   static const String longitude = 'longitude';
   static const String cookiesManagement = 'cookies_management';
+  static const String guestId = '6ammart_guest_id';
+  static const String guestNumber = '6ammart_guest_number';
 
 
   ///Refer & Earn work flow list..

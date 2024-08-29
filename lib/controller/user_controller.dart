@@ -115,4 +115,7 @@ class UserController extends GetxController implements GetxService {
     }
   }
 
+  void setForceFullyUserEmpty() {
+    _userInfoModel = null;
+  }
 }

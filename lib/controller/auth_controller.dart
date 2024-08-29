@@ -25,7 +25,7 @@ import 'package:get/get.dart';
 class AuthController extends GetxController implements GetxService {
   final AuthRepo authRepo;
   AuthController({required this.authRepo}) {
-   _notification = authRepo.isNotificationActive();
+    _notification = authRepo.isNotificationActive();
   }
 
   bool _isLoading = false;
@@ -186,7 +186,7 @@ class AuthController extends GetxController implements GetxService {
     Response response = await authRepo.registration(signUpBody);
     ResponseModel responseModel;
     if (response.statusCode == 200) {
-      if(!Get.find<SplashController>().configModel!.customerVerification!) {
+      if(Get.find<SplashController>().configModel!.customerVerification!) {
         authRepo.saveUserToken(response.body["token"]);
         await authRepo.updateToken();
         Get.find<UserController>().getUserInfo();
@@ -207,7 +207,9 @@ class AuthController extends GetxController implements GetxService {
     ResponseModel responseModel;
     if (response.statusCode == 200) {
       if(Get.find<SplashController>().configModel!.customerVerification! && response.body['is_phone_verified'] == 0) {
-
+        authRepo.saveUserToken(response.body['token'], alreadyInApp: alreadyInApp);
+        await authRepo.updateToken();
+        Get.find<UserController>().getUserInfo();
       }else {
         authRepo.saveUserToken(response.body['token'], alreadyInApp: alreadyInApp);
         await authRepo.updateToken();

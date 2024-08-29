@@ -48,6 +48,13 @@ class SplashController extends GetxController implements GetxService {
   LandingModel? get landingModel => _landingModel;
   bool get savedCookiesData => _savedCookiesData;
 
+
+  @override
+  void onInit() {
+    getModules();
+    super.onInit();
+  }
+
   void selectModuleIndex(int index) {
     _selectedModuleIndex = index;
     update();

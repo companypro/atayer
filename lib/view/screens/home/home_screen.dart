@@ -129,11 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 await Get.find<StoreController>().getFeaturedStoreList();
               }
             },
-            child: ResponsiveHelper.isDesktop(context) ? WebHomeScreen(
-              scrollController: _scrollController,
-            ) : (Get.find<SplashController>().module != null && Get.find<SplashController>().module!.themeId == 2) ? Theme1HomeScreen(
-              scrollController: _scrollController, splashController: splashController, showMobileModule: showMobileModule,
-            ) : CustomScrollView(
+            child:
+            CustomScrollView(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [

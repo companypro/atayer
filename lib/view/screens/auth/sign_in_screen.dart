@@ -176,7 +176,7 @@ class SignInScreenState extends State<SignInScreen> {
                         ),
                         TextButton(
                           onPressed: () => Get.toNamed(RouteHelper.getForgotPassRoute(false, null)),
-                          child: Text('${'forgot_password'.tr}?', style: robotoMedium.copyWith(color: Theme.of(context).hintColor)),
+                          child: Text('${'forgot_password'.tr}', style: robotoMedium.copyWith(color: Theme.of(context).hintColor)),
                         ),
                       ]),
                       const SizedBox(height: Dimensions.paddingSizeLarge),
@@ -211,7 +211,7 @@ class SignInScreenState extends State<SignInScreen> {
                       ]),
                       const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                      const SocialLoginWidget(),
+                      // const SocialLoginWidget(),
 
                       const GuestButton(),
 
@@ -255,17 +255,12 @@ class SignInScreenState extends State<SignInScreen> {
             authController.clearUserNumberAndPassword();
           }
           String token = status.message!.substring(1, status.message!.length);
-          if(Get.find<SplashController>().configModel!.customerVerification! && int.parse(status.message![0]) == 0) {
-            List<int> encoded = utf8.encode(password);
-            String data = base64Encode(encoded);
-            Get.toNamed(RouteHelper.getVerificationRoute(numberWithCountryCode, token, RouteHelper.signUp, data));
-          }else {
-            if(widget.backFromThis) {
-              Get.back();
-            }else{
-              Get.find<LocationController>().navigateToLocationScreen('sign-in', offNamed: true);
-            }
+          if(widget.backFromThis) {
+            Get.back();
+          }else{
+            Get.find<LocationController>().navigateToLocationScreen('sign-in', offNamed: true);
           }
+
         }else {
           showCustomSnackBar(status.message);
         }
